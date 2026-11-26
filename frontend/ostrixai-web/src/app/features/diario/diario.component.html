@@ -1,0 +1,587 @@
+<div class="diario-container">
+  <!-- BARRA DE ESTADO SUPERIOR DE LA BIBLIOTECA -->
+  <header class="app-toolbar" role="banner">
+    <div class="toolbar-brand">
+      <span class="library-icon pi pi-book" aria-hidden="true"></span>
+      <div>
+        <h1 class="library-title">{{ t('myDiary') }}</h1>
+        <p class="library-subtitle">{{ t('diaryDescription') }}</p>
+      </div>
+    </div>
+
+    <!-- Indicadores de estado de hardware, red e IA -->
+    <div class="status-indicators" [attr.aria-label]="settings.profile().language === 'en' ? 'System and inference status' : 'Estado del sistema e inferencia'">
+      <!-- Conectividad -->
+      <span class="status-pill" [class.online]="device.online()" [class.offline]="!device.online()">
+        <i class="pi" [class.pi-wifi]="device.online()" [class.pi-ban]="!device.online()" aria-hidden="true"></i>
+        <span>{{ device.online() ? t('online') : t('offline') }}</span>
+      </span>
+
+      <!-- Gemini Nano Local -->
+      <span class="status-pill nano-pill" [attr.data-status]="device.nano()">
+        <i class="pi pi-bolt" aria-hidden="true"></i>
+        <span>
+          {{ device.nano() === 'available' ? t('nanoAvailable') :
+             device.nano() === 'downloadable' ? t('nanoDownloadable') :
+             device.nano() === 'downloading' ? t('nanoDownloading') : t('essentialModeChip') }}
+        </span>
+      </span>
+
+      <!-- Estado de Sincronización -->
+      <span class="status-pill sync-pill" [class.has-pending]="sync.pendingCount() > 0">
+        <i class="pi pi-sync" [class.pi-spin]="sync.isSyncing()" aria-hidden="true"></i>
+        <span>{{ !sync.pendingCountKnown() ? '—' : sync.pendingCount() > 0 ? (sync.pendingCount() + ' ' + t('journalTimePending')) : t('journalUpToDate') }}</span>
+      </span>
+    </div>
+
+    <!-- Acciones globales -->
+    <div class="toolbar-actions">
+      <button pButton type="button" class="p-button-outlined p-button-sm action-btn" (click)="showStudentSettings()">
+        <i class="pi pi-user-edit" aria-hidden="true"></i>
+        <span>{{ t('editSettings') }}</span>
+      </button>
+
+      <button pButton type="button" class="p-button-outlined p-button-sm action-btn" (click)="prepareLocalModel()" [disabled]="busy() || device.nano() === 'available'">
+        <i class="pi pi-download" aria-hidden="true"></i>
+        <span>{{ t('journalPrepareNano') }}</span>
+      </button>
+
+      <button pButton type="button" class="p-button-outlined p-button-sm action-btn" (click)="syncNow()" [disabled]="busy() || sync.isSyncing()">
+        <i class="pi pi-cloud-upload" aria-hidden="true"></i>
+        <span>{{ t('journalSyncNow') }}</span>
+      </button>
+
+      <button pButton type="button" class="p-button-secondary p-button-sm action-btn" (click)="exportNotebook()">
+        <i class="pi pi-file-export" aria-hidden="true"></i>
+        <span>{{ t('journalExport') }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MENSAJES DE ERROR Y CONFIRMACIÓN ACCESIBLES -->
+  <div *ngIf="error()" class="alert-box alert-error" role="alert" aria-live="assertive">
+    <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+    <span>{{ error() }}</span>
+  </div>
+
+  <div *ngIf="feedback()" class="alert-box alert-success" role="status" aria-live="polite">
+    <i class="pi pi-check-circle" aria-hidden="true"></i>
+    <span>{{ feedback() }}</span>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN DEL ESTUDIANTE -->
+  <section *ngIf="editingSettings()" class="settings-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+    <div class="settings-card">
+      <h2 id="settings-heading">{{ t('journalPreferencesTitle') }}</h2>
+      <p class="settings-sub">{{ t('journalPreferencesDesc') }}</p>
+
+      <div class="form-group">
+        <label for="setting-grade">{{ t('schoolGrade') }}</label>
+        <select id="setting-grade" [(ngModel)]="setupGrade" class="custom-select">
+          <option [ngValue]="null">{{ t('gradeUnspecified') }}</option>
+          <option [ngValue]="1">{{ settings.profile().language === 'en' ? 'Grade 1' : '1.º de secundaria' }}</option>
+          <option [ngValue]="2">{{ settings.profile().language === 'en' ? 'Grade 2' : '2.º de secundaria' }}</option>
+          <option [ngValue]="3">{{ settings.profile().language === 'en' ? 'Grade 3' : '3.º de secundaria' }}</option>
+          <option [ngValue]="4">{{ settings.profile().language === 'en' ? 'Grade 4' : '4.º de secundaria' }}</option>
+          <option [ngValue]="5">{{ settings.profile().language === 'en' ? 'Grade 5' : '5.º de secundaria' }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="setting-lang">{{ t('appLanguage') }}</label>
+        <select id="setting-lang" [(ngModel)]="setupLanguage" class="custom-select">
+          <option value="es">Español</option>
+          <option value="qu-chanka">Quechua Chanka (Ayacucho / Andahuaylas)</option>
+          <option value="en">English (Hackathon Review Mode)</option>
+        </select>
+      </div>
+
+      <div class="form-checkbox">
+        <input type="checkbox" id="setting-science" [(ngModel)]="setupSeparateScience">
+        <label for="setting-science">{{ t('separateScience') }}</label>
+      </div>
+
+      <div class="settings-actions">
+        <button pButton type="button" class="p-button-secondary" (click)="editingSettings.set(false)">Cancelar</button>
+        <button pButton type="button" class="p-button-primary" (click)="saveStudentSettings()">{{ t('journalSaveChanges') }}</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- VISTA 1: BIBLIOTECA GENERAL Y DIARIO POR FECHAS                -->
+  <!-- ============================================================== -->
+  <main *ngIf="!selectedId()" class="library-layout">
+    <!-- COLUMNA IZQUIERDA: NUEVA SESIÓN Y DIARIO POR DÍA -->
+    <section class="sessions-section">
+      <!-- TARJETA CREAR NUEVA SESIÓN -->
+      <article class="book-card create-session-card">
+        <h2 class="card-title">
+          <i class="pi pi-pencil" aria-hidden="true"></i>
+          <span>{{ t('newSession') }}</span>
+        </h2>
+
+        <form (ngSubmit)="createSession()" class="new-session-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="input-date">{{ t('date') }}</label>
+              <input id="input-date" type="date" [(ngModel)]="newDate" name="newDate" required class="custom-input">
+            </div>
+
+            <div class="form-field">
+              <label for="select-course">{{ t('course') }}</label>
+              <select id="select-course" [(ngModel)]="newCourse" name="newCourse" class="custom-select">
+                <option *ngFor="let opt of options()" [value]="opt.name">{{ opt.name }}</option>
+                <option value="__custom">{{ t('custom') }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div *ngIf="newCourse === '__custom'" class="form-field">
+            <label for="input-custom-course">{{ t('journalCourseName') }}</label>
+            <input id="input-custom-course" type="text" [(ngModel)]="customCourse" name="customCourse" placeholder="Ej. Robótica rural" class="custom-input">
+          </div>
+
+          <div class="form-field">
+            <label for="input-topic">{{ t('topic') }}</label>
+            <input id="input-topic" type="text" [(ngModel)]="newTopic" name="newTopic" required placeholder="Ej. Fracciones en la agricultura" class="custom-input">
+          </div>
+
+          <button pButton type="submit" class="p-button-primary submit-session-btn" [disabled]="!newTopic.trim()">
+            <i class="pi pi-plus" aria-hidden="true"></i>
+            <span>{{ t('save') }}</span>
+          </button>
+        </form>
+      </article>
+
+      <!-- LISTA DE SESIONES AGRUPADAS POR FECHA (DIARIO ACADÉMICO) -->
+      <section class="journal-timeline" [attr.aria-label]="t('journalHistoryAria')">
+        <h2 class="timeline-heading">
+          <i class="pi pi-calendar" aria-hidden="true"></i>
+          <span>{{ t('journalByDay') }}</span>
+        </h2>
+
+        <div *ngIf="groups().length === 0" class="empty-state">
+          <i class="pi pi-book empty-icon" aria-hidden="true"></i>
+          <p>{{ t('journalNoSessions') }}</p>
+          <p class="empty-sub">{{ t('journalNoSessionsDesc') }}</p>
+        </div>
+
+        <div *ngFor="let group of groups()" class="day-group-card">
+          <header class="day-group-header">
+            <h3 class="day-date-label">
+              <i class="pi pi-calendar-plus" aria-hidden="true"></i>
+              <span>{{ dateLabel(group.date) }}</span>
+            </h3>
+            <div class="day-stats">
+              <span *ngIf="group.doubts > 0" class="badge-doubt">
+                <i class="pi pi-question-circle" aria-hidden="true"></i> {{ group.doubts }} dudas
+              </span>
+              <span *ngIf="group.eureka > 0" class="badge-eureka">
+                <i class="pi pi-star" aria-hidden="true"></i> {{ group.eureka }} Eureka
+              </span>
+            </div>
+          </header>
+
+          <div class="courses-grid">
+            <div *ngFor="let c of group.courses" class="course-sessions-block">
+              <h4 class="course-name-title">{{ c.name }}</h4>
+              <ul class="sessions-list">
+                <li *ngFor="let s of c.sessions" class="session-item">
+                  <button type="button" class="session-link-card" (click)="select(s)">
+                    <div class="session-info">
+                      <span class="session-topic-text">{{ s.topic }}</span>
+                      <span class="session-preview-notes" *ngIf="s.notes">
+                        {{ s.notes.slice(0, 80) }}...
+                      </span>
+                    </div>
+                    <div class="session-meta-tags">
+                      <span *ngIf="s.summary" class="tag-has-summary" [attr.title]="t('journalHasSummaryTitle')">
+                        <i class="pi pi-file-edit" aria-hidden="true"></i>
+                      </span>
+                      <span *ngIf="s.review" class="tag-has-review" title="Tiene preguntas de repaso">
+                        <i class="pi pi-check-square" aria-hidden="true"></i>
+                      </span>
+                      <i class="pi pi-chevron-right open-arrow" aria-hidden="true"></i>
+                    </div>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- COLUMNA DERECHA: PANEL DE MEMORIA DE APRENDIZAJE REAL -->
+    <aside class="memory-panel-aside" [attr.aria-label]="t('journalReviewAria')">
+      <article class="book-card progress-summary-card">
+        <h2 class="card-title">
+          <i class="pi pi-chart-line" aria-hidden="true"></i>
+          <span>{{ t('journalLearningMemory') }}</span>
+        </h2>
+        <p class="panel-desc">{{ t('journalSm2Desc') }}</p>
+
+        <!-- Métricas de Progreso -->
+        <div class="progress-stats-grid">
+          <div class="stat-box">
+            <span class="stat-number">{{ memory.progress().totalConcepts }}</span>
+            <span class="stat-label">{{ t('journalRegisteredConcepts') }}</span>
+          </div>
+          <div class="stat-box highlight-mastered">
+            <span class="stat-number">{{ memory.progress().masteredCount }}</span>
+            <span class="stat-label">{{ t('journalMasteredConcepts') }}</span>
+          </div>
+          <div class="stat-box highlight-reinforcing">
+            <span class="stat-number">{{ memory.progress().reinforcingCount }}</span>
+            <span class="stat-label">{{ t('journalStrengtheningConcepts') }}</span>
+          </div>
+          <div class="stat-box highlight-due">
+            <span class="stat-number">{{ memory.progress().dueTodayCount }}</span>
+            <span class="stat-label">{{ t('journalReviewTodayCount') }}</span>
+          </div>
+        </div>
+
+        <!-- Barra de Maestría -->
+        <div class="mastery-bar-container">
+          <div class="mastery-labels">
+            <span>{{ t('journalMasteryLevel') }}</span>
+            <strong>{{ memory.progress().masteryPercentage }}%</strong>
+          </div>
+          <div class="mastery-bar-track">
+            <div class="mastery-bar-fill" [style.width.%]="memory.progress().masteryPercentage"></div>
+          </div>
+        </div>
+
+        <!-- Conceptos que tocan hoy -->
+        <div class="due-concepts-section">
+          <h3 class="sub-heading">{{ t('journalScheduledReviews') }}</h3>
+          <div *ngIf="memory.getDueConcepts().length === 0" class="no-due-message">
+            <i class="pi pi-check" aria-hidden="true"></i>
+            <span>{{ t('journalNoReviews') }}</span>
+          </div>
+
+          <ul *ngIf="memory.getDueConcepts().length > 0" class="due-list">
+            <li *ngFor="let c of memory.getDueConcepts().slice(0, 5)" class="due-item">
+              <div class="due-item-header">
+                <span class="due-course-tag">{{ c.course }}</span>
+                <span class="due-status-tag" [attr.data-status]="c.status">{{ c.status }}</span>
+              </div>
+              <p class="due-concept-text">{{ c.conceptText }}</p>
+              <div class="due-item-footer">
+                <span class="streak-text">Racha: {{ c.streak }} aciertos</span>
+                <span class="interval-text">Intervalo: {{ c.intervalDays }} d</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </article>
+    </aside>
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- VISTA 2: CUADERNO ELECTRÓNICO DE LA SESIÓN SELECCIONADA         -->
+  <!-- ============================================================== -->
+  <main *ngIf="selected() as s" class="session-workspace" role="main">
+    <!-- BARRA DE NAVEGACIÓN Y TÍTULO DE LA SESIÓN -->
+    <nav class="session-nav" [attr.aria-label]="t('journalSessionNavigationAria')">
+      <button pButton type="button" class="p-button-text p-button-sm back-btn" (click)="returnToDays()">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ t('journalBackToLibrary') }}</span>
+      </button>
+
+      <div class="session-header-details">
+        <span class="course-badge">{{ s.course }}</span>
+        <h2 class="session-heading-title">{{ s.topic }}</h2>
+        <span class="session-date-tag">{{ dateLabel(s.date) }}</span>
+      </div>
+    </nav>
+
+    <!-- PESTAÑAS DEL CUADERNO (LIBROS TEMÁTICOS) -->
+    <div class="tabs-container" role="tablist">
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'notes'"
+              [class.active]="tab() === 'notes'" (click)="tab.set('notes')" class="tab-button">
+        <i class="pi pi-pencil" aria-hidden="true"></i>
+        <span>{{ t('notes') }}</span>
+      </button>
+
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'summary'"
+              [class.active]="tab() === 'summary'" (click)="tab.set('summary')" class="tab-button">
+        <i class="pi pi-file-edit" aria-hidden="true"></i>
+        <span>{{ t('summary') }}</span>
+        <span *ngIf="s.summary" class="tab-dot" aria-hidden="true"></span>
+      </button>
+
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'doubts'"
+              [class.active]="tab() === 'doubts'" (click)="tab.set('doubts')" class="tab-button">
+        <i class="pi pi-question-circle" aria-hidden="true"></i>
+        <span>{{ t('doubts') }} ({{ s.doubts.length }})</span>
+      </button>
+
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'eureka'"
+              [class.active]="tab() === 'eureka'" (click)="tab.set('eureka')" class="tab-button">
+        <i class="pi pi-star" aria-hidden="true"></i>
+        <span>{{ t('eureka') }} ({{ s.eureka.length }})</span>
+      </button>
+
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'review'"
+              [class.active]="tab() === 'review'" (click)="tab.set('review')" class="tab-button">
+        <i class="pi pi-check-square" aria-hidden="true"></i>
+        <span>{{ t('review') }}</span>
+      </button>
+
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'corrections'"
+              [class.active]="tab() === 'corrections'" (click)="tab.set('corrections')" class="tab-button">
+        <i class="pi pi-comments" aria-hidden="true"></i>
+        <span>Quechua Chanka</span>
+      </button>
+    </div>
+
+    <!-- PESTAÑA 1: EDITOR DE APUNTES ORIGINALES -->
+    <section *ngIf="tab() === 'notes'" class="tab-panel" role="tabpanel">
+      <div class="panel-card">
+        <div class="editor-header">
+          <div>
+            <h3 class="panel-title">{{ t('journalClassNotes') }}</h3>
+            <p class="panel-subtitle">{{ t('journalClassNotesDesc') }}</p>
+          </div>
+          <span class="char-count">{{ notesDraft.length }} caracteres</span>
+        </div>
+
+        <textarea [(ngModel)]="notesDraft" (ngModelChange)="editNotes($event)"
+                  rows="14" class="notes-textarea"
+                  [placeholder]="t('journalNotesInputPlaceholder')"></textarea>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: RESUMEN IA Y TRADUCCIÓN -->
+    <section *ngIf="tab() === 'summary'" class="tab-panel" role="tabpanel">
+      <div class="panel-card">
+        <header class="summary-header">
+          <div>
+            <h3 class="panel-title">{{ t('journalAiSummary') }}</h3>
+            <p class="panel-subtitle">{{ t('journalAiSummaryDesc') }}</p>
+          </div>
+
+          <div class="generation-controls">
+            <!-- Checkbox de Consentimiento Cloud -->
+            <label class="consent-label" for="cloud-consent-summary">
+              <input type="checkbox" id="cloud-consent-summary" [(ngModel)]="cloudConsent">
+              <span>{{ t('journalAllowCloud') }}</span>
+            </label>
+
+            <!-- Checkbox de Traducción Quechua -->
+            <label class="consent-label" for="translation-consent-summary">
+              <input type="checkbox" id="translation-consent-summary" [(ngModel)]="translationConsent">
+              <span>{{ t('journalTranslateQuechua') }}</span>
+            </label>
+
+            <div class="btn-group">
+              <button pButton type="button" class="p-button-primary" (click)="generate('summary')" [disabled]="busy() || !notesDraft.trim()">
+                <i class="pi pi-sparkles" aria-hidden="true"></i>
+                <span>{{ busy() ? 'Generando...' : 'Generar Resumen Híbrido' }}</span>
+              </button>
+
+              <button pButton type="button" class="p-button-outlined" (click)="generate('summary', true)" [disabled]="busy() || !notesDraft.trim()">
+                <i class="pi pi-bolt" aria-hidden="true"></i>
+                <span>{{ t('journalForceNano') }}</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Visualización del resumen en español -->
+        <article class="content-box" *ngIf="s.summary">
+          <h4 class="box-subtitle">{{ t('journalSummarySpanish') }}</h4>
+          <div class="markdown-preview">{{ s.summary }}</div>
+        </article>
+
+        <!-- Visualización de la traducción en Quechua Chanka -->
+        <article class="content-box quechua-box" *ngIf="s.summaryQuechua">
+          <h4 class="box-subtitle">Quechua Chanka (Ayacucho / Andahuaylas):</h4>
+          <div class="markdown-preview">{{ s.summaryQuechua }}</div>
+          <p class="disclaimer-note">{{ t('journalTranslationCaveat') }}</p>
+        </article>
+
+        <div *ngIf="!s.summary" class="empty-tab-hint">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          <span>{{ t('journalNoSummary') }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: LIBRO DE DUDAS (MEMORIA DE APRENDIZAJE) -->
+    <section *ngIf="tab() === 'doubts'" class="tab-panel" role="tabpanel">
+      <div class="panel-card">
+        <h3 class="panel-title">{{ t('journalDoubtsBook') }}</h3>
+        <p class="panel-subtitle">{{ t('journalDoubtsDesc') }}</p>
+
+        <form (ngSubmit)="addConcept('doubts')" class="concept-input-form">
+          <input type="text" [(ngModel)]="conceptDraft" name="conceptDraft"
+                 [placeholder]="t('journalDoubtInputPlaceholder')"
+                 class="custom-input flex-input">
+          <button pButton type="submit" class="p-button-primary" [disabled]="!conceptDraft.trim()">
+            <i class="pi pi-plus" aria-hidden="true"></i>
+            <span>{{ t('journalAddDoubt') }}</span>
+          </button>
+        </form>
+
+        <ul class="concepts-list">
+          <li *ngFor="let doubt of s.doubts; let i = index" class="concept-item doubt-item">
+            <div class="concept-text-wrap">
+              <i class="pi pi-question-circle concept-bullet" aria-hidden="true"></i>
+              <span class="concept-text">{{ doubt }}</span>
+            </div>
+            <button type="button" class="delete-btn" (click)="removeConcept('doubts', i)" [attr.aria-label]="t('journalRemoveDoubtAria')">
+              <i class="pi pi-trash" aria-hidden="true"></i>
+            </button>
+          </li>
+        </ul>
+
+        <div *ngIf="s.doubts.length === 0" class="empty-tab-hint">
+          <i class="pi pi-check" aria-hidden="true"></i>
+          <span>{{ t('journalNoDoubts') }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: LIBRO EUREKA -->
+    <section *ngIf="tab() === 'eureka'" class="tab-panel" role="tabpanel">
+      <div class="panel-card">
+        <h3 class="panel-title">{{ t('journalEurekaBook') }}</h3>
+        <p class="panel-subtitle">{{ t('journalEurekaDesc') }}</p>
+
+        <form (ngSubmit)="addConcept('eureka')" class="concept-input-form">
+          <input type="text" [(ngModel)]="conceptDraft" name="conceptDraft"
+                 [placeholder]="t('journalEurekaInputPlaceholder')"
+                 class="custom-input flex-input">
+          <button pButton type="submit" class="p-button-success" [disabled]="!conceptDraft.trim()">
+            <i class="pi pi-star" aria-hidden="true"></i>
+            <span>{{ t('journalAddEureka') }}</span>
+          </button>
+        </form>
+
+        <ul class="concepts-list">
+          <li *ngFor="let item of s.eureka; let i = index" class="concept-item eureka-item">
+            <div class="concept-text-wrap">
+              <i class="pi pi-star-fill eureka-bullet" aria-hidden="true"></i>
+              <span class="concept-text">{{ item }}</span>
+            </div>
+            <button type="button" class="delete-btn" (click)="removeConcept('eureka', i)" [attr.aria-label]="t('journalRemoveEurekaAria')">
+              <i class="pi pi-trash" aria-hidden="true"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 5: LIBRO DE REPASO Y EJERCICIOS CURRICULARES DETERMINISTAS -->
+    <section *ngIf="tab() === 'review'" class="tab-panel" role="tabpanel">
+      <div class="panel-card">
+        <header class="review-header">
+          <div>
+            <h3 class="panel-title">{{ t('journalExercisesTitle') }}</h3>
+            <p class="panel-subtitle">{{ t('journalExercisesDesc') }}</p>
+          </div>
+
+          <div class="btn-group">
+            <button pButton type="button" class="p-button-outlined" (click)="generate('review')" [disabled]="busy() || !notesDraft.trim()">
+              <i class="pi pi-sparkles" aria-hidden="true"></i>
+              <span>{{ t('journalGenerateQuiz') }}</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- BANCO DE EJERCICIOS CURRICULARES OFFLINE -->
+        <div class="curriculum-exercises-block">
+          <h4 class="sub-heading">
+            <i class="pi pi-list-check" aria-hidden="true"></i>
+            <span>{{ t('journalOfflineExercisesTitle') }}</span>
+          </h4>
+
+          <div *ngIf="currentExercises().length === 0" class="empty-tab-hint">
+            <span>{{ t('journalNoOfflineExercises') }}</span>
+          </div>
+
+          <div *ngFor="let ex of currentExercises()" class="exercise-card">
+            <p class="exercise-question">{{ ex.question }}</p>
+            <p *ngIf="ex.questionQuechua && settings.profile().language === 'qu-chanka'" class="exercise-question-qu">
+              {{ ex.questionQuechua }}
+            </p>
+
+            <!-- Opciones de respuesta -->
+            <div *ngIf="ex.options" class="options-group">
+              <button *ngFor="let opt of ex.options; let optIdx = index"
+                      type="button"
+                      class="option-btn"
+                      [class.selected]="userSelectedAnswers()[ex.id] === optIdx"
+                      [class.correct]="exerciseResults()[ex.id]?.isCorrect && userSelectedAnswers()[ex.id] === optIdx"
+                      [class.incorrect]="exerciseResults()[ex.id] && !exerciseResults()[ex.id]?.isCorrect && userSelectedAnswers()[ex.id] === optIdx"
+                      [disabled]="exerciseResults()[ex.id] !== undefined"
+                      (click)="submitExerciseAnswer(ex, optIdx)">
+                <span class="option-letter">{{ ['A', 'B', 'C', 'D'][optIdx] }})</span>
+                <span class="option-text">{{ opt }}</span>
+              </button>
+            </div>
+
+            <!-- Retroalimentación determinista inmediata -->
+            <div *ngIf="exerciseResults()[ex.id] as res"
+                 class="exercise-feedback"
+                 [class.feedback-correct]="res.isCorrect"
+                 [class.feedback-incorrect]="!res.isCorrect">
+              <i class="pi" [class.pi-check-circle]="res.isCorrect" [class.pi-times-circle]="!res.isCorrect" aria-hidden="true"></i>
+              <div>
+                <strong>{{ res.isCorrect ? '¡Correcto!' : 'Respuesta Incorrecta.' }}</strong>
+                <p>{{ res.explanation }}</p>
+                <small *ngIf="res.nextReview">{{ t('journalReviewDueLabel') }} {{ res.nextReview }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cuestionario generado por IA si existe -->
+        <article *ngIf="s.review" class="content-box ai-review-box">
+          <h4 class="box-subtitle">{{ t('journalGeneratedQuizTitle') }}</h4>
+          <div class="markdown-preview">{{ s.review }}</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 6: RETROALIMENTACIÓN LINGÜÍSTICA QUECHUA CHANKA -->
+    <section *ngIf="tab() === 'corrections'" class="tab-panel" role="tabpanel">
+      <div class="panel-card">
+        <h3 class="panel-title">{{ t('journalQuechuaFeedbackTitle') }}</h3>
+        <p class="panel-subtitle">{{ t('journalQuechuaFeedbackDesc') }}</p>
+
+        <form (ngSubmit)="sendLinguisticCorrection()" class="correction-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="corr-es">{{ t('journalSpanishTermLabel') }}</label>
+              <input id="corr-es" type="text" [(ngModel)]="correctionTermEs" name="corrEs" required placeholder="Ej. Fracción" class="custom-input">
+            </div>
+
+            <div class="form-field">
+              <label for="corr-qu">{{ t('journalCurrentTranslationLabel') }}</label>
+              <input id="corr-qu" type="text" [(ngModel)]="correctionTranslatedQu" name="corrQu" placeholder="Ej. Rakiy" class="custom-input">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="corr-chanka">{{ t('journalSuggestedQuechuaTermLabel') }}</label>
+            <input id="corr-chanka" type="text" [(ngModel)]="correctionSuggestedChanka" name="corrChanka" required placeholder="Ej. Patma / rakiy yupay" class="custom-input">
+          </div>
+
+          <div class="form-field">
+            <label for="corr-context">{{ t('journalCommunityContext') }}</label>
+            <input id="corr-context" type="text" [(ngModel)]="correctionContext" name="corrContext" placeholder="Ej. Distrito de Vinchos, Ayacucho" class="custom-input">
+          </div>
+
+          <button pButton type="submit" class="p-button-primary" [disabled]="busy() || !correctionTermEs.trim() || !correctionSuggestedChanka.trim()">
+            <i class="pi pi-send" aria-hidden="true"></i>
+            <span>{{ t('journalSubmitCorrection') }}</span>
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>

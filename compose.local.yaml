@@ -1,0 +1,39 @@
+# Optional local development. Set database passwords in your local environment.
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD for the local development database}
+      MYSQL_DATABASE: ostrixai
+      MYSQL_USER: ostrix_app
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD for the local development database}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+    ports:
+      - "127.0.0.1:3307:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 8s
+      timeout: 5s
+      retries: 15
+
+  api:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ostrixai
+      MYSQL_USER: ostrix_app
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD for the local development database}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/firebase/firebase-admin.json
+    volumes:
+      - ./backend/.credentials:/run/firebase:ro
+    ports:
+      - "127.0.0.1:5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  mysql_data:

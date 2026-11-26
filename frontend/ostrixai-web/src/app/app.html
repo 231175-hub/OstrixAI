@@ -1,0 +1,2549 @@
+<!-- ================= PUBLIC VIEWS ================= -->
+<div *ngIf="view() === 'bienvenida' || view() === 'acceso' || view() === 'registro' || view() === 'perfil'">
+  <!-- Landing / Bienvenida -->
+  <div class="pub view" *ngIf="view() === 'bienvenida'">
+    <i class="shape s1"></i><i class="shape s2"></i><i class="shape s3"></i><i class="shape s4"></i>
+    <div class="wrap">
+      <nav class="pubnav" [attr.aria-label]="activeLanguage() === 'en' ? 'Welcome navigation' : 'Navegación pública'">
+        <a href="#bienvenida" class="logo" (click)="$event.preventDefault(); go('bienvenida')" style="cursor:pointer">
+          <svg width="36" height="36" viewBox="0 0 120 120" role="img" aria-label="Logo OstrixAi">
+            <path d="M26 40 20 12l28 18z" fill="#4285F4"/>
+            <path d="M94 40l6-28-28 18z" fill="#4285F4"/>
+            <ellipse cx="60" cy="70" rx="40" ry="42" fill="#4285F4"/>
+            <ellipse cx="22" cy="80" rx="9" ry="21" fill="#3367D6"/>
+            <ellipse cx="98" cy="80" rx="9" ry="21" fill="#3367D6"/>
+            <ellipse cx="60" cy="92" rx="23" ry="17" fill="#E8F0FE"/>
+            <path d="M50 88l10 7 10-7M50 95l10 7 10-7" stroke="#34A853" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="43" cy="52" r="17" fill="#fff"/><circle cx="77" cy="52" r="17" fill="#fff"/>
+            <circle cx="44" cy="54" r="8" fill="#202124"/><circle cx="76" cy="54" r="8" fill="#202124"/>
+            <circle cx="47" cy="51" r="2.6" fill="#fff"/><circle cx="79" cy="51" r="2.6" fill="#fff"/>
+            <path d="M53 63h14l-7 12z" fill="#FBBC05"/>
+          </svg>
+          OstrixAi
+        </a>
+        <div class="row">
+          <label class="sr" for="pub-lang">{{ t('appLanguage') }}</label>
+          <select id="pub-lang" [ngModel]="activeLanguage()" (ngModelChange)="changeLanguage($event)" style="width:auto;min-height:40px">
+            <option value="es">{{ t('feedbackSpanishLabel') }}</option>
+            <option value="en">English</option>
+            <option value="qu-chanka">{{ t('appQuechuaDisclaimerOption') }}</option>
+          </select>
+          <a href="#acceso" class="btn" (click)="$event.preventDefault(); go('acceso')" style="cursor:pointer">{{ t('alreadyHaveAccount') }}</a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <div>
+          <span class="chip yellow">{{ t('hackathonBadge') }}</span>
+          <h1 style="margin-top:14px">{{ t('heroTitleStart') }} <span>{{ t('heroTitleAccent') }}</span></h1>
+          <p class="lead">{{ t('heroLead') }}</p>
+          <div class="row">
+            <a href="#registro" class="btn primary" (click)="$event.preventDefault(); go('registro')" style="cursor:pointer">
+              {{ t('startBtn') }}
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['arrow']"/></svg>
+            </a>
+            <a href="#acceso" class="btn" (click)="$event.preventDefault(); go('acceso')" style="cursor:pointer">{{ t('alreadyHaveAccount') }}</a>
+          </div>
+        </div>
+        <div class="art">
+          <svg class="owl-float" width="280" height="280" viewBox="0 0 120 120" role="img" aria-label="OstrixAi Owl Mascot">
+            <path d="M26 40 20 12l28 18z" fill="#4285F4"/>
+            <path d="M94 40l6-28-28 18z" fill="#4285F4"/>
+            <ellipse cx="60" cy="70" rx="40" ry="42" fill="#4285F4"/>
+            <ellipse cx="22" cy="80" rx="9" ry="21" fill="#3367D6"/>
+            <ellipse cx="98" cy="80" rx="9" ry="21" fill="#3367D6"/>
+            <ellipse cx="60" cy="92" rx="23" ry="17" fill="#E8F0FE"/>
+            <path d="M50 88l10 7 10-7M50 95l10 7 10-7" stroke="#34A853" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="43" cy="52" r="17" fill="#fff"/><circle cx="77" cy="52" r="17" fill="#fff"/>
+            <circle cx="44" cy="54" r="8" fill="#202124"/><circle cx="76" cy="54" r="8" fill="#202124"/>
+            <circle cx="47" cy="51" r="2.6" fill="#fff"/><circle cx="79" cy="51" r="2.6" fill="#fff"/>
+            <path d="M53 63h14l-7 12z" fill="#FBBC05"/>
+          </svg>
+        </div>
+      </section>
+
+      <section class="grid g3" aria-label="Three capabilities" style="padding-bottom:56px">
+        <article class="card cap">
+          <span class="badge" style="background:var(--green-l);color:var(--green-ink);width:44px;height:44px;border-radius:14px;display:grid;place-items:center">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['layers']"/></svg>
+          </span>
+          <h3>{{ t('capEssentialTitle') }}</h3>
+          <p class="muted">{{ t('capEssentialDesc') }}</p>
+        </article>
+        <article class="card cap">
+          <span class="badge" style="background:var(--blue-l);color:var(--blue-ink);width:44px;height:44px;border-radius:14px;display:grid;place-items:center">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+          </span>
+          <h3>{{ t('capLocalTitle') }}</h3>
+          <p class="muted">{{ t('capLocalDesc') }}</p>
+        </article>
+        <article class="card cap">
+          <span class="badge" style="background:var(--yellow-l);color:var(--yellow-ink);width:44px;height:44px;border-radius:14px;display:grid;place-items:center">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['cloud']"/></svg>
+          </span>
+          <h3>{{ t('capCloudTitle') }}</h3>
+          <p class="muted">{{ t('capCloudDesc') }}</p>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <!-- Iniciar Sesión / Acceso -->
+  <div class="pub view" *ngIf="view() === 'acceso'">
+    <i class="shape s1"></i><i class="shape s4"></i>
+    <div class="wrap">
+      <nav class="pubnav">
+        <a href="#bienvenida" class="logo" (click)="$event.preventDefault(); go('bienvenida')" style="cursor:pointer">
+          <svg width="36" height="36" viewBox="0 0 120 120" role="img"><path d="M26 40 20 12l28 18z" fill="#4285F4"/><path d="M94 40l6-28-28 18z" fill="#4285F4"/><ellipse cx="60" cy="70" rx="40" ry="42" fill="#4285F4"/><ellipse cx="60" cy="92" rx="23" ry="17" fill="#E8F0FE"/><circle cx="43" cy="52" r="17" fill="#fff"/><circle cx="77" cy="52" r="17" fill="#fff"/><circle cx="44" cy="54" r="8" fill="#202124"/><circle cx="76" cy="54" r="8" fill="#202124"/><path d="M53 63h14l-7 12z" fill="#FBBC05"/></svg>
+          OstrixAi
+        </a>
+        <select [attr.aria-label]="t('appLanguage')" [ngModel]="activeLanguage()" (ngModelChange)="changeLanguage($event)" style="width:auto;min-height:40px">
+          <option value="es">{{ t('feedbackSpanishLabel') }}</option>
+          <option value="en">English</option>
+          <option value="qu-chanka">{{ t('appQuechuaDisclaimerOption') }}</option>
+        </select>
+      </nav>
+      <div class="auth">
+        <div class="card stack" style="padding:28px">
+          <h1 style="font-size:26px">{{ t('loginTitle') }}</h1>
+          <p class="muted">{{ t('loginSub') }}</p>
+          <form class="stack" (ngSubmit)="handleLogin()" novalidate>
+            <label class="f">{{ t('usernameLabel') }}
+              <input type="text" [(ngModel)]="authUsername" name="username" required autocomplete="username" placeholder="student_01">
+            </label>
+            <label class="f">{{ t('passwordLabel') }}
+              <div class="pw-wrap" style="position:relative;display:flex;align-items:center">
+                <input [type]="showLoginPassword() ? 'text' : 'password'" [(ngModel)]="authPassword" name="password" required autocomplete="current-password" [placeholder]="t('passwordHint')" style="padding-right:44px;width:100%">
+                <button type="button" class="btn-pw-toggle" (click)="showLoginPassword.set(!showLoginPassword())"
+                  [attr.aria-label]="showLoginPassword() ? t('hidePassword') : t('showPassword')"
+                  style="position:absolute;right:8px;background:none;border:none;cursor:pointer;padding:6px;color:var(--muted);display:flex;align-items:center">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px"><path [attr.d]="showLoginPassword() ? P['eyeOff'] : P['eye']"/></svg>
+                </button>
+              </div>
+            </label>
+            <div class="err" role="alert" *ngIf="authError()">{{ authError() }}</div>
+            <button class="btn primary" type="submit" [disabled]="authBusy()">
+              {{ authBusy() ? t('decryptingBtn') : t('signInBtn') }}
+            </button>
+          </form>
+          <div class="notice">{{ t('cryptoNotice') }}</div>
+          <div class="row between" style="margin-top:8px">
+            <span class="small muted">{{ t('noAccountYet') }} <a href="#registro" (click)="$event.preventDefault(); go('registro')" style="cursor:pointer;color:var(--blue-ink);font-weight:600">{{ t('createOneLink') }}</a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registro / Crear Cuenta -->
+  <div class="pub view" *ngIf="view() === 'registro'">
+    <i class="shape s2"></i><i class="shape s3"></i>
+    <div class="wrap">
+      <nav class="pubnav">
+        <a href="#bienvenida" class="logo" (click)="$event.preventDefault(); go('bienvenida')" style="cursor:pointer">
+          <svg width="36" height="36" viewBox="0 0 120 120" role="img"><path d="M26 40 20 12l28 18z" fill="#4285F4"/><path d="M94 40l6-28-28 18z" fill="#4285F4"/><ellipse cx="60" cy="70" rx="40" ry="42" fill="#4285F4"/><ellipse cx="60" cy="92" rx="23" ry="17" fill="#E8F0FE"/><circle cx="43" cy="52" r="17" fill="#fff"/><circle cx="77" cy="52" r="17" fill="#fff"/><circle cx="44" cy="54" r="8" fill="#202124"/><circle cx="76" cy="54" r="8" fill="#202124"/><path d="M53 63h14l-7 12z" fill="#FBBC05"/></svg>
+          OstrixAi
+        </a>
+        <select [attr.aria-label]="t('appLanguage')" [ngModel]="activeLanguage()" (ngModelChange)="changeLanguage($event)" style="width:auto;min-height:40px">
+          <option value="es">{{ t('feedbackSpanishLabel') }}</option>
+          <option value="en">English</option>
+          <option value="qu-chanka">{{ t('appQuechuaDisclaimerOption') }}</option>
+        </select>
+      </nav>
+      <div class="auth">
+        <div class="card stack" style="padding:28px">
+          <h1 style="font-size:26px">{{ t('registerTitle') }}</h1>
+          <p class="muted">{{ t('registerSub') }}</p>
+          <form class="stack" (ngSubmit)="handleRegister()" novalidate>
+            <label class="f">{{ t('usernameLabel') }}
+              <input type="text" [(ngModel)]="authUsername" name="regUsername" required autocomplete="username" [placeholder]="t('usernameHint')">
+            </label>
+            <label class="f">{{ t('passwordLabel') }}
+              <div class="pw-wrap" style="position:relative;display:flex;align-items:center">
+                <input [type]="showRegPassword() ? 'text' : 'password'" [(ngModel)]="authPassword" name="regPassword" required autocomplete="new-password" [placeholder]="t('passwordHint')" style="padding-right:44px;width:100%">
+                <button type="button" class="btn-pw-toggle" (click)="showRegPassword.set(!showRegPassword())"
+                  [attr.aria-label]="showRegPassword() ? t('hidePassword') : t('showPassword')"
+                  style="position:absolute;right:8px;background:none;border:none;cursor:pointer;padding:6px;color:var(--muted);display:flex;align-items:center">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px"><path [attr.d]="showRegPassword() ? P['eyeOff'] : P['eye']"/></svg>
+                </button>
+              </div>
+            </label>
+            <label class="f">{{ t('confirmPasswordLabel') }}
+              <div class="pw-wrap" style="position:relative;display:flex;align-items:center">
+                <input [type]="showRegConfirm() ? 'text' : 'password'" [(ngModel)]="authConfirmPassword" name="regConfirm" required autocomplete="new-password" style="padding-right:44px;width:100%">
+                <button type="button" class="btn-pw-toggle" (click)="showRegConfirm.set(!showRegConfirm())"
+                  [attr.aria-label]="showRegConfirm() ? t('hidePassword') : t('showPassword')"
+                  style="position:absolute;right:8px;background:none;border:none;cursor:pointer;padding:6px;color:var(--muted);display:flex;align-items:center">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px"><path [attr.d]="showRegConfirm() ? P['eyeOff'] : P['eye']"/></svg>
+                </button>
+              </div>
+            </label>
+            <div class="err" role="alert" *ngIf="authError()">{{ authError() }}</div>
+            <button class="btn primary" type="submit" [disabled]="authBusy()">
+              {{ authBusy() ? t('creatingAccountBtn') : t('createAccountBtn') }}
+            </button>
+          </form>
+          <div class="notice">{{ t('cryptoNotice') }}</div>
+          <p class="small muted">{{ t('haveAccountPrompt') }} <a href="#acceso" (click)="$event.preventDefault(); go('acceso')" style="cursor:pointer;color:var(--blue-ink);font-weight:600">{{ t('signInBtn') }}</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuración de Perfil Inicial -->
+  <div class="pub view" *ngIf="view() === 'perfil'">
+    <i class="shape s2"></i>
+    <div class="wrap">
+      <nav class="pubnav">
+        <a href="#bienvenida" class="logo" (click)="$event.preventDefault(); go('bienvenida')" style="cursor:pointer">
+          <svg width="36" height="36" viewBox="0 0 120 120" role="img"><path d="M26 40 20 12l28 18z" fill="#4285F4"/><path d="M94 40l6-28-28 18z" fill="#4285F4"/><ellipse cx="60" cy="70" rx="40" ry="42" fill="#4285F4"/><ellipse cx="60" cy="92" rx="23" ry="17" fill="#E8F0FE"/><circle cx="43" cy="52" r="17" fill="#fff"/><circle cx="77" cy="52" r="17" fill="#fff"/><circle cx="44" cy="54" r="8" fill="#202124"/><circle cx="76" cy="54" r="8" fill="#202124"/><path d="M53 63h14l-7 12z" fill="#FBBC05"/></svg>
+          OstrixAi
+        </a>
+      </nav>
+      <div class="auth" style="max-width:520px">
+        <div class="card stack" style="padding:28px">
+          <h1 style="font-size:26px">{{ t('onboardingTitle') }}</h1>
+          <p class="muted">{{ t('onboardingSub') }}</p>
+          <label class="f">{{ t('schoolGrade') }}
+            <select [(ngModel)]="setupGrade">
+              <option [value]="1">1.º</option>
+              <option [value]="2">2.º</option>
+              <option [value]="3">3.º</option>
+              <option [value]="4">4.º</option>
+              <option [value]="5">5.º</option>
+            </select>
+          </label>
+          <label class="f">{{ t('appLanguage') }}
+            <select [(ngModel)]="setupLanguage" (ngModelChange)="publicLanguage.set($event)">
+              <option value="es">{{ t('feedbackSpanishLabel') }}</option>
+              <option value="en">English</option>
+              <option value="qu-chanka">{{ t('appQuechuaDisclaimerOption') }}</option>
+            </select>
+          </label>
+          <label class="row">
+            <input type="checkbox" [(ngModel)]="setupSeparateScience">
+            {{ t('separateScience') }}
+          </label>
+          <button class="btn primary" (click)="saveSettings(); go('inicio')">
+            {{ t('saveSettings') }}
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['arrow']"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP SHELL ================= -->
+<div class="app" *ngIf="view() !== 'bienvenida' && view() !== 'acceso' && view() !== 'registro' && view() !== 'perfil'">
+  <!-- Sidebar (Desktop) -->
+  <aside class="side">
+    <a href="#inicio" class="logo" (click)="$event.preventDefault(); go('inicio')" style="cursor:pointer">
+      <svg width="36" height="36" viewBox="0 0 120 120" role="img">
+        <path d="M26 40 20 12l28 18z" fill="#4285F4"/>
+        <path d="M94 40l6-28-28 18z" fill="#4285F4"/>
+        <ellipse cx="60" cy="70" rx="40" ry="42" fill="#4285F4"/>
+        <ellipse cx="22" cy="80" rx="9" ry="21" fill="#3367D6"/>
+        <ellipse cx="98" cy="80" rx="9" ry="21" fill="#3367D6"/>
+        <ellipse cx="60" cy="92" rx="23" ry="17" fill="#E8F0FE"/>
+        <circle cx="43" cy="52" r="17" fill="#fff"/><circle cx="77" cy="52" r="17" fill="#fff"/>
+        <circle cx="44" cy="54" r="8" fill="#202124"/><circle cx="76" cy="54" r="8" fill="#202124"/>
+        <path d="M53 63h14l-7 12z" fill="#FBBC05"/>
+      </svg>
+      OstrixAi
+    </a>
+    <!-- COMPANION-05: concise navigation; all original pages remain accessible. -->
+    <nav class="nav" [attr.aria-label]="activeLanguage() === 'en' ? 'Main navigation' : 'Navegación principal'">
+      <a href="#inicio" [attr.aria-current]="view() === 'inicio' ? 'page' : null" (click)="$event.preventDefault(); go('inicio')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['home']"/></svg>
+        {{ t('navHome') }}
+      </a>
+      <a href="#diario" [attr.aria-current]="view() === 'diario' || view() === 'libro' ? 'page' : null" (click)="$event.preventDefault(); go('diario')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['book']"/></svg>
+        {{ t('navDiary') }}
+      </a>
+      <a href="#progreso" [attr.aria-current]="view() === 'progreso' ? 'page' : null" (click)="$event.preventDefault(); go('progreso')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chart']"/></svg>
+        {{ t('navProgress') }}
+      </a>
+      <a href="#configuracion" [attr.aria-current]="view() === 'configuracion' ? 'page' : null" (click)="$event.preventDefault(); go('configuracion')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['gear']"/></svg>
+        {{ t('navSettings') }}
+      </a>
+      <details class="companion-extra-nav">
+        <summary>{{ activeLanguage() === 'en' ? 'All sections' : 'Todas las secciones' }}</summary>
+        <div class="companion-extra-links">
+      <a href="#apuntes" [attr.aria-current]="view() === 'apuntes' ? 'page' : null" (click)="$event.preventDefault(); go('apuntes')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['notes']"/></svg>
+        {{ t('navNotes') }}
+      </a>
+      <a href="#dudas" [attr.aria-current]="view() === 'dudas' ? 'page' : null" (click)="$event.preventDefault(); go('dudas')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['help']"/></svg>
+        {{ t('navDoubts') }}
+      </a>
+      <a href="#eureka" [attr.aria-current]="view() === 'eureka' ? 'page' : null" (click)="$event.preventDefault(); go('eureka')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['bulb']"/></svg>
+        {{ t('navEureka') }}
+      </a>
+      <a href="#repaso" [attr.aria-current]="view() === 'repaso' ? 'page' : null" (click)="$event.preventDefault(); go('repaso')" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['refresh']"/></svg>
+        {{ t('navReview') }}
+      </a>
+      <a href="#tutor" *ngIf="identity.student()" [attr.aria-current]="view() === 'tutor' ? 'page' : null" (click)="$event.preventDefault(); openTutor(null)" style="cursor:pointer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+        {{ t('navTutor') }}
+      </a>
+        </div>
+      </details>
+    </nav>
+    <div class="notice" style="margin-top:auto">
+      <strong>{{ t('sidebarFooterTitle') }}</strong><br>
+      {{ t('sidebarFooterDesc') }}
+    </div>
+  </aside>
+
+  <!-- Main View Area -->
+  <div class="main">
+    <header class="top">
+      <div class="grow">
+        <strong style="font-family:var(--font-head)">
+          {{ t('greetingPrefix') }} {{ identity.student()?.username || t('studentFallback') }}
+        </strong>
+        <div class="small muted">{{ formatDate(TODAY) }}</div>
+      </div>
+      <div class="row" style="gap:8px">
+        <span class="ai-chip" [class.on]="device.online()" [class.off]="!device.online()">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path [attr.d]="device.online() ? P['wifi'] : P['wifioff']"/>
+          </svg>
+          {{ connectionLabel() }}
+        </span>
+        <span class="ai-chip" [class.on]="isNanoAvailable()">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+          {{ isNanoAvailable() ? t('nanoAvailable') : device.nano() === 'downloadable' ? t('nanoDownloadable') : device.nano() === 'downloading' ? t('nanoDownloading') : t('essentialModeChip') }}
+        </span>
+        <span class="ai-chip" *ngIf="topicEnrichment.isQueueActive() || topicEnrichment.isEnriching()"
+              role="status" aria-live="polite" [title]="activeLanguage() === 'en' ? 'Preparing learning materials with permitted AI; you can keep studying.' : 'Preparando materiales de aprendizaje con la IA autorizada; puedes seguir estudiando.'">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+          {{ activeLanguage() === 'en' ? 'Enriching notes…' : 'Enriqueciendo apuntes…' }}
+          <span *ngIf="topicEnrichment.queueLength() > 0">({{ topicEnrichment.queueLength() }} {{ activeLanguage() === 'en' ? 'waiting' : 'en cola' }})</span>
+        </span>
+        <span class="ai-chip" *ngIf="sync.isSyncing()" role="status" aria-live="polite"
+              [title]="activeLanguage() === 'en' ? 'Authorized school synchronization in progress.' : 'Sincronización escolar autorizada en curso.'">
+          {{ activeLanguage() === 'en' ? 'Syncing…' : 'Sincronizando…' }}
+        </span>
+        <span class="ai-chip" *ngIf="sync.pendingCount() > 0" [title]="t('journalTimePending')">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['cloud']"/></svg>
+          {{ sync.pendingCount() }} {{ t('journalTimePending') }}
+        </span>
+        <select [attr.aria-label]="t('appLanguage')" [ngModel]="activeLanguage()" (ngModelChange)="changeLanguage($event)"
+          style="width:auto;min-height:32px;padding:3px 8px;border-radius:12px;font-size:0.85rem;border:1px solid var(--line);background:#fff;color:#1e293b;cursor:pointer;font-weight:500">
+          <option value="es">{{ t('feedbackSpanishLabel') }}</option>
+          <option value="en">English</option>
+          <option value="qu-chanka">{{ t('appQuechuaDisclaimerOption') }}</option>
+        </select>
+      </div>
+      <div class="avatar" [title]="identity.student()?.username || t('studentFallback')">
+        {{ (identity.student()?.username || 'E').slice(0, 1).toUpperCase() }}
+      </div>
+      <button class="btn small ghost" (click)="logout()" [title]="t('logoutBtn')" *ngIf="identity.student()">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['back']"/></svg>
+      </button>
+    </header>
+
+    <main class="content view" id="main" [class.view-tutor]="view() === 'tutor'" [class.view-practice]="view() === 'practica'">
+      <!-- Tutor Ostrix mounted inside main -->
+      <app-tutor
+        *ngIf="view() === 'tutor' && identity.student()"
+        [initialSessionId]="tutorSessionId()"
+          [initialMode]="tutorMode()"
+          [practiceAttempts]="practiceAttemptsList()"
+          (openDiary)="go('libro', $event)"
+          (practiceSaved)="loadPracticeAttempts()"
+        [initialQuestion]="tutorInitialQuestion()">
+      </app-tutor>
+
+      <!-- VIEW: INICIO -->
+      <ng-container *ngIf="view() === 'inicio'">
+        <div class="page-h">
+          <div>
+            <h1>{{ t('myLearningTitle') }}</h1>
+            <p class="muted">{{ t('myLearningSub') }}</p>
+          </div>
+          <div class="row">
+            <button class="btn" (click)="openTutor(diary.sessions()[0]?.id ?? null)">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+              {{ t('navTutor') }}
+            </button>
+            <button class="btn primary" (click)="openNewSessionModal()">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['plus']"/></svg>
+              {{ t('newSession') }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Continue Hero (P1.5.1: Continúa donde te quedaste) -->
+        <section class="card continue" *ngIf="diary.sessions()[0] as last; else emptyHome" style="border-left:4px solid var(--blue-ink);position:relative">
+          <div>
+            <div class="row" style="gap:8px;align-items:center;margin-bottom:6px">
+              <span class="chip" [style.color]="getCourseColor(last.course)" style="font-weight:700">{{ last.course }}</span>
+              <span class="small muted" style="font-weight:600">{{ t('continueWhereYouLeftOff') }}</span>
+            </div>
+            <h2 style="margin:4px 0 8px;font-size:1.4rem">{{ last.topic || (last.topics && last.topics[0]?.name) || 'General' }}</h2>
+            <p class="small muted" style="margin:0">
+              {{ formatDate(last.date) }} · {{ plural(last.doubts.length, 'doubtSingular', 'doubtPlural') }} · {{ plural(last.eureka.length, 'eurekaSingular', 'eurekaPlural') }}
+            </p>
+          </div>
+          <div class="row" style="gap:8px;align-items:center">
+            <button class="btn" (click)="openTutor(last.id)">{{ t('askTutorBtn') }}</button>
+            <button class="btn primary" (click)="go('libro', last.id)">
+              {{ t('continueStudyingBtn') }}
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['arrow']"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <ng-template #emptyHome>
+          <section class="card stack" style="text-align:center;padding:32px">
+            <h2>{{ t('welcomeEmptyTitle') }}</h2>
+            <p class="muted">{{ t('welcomeEmptyDesc') }}</p>
+            <div class="row" style="justify-content:center">
+              <button class="btn primary" (click)="openNewSessionModal()">{{ t('createFirstSession') }}</button>
+              <button class="btn" (click)="loadSampleSession()">
+                {{ activeLanguage() === 'en' ? 'Load sample Math session' : 'Cargar sesión de ejemplo (Matemática)' }}
+              </button>
+            </div>
+          </section>
+        </ng-template>
+
+        <!-- Stats Grid (P1.5.2: Acciones Priorizadas) -->
+        <section class="grid g3">
+          <div class="card">
+            <p class="small muted">{{ t('pendingDoubtsCard') }}</p>
+            <p style="font-size:32px;font-family:var(--font-head);color:var(--red-ink);margin:4px 0">
+              {{ (allDoubts() | slice:0).filter(isPending).length }}
+            </p>
+            <a href="#dudas" class="small" (click)="$event.preventDefault(); go('dudas')" style="cursor:pointer;color:var(--blue-ink);font-weight:600">{{ t('viewDoubtsLink') }}</a>
+          </div>
+          <div class="card">
+            <p class="small muted">{{ t('dueReviewsCard') }}</p>
+            <p style="font-size:32px;font-family:var(--font-head);color:var(--green-ink);margin:4px 0">
+              {{ dueReviews().length + dueReviewCards().length }}
+            </p>
+            <a href="#repaso" class="small" (click)="$event.preventDefault(); go('repaso')" style="cursor:pointer;color:var(--blue-ink);font-weight:600">{{ t('reviewNowLink') }}</a>
+          </div>
+          <div class="card">
+            <p class="small muted">{{ t('eurekaCard') }}</p>
+            <p style="font-size:32px;font-family:var(--font-head);color:var(--yellow-ink);margin:4px 0">
+              {{ allEureka().length }}
+            </p>
+            <a href="#eureka" class="small" (click)="$event.preventDefault(); go('eureka')" style="cursor:pointer;color:var(--blue-ink);font-weight:600">{{ t('viewEurekaLink') }}</a>
+          </div>
+        </section>
+
+        <!-- SECTION: MIS CURSOS (P1.5.3: Tarjetas con Portadas Temáticas Vectoriales Reales) -->
+        <section class="card stack" [attr.aria-label]="t('appSchoolCoursesAria')">
+          <div class="row between">
+            <div>
+              <h2 style="font-size:1.35rem;margin:0">{{ t('myCoursesTitle') }}</h2>
+              <p class="small muted" style="margin:4px 0 0">{{ t('myCoursesSub') }}</p>
+            </div>
+            <button class="btn primary small" type="button" (click)="openNewCourseModal()">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['plus']"/></svg>
+              {{ t('addCourseBtn') }}
+            </button>
+          </div>
+
+          <!-- Grid de Cursos del Estudiante con Portadas Vectoriales -->
+          <div *ngIf="coursesService.courses().length > 0; else noCoursesTpl" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 12px;">
+            <div *ngFor="let course of coursesService.courses()" class="card flat course-card-editorial"
+                 style="padding:0;overflow:hidden;border-radius:18px;display:flex;flex-direction:column;justify-content:space-between;background:var(--surface);box-shadow:0 4px 16px rgba(0,0,0,0.05);border:1px solid var(--line)">
+              <!-- Mini Hero con Portada Temática Real -->
+              <div class="course-card-cover-hero"
+                   [style.background]="getCourseCoverObj(course.name, course.coverId).gradient"
+                   style="height:80px;position:relative;display:flex;align-items:center;padding:0 16px;overflow:hidden">
+                <div style="position:absolute;right:-12px;top:-12px;width:105px;height:105px;opacity:0.3;pointer-events:none"
+                     [innerHTML]="safeSvg(getCourseCoverObj(course.name, course.coverId).illustrationSvg)"></div>
+                <span class="chip" style="background:rgba(255,255,255,0.92);color:#0f172a;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.08);z-index:1;font-size:13px">
+                  {{ course.name }}
+                </span>
+                <div class="row" style="margin-left:auto;gap:4px;z-index:1">
+                  <button type="button" (click)="openCoverModal(course)" [title]="t('changeCoverBtn')" [attr.aria-label]="t('changeCoverBtn') + ' ' + course.name"
+                    style="background:rgba(255,255,255,0.88);border:none;border-radius:8px;cursor:pointer;color:#334155;padding:5px;display:flex;align-items:center">
+                    <svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px"><path [attr.d]="P['palette']"/></svg>
+                  </button>
+                  <button type="button" (click)="openEditCourseModal(course)" [title]="t('editCourseTitle')" [attr.aria-label]="t('editCourseTitle') + ' ' + course.name"
+                    style="background:rgba(255,255,255,0.88);border:none;border-radius:8px;cursor:pointer;color:#334155;padding:5px;display:flex;align-items:center">
+                    <svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px"><path [attr.d]="P['edit']"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div style="padding:14px 16px">
+                <div class="small muted" style="font-weight:600">
+                  {{ plural(countSessionsForCourse(course.name), 'sessionSingular', 'sessionPlural') }}
+                </div>
+                <div class="row" style="margin-top:12px;gap:6px">
+                  <button class="btn small ghost" (click)="filterByCourseAndGoDiario(course.name)" style="flex:1">
+                    {{ t('viewSessionsBtn') }}
+                  </button>
+                  <button class="btn small primary" (click)="openNewSessionForCourse(course.name)" [title]="t('newSessionInCourse')" [attr.aria-label]="t('newSessionInCourse')">
+                    <svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px"><path [attr.d]="P['plus']"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noCoursesTpl>
+            <div style="text-align:center;padding:26px 16px;background:var(--surface-l);border-radius:12px;border:1px dashed var(--line);margin-top:8px">
+              <p class="muted" style="margin-bottom:12px">
+                {{ t('noCoursesPrompt') }}
+              </p>
+              <button class="btn primary small" (click)="openNewCourseModal()">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['plus']"/></svg>
+                {{ t('addCourseBtn') }}
+              </button>
+            </div>
+          </ng-template>
+        </section>
+
+        <!-- Activity Bar Chart -->
+        <section class="card stack">
+          <h3>{{ t('recentActivityTitle') }}</h3>
+          <div class="bars">
+            <div class="bar" *ngFor="let cell of calendarCells() | slice:-7">
+              <b>{{ cell.count }}</b>
+              <i [style.height.px]="cell.count * 24 + 4" [style.background]="cell.count > 0 ? 'var(--blue)' : 'var(--line)'"></i>
+              <span>{{ t('dayLabel') }} {{ cell.day }}</span>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- VIEW: DIARIO -->
+      <ng-container *ngIf="view() === 'diario'">
+        <div class="page-h">
+          <div>
+            <h1>{{ t('myDiary') }}</h1>
+            <p class="muted">{{ t('diaryDescription') }}</p>
+          </div>
+          <button class="btn primary" (click)="openNewSessionModal()">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['plus']"/></svg>
+            {{ t('newSession') }}
+          </button>
+        </div>
+
+        <div class="card flat grid g3" style="align-items:end">
+          <label class="f">{{ t('searchLabel') }}
+            <input type="search" [ngModel]="query()" (ngModelChange)="query.set($event)" [placeholder]="t('searchPlaceholder')">
+          </label>
+          <label class="f">{{ t('course') }}
+            <select [ngModel]="filterCourse()" (ngModelChange)="filterCourse.set($event)">
+              <option value="all">{{ t('allCourses') }}</option>
+              <option *ngFor="let c of courseList()" [value]="c.name">{{ c.name }}</option>
+            </select>
+          </label>
+          <label class="f">{{ t('date') }}
+            <input type="date" [ngModel]="filterDate()" (ngModelChange)="filterDate.set($event)">
+          </label>
+        </div>
+
+        <div class="stack" id="dlist">
+          <div class="editorial-grid" *ngIf="filteredSessions().length > 0; else emptyDiario">
+            <div class="editorial-card" *ngFor="let s of filteredSessions()">
+              <!-- Banner Hero con Ilustración Temática Vectorial Offline (Compacto ~72px) -->
+              <div class="editorial-card-hero" [style.background]="getCourseCoverObj(s.course, s.coverId).gradient">
+                <div class="editorial-card-art" [innerHTML]="safeSvg(getCourseCoverObj(s.course, s.coverId).illustrationSvg)"></div>
+                <div class="editorial-hero-tag-row">
+                  <span class="editorial-course-tag" [style.background]="getCourseCoverObj(s.course, s.coverId).accentColor">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path [attr.d]="getCourseCoverObj(s.course, s.coverId).iconPath"/></svg>
+                    {{ s.course }}
+                  </span>
+                  <div class="editorial-hero-actions" (click)="$event.stopPropagation()">
+                    <button class="editorial-hero-btn" (click)="openEditSessionModal(s)" [title]="t('editBtn')">
+                      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path [attr.d]="P['edit']"/></svg>
+                    </button>
+                    <button class="editorial-hero-btn danger" (click)="confirmDeleteSession(s.id)" [title]="t('deleteBtn')">
+                      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path [attr.d]="P['trash']"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cuerpo de la Tarjeta con Contenido Académico Real -->
+              <div class="editorial-body">
+                <div class="editorial-title-row">
+                  <h3 class="editorial-title" [title]="s.topic">{{ s.topic }}</h3>
+                  <span class="editorial-date-badge">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px"><path [attr.d]="P['calendar']"/></svg>
+                    {{ formatDate(s.date) }}
+                  </span>
+                </div>
+
+                <!-- Chips de temas (máximo 2 visibles, +N si hay más) -->
+                <div class="editorial-topics-chips" *ngIf="s.topics && s.topics.length > 0">
+                  <span class="editorial-topic-pill" *ngFor="let top of s.topics.slice(0, 2)" [title]="top.name">
+                    {{ top.name }}
+                  </span>
+                  <span class="editorial-topic-pill more" *ngIf="s.topics.length > 2">
+                    +{{ s.topics.length - 2 }}
+                  </span>
+                </div>
+
+                <!-- Vista Previa de Apuntes (1 línea con elipsis) -->
+                <p class="editorial-snippet" [title]="getSessionSnippet(s)">{{ getSessionSnippet(s) }}</p>
+
+                <!-- Metadatos e Indicadores de Aprendizaje -->
+                <div class="editorial-meta-row">
+                  <span class="editorial-meta-badge" [title]="s.topics.length + ' ' + t('topicCountLabel')">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px"><path [attr.d]="P['layers']"/></svg>
+                    {{ s.topics.length }} {{ t('topicCountLabel') }}
+                  </span>
+                  <span class="editorial-meta-badge doubt" *ngIf="s.doubts && s.doubts.length > 0">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px"><path [attr.d]="P['help']"/></svg>
+                    {{ s.doubts.length }} {{ t('doubts') }}
+                  </span>
+                  <span class="editorial-meta-badge eureka" *ngIf="s.eureka && s.eureka.length > 0">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px"><path [attr.d]="P['bulb']"/></svg>
+                    {{ s.eureka.length }} {{ t('eureka') }}
+                  </span>
+                  <span class="editorial-meta-badge enrichment ready" *ngIf="isSessionEnriched(s)" [title]="t('sessionEnrichedBadge')">
+                    ⚡ {{ t('enrichedStatusShort') }}
+                  </span>
+                </div>
+
+                <!-- Dos Acciones Principales por Tarjeta: Abrir y Practicar -->
+                <div class="editorial-actions-row">
+                  <button type="button" class="editorial-card-btn-open" (click)="go('libro', s.id)">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['book']"/></svg>
+                    {{ t('openSessionBtn') }}
+                  </button>
+                  <button type="button" class="editorial-card-btn-practice" (click)="startExamPractice(s)">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['layers']"/></svg>
+                    {{ t('practiceForExamBtn') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #emptyDiario>
+            <div class="empty card flat">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['book']"/></svg>
+              <p><strong>{{ t('noSessionsFound') }}</strong></p>
+              <button class="btn primary" (click)="openNewSessionModal()" style="margin-top:12px">{{ t('createFirstSession') }}</button>
+            </div>
+          </ng-template>
+        </div>
+      </ng-container>
+
+      <!-- VIEW: APUNTES (P1.9: Explorador Académico de Apuntes y Conocimientos) -->
+      <ng-container *ngIf="view() === 'apuntes'">
+        <div class="page-h">
+          <div>
+            <h1>{{ t('searchAcademicExplorerTitle') }}</h1>
+            <p class="muted">{{ t('notesSubtitle') }}</p>
+          </div>
+        </div>
+
+        <!-- Filtros y Búsqueda Local (100% en dispositivo, respetando aislamiento) -->
+        <section class="card flat stack" style="background:var(--surface);padding:18px;border:1px solid var(--line);gap:12px">
+          <div class="row" style="gap:10px;flex-wrap:wrap;align-items:center">
+            <!-- Barra de búsqueda -->
+            <div style="flex:1;min-width:260px">
+              <input type="search" [ngModel]="notesSearchQuery()" (ngModelChange)="notesSearchQuery.set($event)"
+                     [placeholder]="t('searchPlaceholder')" style="width:100%;box-sizing:border-box">
+            </div>
+
+            <!-- Filtro por curso -->
+            <div style="min-width:180px">
+              <select [ngModel]="notesFilterCourse()" (ngModelChange)="notesFilterCourse.set($event)" style="width:100%">
+                <option value="all">{{ t('filterAllCourses') }}</option>
+                <option *ngFor="let c of courseList()" [value]="c.name">{{ c.name }}</option>
+              </select>
+            </div>
+
+            <!-- Filtro por fecha -->
+            <div class="row" style="gap:4px">
+              <button class="btn small" [class.primary]="notesFilterDate() === 'all'" (click)="notesFilterDate.set('all')">
+                {{ t('filterAllDates') }}
+              </button>
+              <button class="btn small" [class.primary]="notesFilterDate() === 'week'" (click)="notesFilterDate.set('week')">
+                {{ t('filterThisWeek') }}
+              </button>
+              <button class="btn small" [class.primary]="notesFilterDate() === 'month'" (click)="notesFilterDate.set('month')">
+                {{ t('filterThisMonth') }}
+              </button>
+            </div>
+          </div>
+
+          <div class="small muted" style="font-weight:600">
+            {{ academicSearchResults().length }} {{ t('topicsFoundLabel') }}
+          </div>
+        </section>
+
+        <!-- Resultados de Apuntes Encontrados por Tema -->
+        <div class="stack" style="margin-top:14px;gap:12px">
+          <article class="card stack" *ngFor="let res of academicSearchResults()" style="border-left:4px solid var(--blue-ink);padding:16px 20px">
+            <div class="row between" style="align-items:center;flex-wrap:wrap;gap:8px">
+              <div class="row" style="gap:8px;align-items:center">
+                <span class="chip" [style.color]="getCourseColor(res.session.course)" style="font-weight:700">
+                  {{ res.session.course }}
+                </span>
+                <span class="small muted">{{ formatDate(res.session.date) }}</span>
+              </div>
+              <div class="row" style="gap:6px">
+                <button class="btn small ghost" (click)="goToTopicOnBlackboard(res.session.id, res.topic.id)">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['notes']"/></svg>
+                  {{ t('goToTopicInBlackboard') }}
+                </button>
+                <button class="btn small" (click)="go('libro', res.session.id)">
+                  {{ t('openNotebook') }} →
+                </button>
+              </div>
+            </div>
+
+            <h3 style="font-size:17px;margin:6px 0 4px;color:var(--fg)">{{ res.topic.name }}</h3>
+            <p style="font-size:14px;line-height:1.6;color:var(--muted);margin:0;background:#f8fafc;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0">
+              {{ res.snippet }}
+            </p>
+          </article>
+
+          <!-- Estado vacío -->
+          <div class="empty card flat" *ngIf="academicSearchResults().length === 0" style="text-align:center;padding:36px">
+            <svg class="ico muted" viewBox="0 0 24 24" aria-hidden="true" style="width:36px;height:36px;margin-bottom:8px"><path [attr.d]="P['notes']"/></svg>
+            <p><strong>{{ t('noSearchResultsLabel') }}</strong></p>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- VIEW: DUDAS (P1.10: Tablero de 4 Columnas con Acciones Pedagógicas Reales) -->
+      <ng-container *ngIf="view() === 'dudas'">
+        <div class="page-h">
+          <div>
+            <h1>{{ t('navDoubts') }}</h1>
+            <p class="muted">{{ t('doubtsSubtitle') }}</p>
+          </div>
+          <span class="chip red" style="font-weight:700">{{ allDoubts().length }}</span>
+        </div>
+
+        <!-- Tablero de 4 Columnas Equilibrado -->
+        <div class="grid doubts-kanban-grid" style="grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;align-items:start">
+          <section class="card stack doubts-column" *ngFor="let stateName of DST(); let idx = index"
+                   [style.border-top]="idx === 0 ? '4px solid #ef4444' : idx === 1 ? '4px solid #f59e0b' : idx === 2 ? '4px solid #3b82f6' : '4px solid #10b981'"
+                   style="background:var(--surface);padding:16px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.04)">
+            <div class="row between" style="align-items:center;margin-bottom:8px">
+              <h3 style="font-size:15px;margin:0;font-weight:700">{{ stateName }}</h3>
+              <span class="chip" [class.red]="idx === 0" [class.yellow]="idx === 1" [class.blue]="idx === 2" [class.green]="idx === 3" style="font-size:11px">
+                {{ getDoubtsByState(idx).length }}
+              </span>
+            </div>
+
+            <!-- Tarjetas de Dudas en este Estado -->
+            <div class="stack" style="gap:10px">
+              <div class="item card flat" *ngFor="let d of getDoubtsByState(idx)"
+                   style="border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)">
+                <div>
+                  <strong style="font-size:14px;color:var(--fg);display:block;line-height:1.4">{{ d.t }}</strong>
+                  <span class="small muted" style="display:block;margin-top:4px">{{ d.session.course }} · {{ d.session.topic }}</span>
+                </div>
+
+                <!-- Acciones pedagógicas comprensibles según el estado (P1.10.2) -->
+                <div class="row" style="gap:6px;margin-top:4px;flex-wrap:wrap">
+                  <!-- Estado 0: Pendiente -> Analizar con Ostrix -->
+                  <ng-container *ngIf="idx === 0">
+                    <button class="btn small primary" (click)="handleDoubtAction(d, 'analyze')">
+                      {{ t('analyzeWithOstrixBtn') }}
+                    </button>
+                    <button class="btn small ghost" (click)="go('libro', d.session.id)">
+                      {{ t('openNotebook') }}
+                    </button>
+                  </ng-container>
+
+                  <!-- Estado 1: En análisis -> Ver explicación -->
+                  <ng-container *ngIf="idx === 1">
+                    <button class="btn small primary" (click)="handleDoubtAction(d, 'explain')">
+                      {{ t('viewExplanationBtn') }}
+                    </button>
+                    <button class="btn small ghost" (click)="handleDoubtAction(d, 'analyze')">
+                      {{ t('navTutor') }}
+                    </button>
+                  </ng-container>
+
+                  <!-- Estado 2: Explicada -> Comprobar comprensión y Marcar como comprendida -->
+                  <ng-container *ngIf="idx === 2">
+                    <button class="btn small ghost" (click)="handleDoubtAction(d, 'test')" [title]="t('checkComprehensionBtn')">
+                      {{ t('checkComprehensionBtn') }}
+                    </button>
+                    <button class="btn small primary" (click)="handleDoubtAction(d, 'master')">
+                      {{ t('markAsMasteredBtn') }}
+                    </button>
+                  </ng-container>
+
+                  <!-- Estado 3: Comprendida -> Repasar en SM-2 -->
+                  <ng-container *ngIf="idx === 3">
+                    <span class="chip green" style="font-size:11px;font-weight:700">{{ t('comprehendedBadge') }}</span>
+                    <button class="btn small ghost" (click)="handleDoubtAction(d, 'test')" style="margin-left:auto">
+                      {{ t('practiceReview') }}
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
+
+              <p class="small muted" *ngIf="getDoubtsByState(idx).length === 0" style="text-align:center;padding:12px 0">
+                {{ t('noDoubtsInStage') }}
+              </p>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+
+      <!-- VIEW: EUREKA (P1.11: Biblioteca Eureka Enriquecida con Filtros y Clarificación) -->
+      <ng-container *ngIf="view() === 'eureka'">
+        <div class="page-h">
+          <div>
+            <h1>{{ t('navEureka') }}</h1>
+            <p class="muted">{{ t('eurekaSubtitle') }}</p>
+          </div>
+          <span class="chip yellow" style="font-weight:700">{{ allEureka().length }}</span>
+        </div>
+
+        <!-- Filtro por curso en Biblioteca Eureka -->
+        <div class="row between card flat" style="align-items:center;background:var(--surface);padding:12px 16px;margin-bottom:14px">
+          <label class="row small" style="margin:0;gap:8px;align-items:center">
+            <span>{{ t('filterByCourse') }}:</span>
+            <select [ngModel]="eurekaFilterCourse()" (ngModelChange)="eurekaFilterCourse.set($event)" style="padding:4px 8px">
+              <option value="all">{{ t('filterAllCourses') }}</option>
+              <option *ngFor="let c of courseList()" [value]="c.name">{{ c.name }}</option>
+            </select>
+          </label>
+          <span class="small muted">{{ filteredGlobalEureka().length }} {{ t('eureka') }}</span>
+        </div>
+
+        <!-- Grilla de Tarjetas Eureka Enriquecidas -->
+        <div class="grid" style="grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));gap:16px">
+          <article class="card stack" *ngFor="let e of filteredGlobalEureka()"
+                   style="background:var(--surface);border-left:4px solid #f59e0b;padding:16px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.03);display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div class="row between" style="margin-bottom:8px;align-items:center">
+                <span class="chip yellow" style="font-size:11px;font-weight:700">{{ t('eurekaDiscoverLabel') }}</span>
+                <span class="chip" [style.color]="getCourseColor(e.session.course)" style="font-size:11px;font-weight:600">
+                  {{ e.session.course }}
+                </span>
+              </div>
+
+              <h3 style="font-size:16px;margin:4px 0 6px;color:var(--fg);line-height:1.4">"{{ displayAcademicText(e.t) }}"</h3>
+              <p class="small muted" style="margin:0">{{ formatDate(e.session.date) }} · {{ e.session.topic }}</p>
+
+              <!-- Clarificación guiada si el registro es ambiguo (P0.4) -->
+              <div *ngIf="isAmbiguousEureka(e.t)" style="margin-top:10px;background:#fef3c7;border-radius:8px;padding:8px 12px;border:1px solid #fcd34d">
+                <p class="small" style="color:#92400e;margin:0">
+                  💡 <strong>Ostrix:</strong> {{ getEurekaClarification(e.t) }}
+                </p>
+              </div>
+
+              <!-- Ampliación guardada si existe -->
+              <div *ngIf="!isAmbiguousEureka(e.t) && getEnrichedEureka(e.session, e.t) as enriched" style="margin-top:10px;background:#fffbeb;border-radius:8px;padding:8px 12px;border:1px solid #fde68a">
+                <p class="small" style="color:#78350f;margin:0;line-height:1.5">
+                  {{ enriched.expansion.slice(0, 150) }}{{ enriched.expansion.length > 150 ? '...' : '' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:14px;gap:6px">
+              <button class="btn small primary" (click)="openEurekaDetail(e)" style="flex:1">
+                {{ t('exploreFindingLabel') }}
+              </button>
+              <button class="btn small ghost" (click)="go('libro', e.session.id)" [title]="t('openNotebook')">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['arrow']"/></svg>
+              </button>
+            </div>
+          </article>
+
+          <div class="empty card flat" *ngIf="filteredGlobalEureka().length === 0" style="grid-column:1/-1;text-align:center;padding:36px">
+            <p><strong>{{ t('eurekaSubtitle') }}</strong></p>
+          </div>
+        </div>
+
+        <!-- Modal de Detalle de Descubrimiento Eureka (Sin generación artificial) -->
+        <div *ngIf="selectedEurekaDetail() as ed" style="position:fixed;inset:0;z-index:2600;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.55)">
+          <section role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="closeEurekaDetail()" style="width:min(100%,560px);max-height:90vh;overflow-y:auto;background:#fff;border-radius:20px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+            <div class="row between" style="align-items:center;margin-bottom:12px">
+              <span class="chip yellow" style="font-weight:700">{{ t('eurekaDiscoveryLabel') }}</span>
+              <button class="btn small icon ghost" (click)="closeEurekaDetail()">✕</button>
+            </div>
+
+            <h3 style="font-size:18px;margin:0 0 6px">"{{ displayAcademicText(ed.text) }}"</h3>
+            <p class="small muted" style="margin:0 0 16px">{{ ed.session.course }} · {{ formatDate(ed.session.date) }} · {{ ed.session.topic }}</p>
+
+            <div *ngIf="isAmbiguousEureka(ed.text); else edEnrichedTpl" style="background:#fef3c7;border-radius:10px;padding:14px;border:1px solid #fcd34d">
+              <strong style="color:#92400e;display:block;margin-bottom:6px">{{ t('ostrixGuidanceLabel') }}</strong>
+              <p style="color:#78350f;margin:0;line-height:1.6">{{ getEurekaClarification(ed.text) }}</p>
+            </div>
+
+            <ng-template #edEnrichedTpl>
+              <div *ngIf="ed.enriched as enriched; else edPendingTpl" class="stack" style="gap:12px">
+                <div style="background:#fffbeb;border-radius:10px;padding:14px;border:1px solid #fde68a">
+                  <strong style="color:#92400e;display:block;margin-bottom:6px">🚀 {{ t('ostrixExpands') }}:</strong>
+                  <p style="color:#78350f;margin:0;line-height:1.6">{{ enriched.expansion }}</p>
+                </div>
+                <div *ngIf="enriched.practicalApplication" style="background:#ecfdf5;border-radius:10px;padding:14px;border:1px solid #a7f3d0">
+                  <strong style="color:#065f46;display:block;margin-bottom:6px">🎯 {{ t('practicalApplication') }}:</strong>
+                  <p style="color:#064e3b;margin:0;line-height:1.6">{{ enriched.practicalApplication }}</p>
+                </div>
+              </div>
+              <ng-template #edPendingTpl>
+                <p class="muted small" style="margin:12px 0">{{ t('eurekaNotExpandedLabel') }}</p>
+              </ng-template>
+            </ng-template>
+
+            <div class="row" style="margin-top:20px;justify-content:flex-end;gap:8px">
+              <button class="btn" (click)="closeEurekaDetail()">{{ t('closeBtn') }}</button>
+              <button class="btn primary" (click)="closeEurekaDetail(); go('libro', ed.session.id)">{{ t('openNotebook') }}</button>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+
+      <!-- VIEW: REPASO -->
+      <ng-container *ngIf="view() === 'repaso'">
+        <div class="page-h">
+          <div>
+            <h1>{{ t('navReview') }}</h1>
+            <p class="muted">{{ t('reviewSubtitle') }}</p>
+          </div>
+          <span class="chip green">{{ dueReviews().length + dueReviewCards().length }} {{ t('dueReviewsCard') }}</span>
+        </div>
+
+        <!-- Tarjetas de repaso creadas desde Dudas / Tutor Ostrix -->
+        <section class="stack" *ngIf="reviewCards().length > 0">
+          <h3>{{ activeLanguage() === 'en' ? 'Personal Review Queue' : 'Cola de Repaso Personal' }}</h3>
+          <div class="item yellow" *ngFor="let card of reviewCards()">
+            <div style="flex:1;min-width:0">
+              <span class="chip">{{ card.course }}</span>
+              <strong style="display:block;margin-top:6px">{{ card.concept }}</strong>
+              <span class="small muted">{{ formatDate(card.dueDate) }} · streak: {{ card.streak }} · attempts: {{ card.attempts }}</span>
+            </div>
+            <div class="row" style="gap:6px">
+              <button class="btn small danger" (click)="rateReviewCard(card, 0)">
+                {{ activeLanguage() === 'en' ? 'Hard (1d)' : 'Difícil (1d)' }}
+              </button>
+              <button class="btn small" (click)="rateReviewCard(card, 1)">
+                {{ activeLanguage() === 'en' ? 'Good (2d)' : 'Bien (2d)' }}
+              </button>
+              <button class="btn small primary" (click)="rateReviewCard(card, 2)">
+                {{ activeLanguage() === 'en' ? 'Easy (+)' : 'Fácil (+)' }}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Ejercicios curriculares deterministas -->
+        <section class="stack">
+          <h3>{{ t('exercisesTitle') }}</h3>
+          <div class="item green" *ngFor="let r of allReviews()">
+            <div style="flex:1">
+              <strong>{{ r.q }}</strong><br>
+              <span class="small muted">
+                {{ r.session.course }} @if (r.next) { · {{ formatDate(r.next) }} }
+                {{ r.done === true ? ' · ✓' : r.done === false ? ' · ✗' : '' }}
+              </span>
+              @if (r.done === null) {
+                <div class="row" style="flex-wrap:wrap">
+                  <button type="button" class="btn small" *ngFor="let option of r.opts; index as i" (click)="answerReview(r, i)">{{ option }}</button>
+                </div>
+              } @else {
+                <p class="small">{{ r.explanation }}</p>
+              }
+            </div>
+            <svg class="ico muted" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['arrow']"/></svg>
+          </div>
+          <div class="empty card flat" *ngIf="allReviews().length === 0 && reviewCards().length === 0">
+            <p><strong>{{ t('noSessionsFound') }}</strong></p>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- VIEW: PROGRESO -->
+      <ng-container *ngIf="view() === 'progreso'">
+        <div class="page-h">
+          <div>
+            <h1>{{ t('progress') }}</h1>
+            <p class="muted">{{ t('progressSubtitle') }}</p>
+          </div>
+        </div>
+
+        <!-- Métricas del Estudiante (P1.12.1: Sesiones, Dudas y Prácticas Reales) -->
+        <section class="grid g3">
+          <div class="card">
+            <p class="small muted">{{ t('sessionsStudied') }}</p>
+            <p style="font-size:32px;font-family:var(--font-head);margin:4px 0">{{ diary.sessions().length }}</p>
+          </div>
+          <div class="card">
+            <p class="small muted">{{ t('doubtsUnderstood') }}</p>
+            <p style="font-size:32px;font-family:var(--font-head);color:var(--green-ink);margin:4px 0">
+              {{ (allDoubts() | slice:0).filter(isMastered).length }}
+            </p>
+          </div>
+          <div class="card">
+            <p class="small muted">{{ t('pendingDoubtsCard') }}</p>
+            <p style="font-size:32px;font-family:var(--font-head);color:var(--red-ink);margin:4px 0">
+              {{ (allDoubts() | slice:0).filter(isPending).length }}
+            </p>
+          </div>
+        </section>
+
+        <!-- Integración con Prácticas para Examen (P1.12.2) -->
+        <section class="grid g4 ostrix-progress-summary" style="margin-top:14px">
+          <div class="card">
+            <p class="small muted">{{ t('statsCompletedExams') }}</p>
+            <p style="font-size:26px;font-family:var(--font-head);color:var(--blue-ink);margin:4px 0">{{ totalPracticeExams() }}</p>
+          </div>
+          <div class="card">
+            <p class="small muted">{{ t('statsAvgScore') }}</p>
+            <p style="font-size:26px;font-family:var(--font-head);color:var(--green-ink);margin:4px 0">{{ averagePracticeScore() }}%</p>
+            <p class="small muted" style="margin:2px 0 0;font-size:11px">{{ activeLanguage() === 'en' ? 'Average of practice percentages (equal weight per attempt).' : 'Media de porcentajes: cada práctica cuenta igual.' }}</p>
+          </div>
+          <div class="card">
+            <p class="small muted">{{ t('statsVerifiedDoubts') }}</p>
+            <p style="font-size:26px;font-family:var(--font-head);color:#7c3aed;margin:4px 0">{{ totalCorrectPracticeAnswers() }}</p>
+          </div>
+          <div class="card">
+            <p class="small muted">{{ t('dueReviewsCard') }}</p>
+            <p style="font-size:26px;font-family:var(--font-head);color:var(--yellow-ink);margin:4px 0">{{ dueReviews().length + dueReviewCards().length }}</p>
+          </div>
+        </section>
+
+        <section class="grid g2" style="margin-top:14px">
+          <article class="card stack">
+            <h3>{{ currentMonthLabel() }}</h3>
+            <div class="cal" role="group" aria-label="Activity calendar">
+              <span class="h">L</span><span class="h">M</span><span class="h">M</span>
+              <span class="h">J</span><span class="h">V</span><span class="h">S</span><span class="h">D</span>
+              <span *ngFor="let _ of calendarOffset()"></span>
+              <span *ngFor="let c of calendarCells()" [class]="c.level" [title]="c.count + ' ' + t('sessionsLabel')">
+                {{ c.day }}
+              </span>
+            </div>
+          </article>
+
+          <!-- Recomendaciones Accionables (P1.12.4) -->
+          <article class="card stack">
+            <h3>{{ t('recommendationsTitle') }}</h3>
+            <div class="item yellow" *ngFor="let rec of actionableRecommendations()" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span>{{ rec.text }}</span>
+              <button *ngIf="rec.actionView" class="btn small primary" (click)="go(rec.actionView)" style="white-space:nowrap;margin-left:auto">
+                {{ rec.actionLabel }} →
+              </button>
+            </div>
+            <p class="muted" *ngIf="actionableRecommendations().length === 0">—</p>
+          </article>
+        </section>
+
+        <section class="card">
+          <h3 style="margin-bottom:8px">{{ t('evolutionByCourse') }}</h3>
+          <div class="tablewrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>{{ t('course') }}</th>
+                  <th class="n">{{ t('sessionsLabel') }}</th>
+                  <th class="n">{{ t('doubts') }}</th>
+                  <th class="n">{{ t('doubtsUnderstood') }}</th>
+                  <th class="n">{{ t('eureka') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of courseEvolution()">
+                  <td>{{ row.name }}</td>
+                  <td class="n">{{ row.sessions }}</td>
+                  <td class="n">{{ row.doubts }}</td>
+                  <td class="n">{{ row.understood }}</td>
+                  <td class="n">{{ row.eureka }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- VIEW: CONFIGURACIÓN -->
+      <ng-container *ngIf="view() === 'configuracion'">
+        <div class="page-h">
+          <!-- CONFIG-UI-01 -->
+<div class="os-settings-heading">
+  <div class="os-settings-heading-icon" aria-hidden="true">⚙</div>
+  <div>
+    <h1>{{ t('settingsTitle') }}</h1>
+    <p>
+      {{ activeLanguage() === 'en'
+          ? 'Personalize your learning and control your data.'
+          : 'Personaliza tu aprendizaje y controla tus datos.' }}
+    </p>
+  </div>
+</div>
+        </div>
+
+        <section class="card stack os-settings-profile">
+          <h3>{{ t('studyProfileTitle') }}</h3>
+          <div class="grid g2">
+            <label class="f">{{ t('schoolGrade') }}
+              <select [(ngModel)]="setupGrade" (ngModelChange)="saveSettings()">
+                <option [ngValue]="null">{{ t('gradeUnspecified') }}</option>
+                <option [ngValue]="1">1.º</option>
+                <option [ngValue]="2">2.º</option>
+                <option [ngValue]="3">3.º</option>
+                <option [ngValue]="4">4.º</option>
+                <option [ngValue]="5">5.º</option>
+              </select>
+            </label>
+            <label class="f">{{ t('appLanguage') }}
+              <select [(ngModel)]="setupLanguage" (ngModelChange)="saveSettings()">
+                <option value="es">{{ t('feedbackSpanishLabel') }}</option>
+                <option value="en">English</option>
+                <option value="qu-chanka">{{ t('appQuechuaDisclaimerOption') }}</option>
+              </select>
+            </label>
+          </div>
+          <label class="row os-settings-toggle">
+            <input type="checkbox" [(ngModel)]="setupSeparateScience" (ngModelChange)="saveSettings()">
+            {{ t('separateScience') }}
+          </label>
+          <label class="row os-settings-toggle">
+            <input type="checkbox" [(ngModel)]="setupOfflineOnly" (ngModelChange)="saveSettings()">
+            {{ t('offlineOnlyLabel') }}
+          </label>
+          <label class="row os-settings-toggle">
+            <input type="checkbox" [(ngModel)]="setupAutoEnrichNotes" (ngModelChange)="saveSettings()">
+            {{ t('autoEnrichNotesPref') }}
+          </label>
+          <label class="row os-settings-toggle os-settings-context">
+            <input type="checkbox" [(ngModel)]="setupAutoInjectSessionContext" (ngModelChange)="saveSettings()">
+            <span><strong>{{ t('autoInjectContextSettingTitle') }}</strong> {{ t('autoInjectContextSettingDesc') }}</span>
+          </label>
+          <label class="row os-settings-toggle os-settings-cloud">
+            <input type="checkbox" [disabled]="setupOfflineOnly" [(ngModel)]="setupAllowCloudEnrichment" (ngModelChange)="saveSettings()">
+            <span><strong>{{ t('allowCloudSettingTitle') }}</strong> {{ t('allowCloudSettingDesc') }}</span>
+          </label>
+        </section>
+
+        <!-- Inferencia Híbrida y Diagnóstico Técnico -->
+        <section class="card stack os-settings-diagnostic">
+          <h3>{{ t('aiDiagnosticTitle') }}</h3>
+          <div class="row" style="flex-wrap:wrap;gap:8px">
+            <span class="ai-chip" [class.on]="isNanoAvailable()">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+              Gemini Nano: {{ device.engineState() }}
+            </span>
+            <span class="ai-chip" *ngIf="device.downloadProgress() !== null">
+              Descarga: {{ device.downloadProgress() }}%
+            </span>
+            <button class="btn small" (click)="device.checkNano()">{{ t('checkNanoBtn') }}</button>
+            <button class="btn small" (click)="prepareNano()" [disabled]="aiBusy()">
+              {{ t('prepareNanoBtn') }}
+            </button>
+            <button type="button" class="btn small" (click)="probarNano()"
+                    [disabled]="nanoTestBusy() || aiBusy() || ai.isBusy()">
+              {{ activeLanguage() === 'en' ? (nanoTestBusy() ? 'Testing Nano…' : 'Test local Nano') : (nanoTestBusy() ? 'Probando Nano…' : 'Probar Nano local') }}
+            </button>
+          </div>
+          <p *ngIf="nanoTestMessage()" class="small" role="status" aria-live="polite">
+            {{ nanoTestMessage() }}
+          </p>
+          <p class="small muted">
+            {{ activeLanguage() === 'en'
+              ? 'Uses Firebase AI Logic (ONLY_ON_DEVICE, PREFER_ON_DEVICE, ONLY_IN_CLOUD). If Gemini Nano is unavailable, Essential Mode remains 100% functional offline.'
+              : 'Usa Firebase AI Logic (ONLY_ON_DEVICE, PREFER_ON_DEVICE, ONLY_IN_CLOUD). Si Gemini Nano no está listo, el Modo Esencial sigue funcionando 100% offline.' }}
+          </p>
+
+          <!-- Telemetría Técnica Detallada T0-T8 -->
+          <div *ngIf="ai.lastResult() as res" style="margin-top:10px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
+            <h4 style="font-size:13px;margin:0 0 6px;color:#0f172a">{{ activeLanguage() === 'en' ? 'Last inference' : 'Última inferencia' }}</h4>
+            <div style="font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:4px;color:#475569">
+              <div>{{ activeLanguage() === 'en' ? 'Source' : 'Origen' }} · <strong>{{ res.source }}</strong></div>
+              <div>{{ activeLanguage() === 'en' ? 'Model' : 'Modelo' }} · <strong>{{ res.modelUsed || 'N/A' }}</strong></div>
+              <div>{{ activeLanguage() === 'en' ? 'Total latency' : 'Latencia total' }} · <strong>{{ res.latencyMs }} ms</strong> ({{ res.friendlyDuration || 'N/A' }})</div>
+              <div>TTFB: <strong>{{ res.timeToFirstChunkMs ? res.timeToFirstChunkMs + ' ms' : 'N/A' }}</strong></div>
+            </div>
+            <div *ngIf="res.telemetry as tel" style="margin-top:6px;font-size:11.5px;color:#64748b;border-top:1px dashed #cbd5e1;padding-top:6px">
+              <span>Espera previa: {{ tel.preInferenceWaitMs }} ms</span> ·
+              <span>Generación: {{ tel.generationMs }} ms</span> ·
+              <span>Post-proceso: {{ tel.postProcessingMs }} ms</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sincronización Servidor Escolar -->
+        <section class="card stack">
+          <h3>{{ t('syncTitle') }}</h3>
+          <div class="notice">
+            {{ sync.serverIdentityLinked()
+              ? (activeLanguage() === 'en' ? 'Individual server identity linked.' : 'Identidad individual de servidor vinculada.')
+              : (activeLanguage() === 'en'
+                ? 'Remote sync is intentionally locked until an individual non-anonymous server account is linked. OstrixAi never shares anonymous tokens across students on a shared PC.'
+                : 'Sincronización remota bloqueada por seguridad hasta vincular una cuenta individual no anónima. OstrixAi nunca usa identidades anónimas compartidas entre alumnos.') }}
+          </div>
+          <label class="row">
+            <input type="checkbox" [ngModel]="syncConsentChecked" (ngModelChange)="onSyncConsentChange($event)">
+            {{ activeLanguage() === 'en' ? 'Authorize sync when individual server identity is linked' : 'Autorizar sincronización cuando exista identidad individual vinculada' }}
+          </label>
+          <div class="row between">
+            <div>
+              <p>{{ t('journalTimePending') }}: <strong>{{ sync.pendingCountKnown() ? sync.pendingCount() : '—' }}</strong></p>
+              <p *ngIf="sync.isSyncing()" class="small muted" role="status">{{ activeLanguage() === 'en' ? 'Sending authorized changes in the background…' : 'Enviando cambios autorizados en segundo plano…' }}</p>
+              <p *ngIf="sync.lastSyncError() && !sync.isSyncing()" class="small err" role="alert">{{ sync.lastSyncError() }} {{ activeLanguage() === 'en' ? 'Pending local records remain protected. Automatic retry requires the linked account and your consent.' : 'Los registros locales pendientes siguen protegidos. El reintento automático requiere cuenta vinculada y consentimiento.' }}</p>
+              <p *ngIf="sync.lastSyncSuccess() && !sync.isSyncing() && !sync.lastSyncError()" class="small muted">{{ sync.lastSyncSuccess() }}</p>
+            </div>
+            <button class="btn small" type="button" (click)="linkSchoolAccount()" [disabled]="sync.isLinking() || sync.isSyncing() || !device.online()">
+              {{ activeLanguage() === 'en' ? 'Link school Google account' : 'Vincular cuenta escolar de Google' }}
+            </button>
+            <button class="btn primary small" (click)="triggerSyncWithFlask()" [disabled]="sync.isSyncing()">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['cloud']"/></svg>
+              {{ t('syncNowBtn') }}
+            </button>
+          </div>
+        </section>
+
+        <!-- Copia de Seguridad -->
+        <section class="card stack">
+          <h3>{{ t('backupTitle') }}</h3>
+          <div>
+            <button class="btn small" (click)="exportJsonBackup()">{{ t('exportJsonBtn') }}</button>
+          </div>
+        </section>
+
+        <!-- Validación Lingüística Quechua -->
+        <section class="card stack">
+          <h3>Quechua (qu) — Feedback</h3>
+          <div class="grid g2">
+            <label class="f">{{ t('feedbackSpanishLabel') }}
+              <input type="text" [(ngModel)]="corrTermEs" [placeholder]="t('appTermPlaceholder')">
+            </label>
+            <label class="f">{{ t('feedbackQuechuaLabel') }}
+              <input type="text" [(ngModel)]="corrSugChanka" placeholder="Tinkuchina">
+            </label>
+          </div>
+          <label class="f">{{ t('feedbackContextLabel') }}
+            <input type="text" [(ngModel)]="corrContext" [placeholder]="t('appCommunityContextPlaceholder')">
+          </label>
+          <div>
+            <button class="btn small primary" (click)="submitCorrection()">{{ t('save') }}</button>
+          </div>
+        </section>
+
+        <!-- Sesión Actual -->
+        <section class="card stack" *ngIf="identity.student() as st">
+          <h3>{{ t('activeAccountTitle') }}</h3>
+          <p class="small"><strong>{{ st.username }}</strong> · AES-GCM-256</p>
+          <div>
+            <button class="btn danger small" (click)="logout()">{{ t('secureLogoutBtn') }}</button>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- VIEW: LIBRO INTELIGENTE / PIZARRA ACADÉMICA -->
+      <ng-container *ngIf="view() === 'libro' && activeSession() as s">
+        <div class="page-h">
+          <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+            <a href="#diario" class="btn small ghost" (click)="$event.preventDefault(); go('diario')" style="cursor:pointer">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['back']"/></svg>
+              {{ t('navDiary') }}
+            </a>
+            <span class="editorial-course-tag" [style.background]="getCourseCoverObj(s.course, s.coverId).accentColor">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="getCourseCoverObj(s.course, s.coverId).iconPath"/></svg>
+              {{ s.course }}
+            </span>
+            <span class="muted small">{{ formatDate(s.date) }}</span>
+          </div>
+
+          <div class="row" style="gap:8px;align-items:center;flex-wrap:wrap">
+            <!-- BOTÓN SUPERIOR: ALTERNAR ENTRE PIZARRA ORIGINAL Y APRENDIZAJE ENRIQUECIDO -->
+            <button class="btn small" (click)="toggleBookMode()"
+                    [style.background]="bookMode() === 'pizarra' ? 'var(--surface)' : 'var(--blue-ink)'"
+                    [style.color]="bookMode() === 'pizarra' ? 'var(--blue-ink)' : '#fff'"
+                    style="border:1.5px solid var(--blue-ink);font-weight:700">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <path [attr.d]="bookMode() === 'pizarra' ? P['layers'] : P['notes']"/>
+              </svg>
+              {{ bookMode() === 'pizarra' ? (t('viewEnrichedLearningBtn') + ' →') : ('← ' + t('viewOriginalNotesBtn')) }}
+            </button>
+
+            <button class="btn small primary" (click)="openTutor(s.id)">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+              {{ t('askTutorBtn') }}
+            </button>
+            <button class="btn small" (click)="startExamPractice(s)" style="background:#4338ca;color:#fff;border:none;font-weight:700">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['layers']"/></svg>
+              {{ t('practiceForExamBtn') }}
+            </button>
+            <button class="btn small ghost icon" (click)="openEditSessionModal(s)" [title]="t('editBtn')">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['edit']"/></svg>
+            </button>
+            <button class="btn small ghost danger icon" (click)="confirmDeleteSession(s.id)" [title]="t('deleteBtn')">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['trash']"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- PANTALLA A: PIZARRA ACADÉMICA DIGITAL — HOJA DE TRABAJO REAL (3 ZONAS SIMULTÁNEAS) -->
+        <div *ngIf="bookMode() === 'pizarra'" class="pizarra-sheet">
+          <!-- Banner de recuperación de borrador si existe guardado provisional no confirmado -->
+          <div *ngIf="draftRecoveryAvailable()" class="row between" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 18px;color:#1e40af;margin-bottom:4px">
+            <div class="row" style="gap:10px;align-items:center">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:#2563eb;width:20px;height:20px"><path [attr.d]="P['notes']"/></svg>
+              <span style="font-size:14px;font-weight:600">{{ t('draftRecoverPrompt') }}</span>
+            </div>
+            <div class="row" style="gap:8px">
+              <button class="btn small primary" type="button" (click)="recoverEmergencyDraft()">{{ t('recoverDraftBtn') }}</button>
+              <button class="btn small ghost" type="button" (click)="discardEmergencyDraft()">{{ t('discardDraftBtn') }}</button>
+            </div>
+          </div>
+
+          <!-- Cuadrícula Principal: Zona A (~70%) y Zona B (~30%) -->
+          <div class="pizarra-main-grid">
+            <!-- ZONA A: APUNTES DE CLASE (~70% - Espaciosa y Consecutiva) -->
+            <section class="pizarra-apuntes-col pizarra-col-notes">
+              <h2 class="pizarra-section-title">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:#2563eb"><path [attr.d]="P['notes']"/></svg>
+                {{ t('pizarraZoneANotes') }}
+              </h2>
+
+              <!-- Pila de Temas Consecutivos (Cada tema debajo del anterior con scroll natural de página) -->
+              <div class="stack" style="gap:24px">
+                <div *ngFor="let topic of draftTopics(); let tIdx = index; trackBy: trackByTopicId" class="pizarra-topic-section" [attr.data-topic-id]="topic.id">
+                  <div class="pizarra-topic-headline">
+                    <span class="pizarra-topic-number">{{ t('appTopicLabel') }} {{ tIdx + 1 }}</span>
+                    <input
+                      type="text"
+                      class="pizarra-topic-input-title"
+                      [(ngModel)]="topic.name"
+                      (ngModelChange)="onTopicTitleChange(topic.id, $event)"
+                      [placeholder]="t('topicTitlePlaceholder')">
+                    <button *ngIf="draftTopics().length > 1"
+                            type="button"
+                            class="btn small ghost icon danger"
+                            (click)="deleteTopic(topic.id)"
+                            [title]="t('removeTopicBtn')"
+                            style="opacity:0.65;padding:2px 6px">
+                      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['trash']"/></svg>
+                    </button>
+                  </div>
+
+                  <!-- Acción opcional de traducción derivada si la interfaz está en otro idioma -->
+                  <div *ngIf="activeLanguage() !== 'es'" style="margin:4px 0 8px;display:flex;align-items:center;gap:8px">
+                    <button type="button" class="btn small ghost" (click)="toggleTopicDerivedTranslation(topic.id)" style="font-size:11.5px;padding:2px 8px;border:1px dashed #cbd5e1">
+                      {{ showTopicTranslation()[topic.id] ? t('viewOriginalBtn') : t('viewTranslationBtn') }}
+                    </button>
+                    <span *ngIf="showTopicTranslation()[topic.id]" style="font-size:11px;color:#16a34a;font-weight:600">
+                      {{ t('derivedTranslationNotice') }}
+                    </span>
+                  </div>
+                  <div *ngIf="showTopicTranslation()[topic.id] && topicDerivedTranslation()[topic.id]" style="margin-bottom:10px;padding:8px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px">
+                    <p style="margin:0;font-size:13px;color:#14532d;white-space:pre-wrap">{{ topicDerivedTranslation()[topic.id] }}</p>
+                  </div>
+
+                  <!-- Editor de Apuntes en Viñetas Auto-expandibles (Enter: nuevo apunte, Shift+Enter: salto de párrafo) -->
+                  <div class="pizarra-notes-flow">
+                    <div class="pizarra-note-line" *ngFor="let line of getTopicNotesLines(topic.id); let lIdx = index; trackBy: trackByIndex" [style.display]="line.trim() === '[Explicación de Tutor Ostrix]' ? 'none' : null">
+                      <span class="pizarra-bullet" aria-hidden="true"></span>
+                      <!-- APUNTES-IA-VISUAL-02 -->
+<div class="os-tutor-note-card" *ngIf="isTutorNoteLine(line)">
+  <strong class="os-tutor-note-title">
+    {{ t('companionTutorExplanation') }}
+  </strong>
+
+  <textarea
+    class="pizarra-textarea-auto os-tutor-note-textarea"
+    rows="3"
+    [value]="tutorNoteEditorText(line)"
+    (input)="onTutorNoteEditorInput(topic.id, lIdx, $any($event.target).value, $event)"
+    aria-label="Contenido de explicación de Tutor Ostrix"
+    spellcheck="true"></textarea>
+</div>
+
+<textarea
+  *ngIf="!isTutorNoteLine(line)"
+  class="pizarra-textarea-auto"
+  rows="1"
+  [value]="line"
+  (input)="onTopicNoteLineInput(topic.id, lIdx, $any($event.target).value, $event)"
+  (keydown.enter)="onTopicNoteEnter(topic.id, $event, lIdx)"
+  (keydown.backspace)="onTopicNoteBackspace(topic.id, $event, lIdx)"
+  [placeholder]="t('appNotesPlaceholder')">
+</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ÚNICO BOTÓN PRINCIPAL PARA AÑADIR OTRO TEMA (Al final de la sección de apuntes) -->
+              <button type="button" class="btn-add-topic-main" (click)="addAnotherTopic()">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['plus']"/></svg>
+                {{ t('addAnotherTopicBtn') }}
+              </button>
+            </section>
+
+            <!-- ZONA B: COSAS QUE NO ENTIENDO (~30% - Formulario discreto, no intrusivo) -->
+            <aside class="pizarra-dudas-col pizarra-col-doubts">
+              <h3 class="pizarra-dudas-title">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['help']"/></svg>
+                {{ t('pizarraZoneBDoubts') }}
+                <span class="n" *ngIf="draftDoubts().length > 0" style="font-size:12px;background:#fee2e2;color:#dc2626;padding:2px 7px;border-radius:12px">
+                  {{ draftDoubts().length }}
+                </span>
+              </h3>
+
+              <p class="small muted" style="margin:3px 0 10px;line-height:1.4">{{ activeLanguage() === 'en' ? 'Make each doubt specific: mention the subject.' : 'Especifica el tema en la duda; así Ostrix sabrá a qué te refieres.' }}</p>
+
+              <!-- Entrada limpia de dudas (añade al borrador sin iniciar IA) -->
+              <div class="pizarra-dudas-input-box">
+                <input
+                  type="text"
+                  class="pizarra-input-clean"
+                  [(ngModel)]="newDoubtText"
+                  (keydown.enter)="addDraftDoubt()"
+                  [placeholder]="t('doubtPlaceholder')">
+                <div class="row" style="gap:6px">
+                  <select [(ngModel)]="newDoubtTopicId" style="flex:1;font-size:12px;padding:7px;border-radius:8px;border:1px solid #e7e5e4;background:#fff">
+                    <option value="">{{ t('generalTopicLabel') }}</option>
+                    <option *ngFor="let top of draftTopics()" [value]="top.id">{{ top.name }}</option>
+                  </select>
+                  <button class="btn small primary danger" type="button" (click)="addDraftDoubt()" [disabled]="!newDoubtText.trim()">
+                    {{ t('addDoubtBtn') }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Lista de dudas registradas en el borrador -->
+              <div class="stack" style="gap:10px">
+                <div *ngFor="let doubt of draftDoubts(); let dIdx = index; trackBy: trackByIndex" class="pizarra-duda-card">
+                  <!-- Modo edición de duda -->
+                  <div *ngIf="editingDoubtIdx === dIdx" class="stack" style="gap:6px">
+                    <input type="text" [(ngModel)]="editingDoubtText" style="border:1px solid #dc2626;padding:6px;border-radius:6px;font-size:13px">
+                    <div class="row" style="gap:6px;justify-content:flex-end">
+                      <button class="btn small" type="button" (click)="cancelEditDoubt()">{{ t('cancel') }}</button>
+                      <button class="btn small primary" type="button" (click)="saveEditDoubt(dIdx)">{{ t('save') }}</button>
+                    </div>
+                  </div>
+
+                  <!-- Modo lectura de duda -->
+                  <div *ngIf="editingDoubtIdx !== dIdx" class="stack" style="gap:6px">
+                    <div class="row between" style="align-items:flex-start;gap:8px">
+                      <span style="font-size:13.5px;font-weight:600;color:#991b1b;line-height:1.4">{{ doubt.text }}</span>
+                      <div class="row" style="gap:4px">
+                        <button class="btn small ghost icon" (click)="startEditDoubt(dIdx, doubt.text)" [title]="t('editBtn')" style="padding:2px 4px;height:auto">
+                          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path [attr.d]="P['edit']"/></svg>
+                        </button>
+                        <button class="btn small ghost icon danger" (click)="removeDraftDoubt(dIdx)" [title]="t('deleteBtn')" style="padding:2px 4px;height:auto">
+                          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path [attr.d]="P['trash']"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="row between" style="align-items:center;margin-top:2px">
+                      <span *ngIf="getLinkedTopicName(s, 'doubts', doubt.text) as linkedTopName" class="chip" style="font-size:11px;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca">
+                        {{ activeLanguage() === 'en' ? 'Topic' : 'Tema' }}: {{ linkedTopName }}
+                      </span>
+                      <span *ngIf="!getLinkedTopicName(s, 'doubts', doubt.text)" class="small muted" style="font-size:11px">{{ activeLanguage() === 'en' ? 'No linked topic · Use the pencil to clarify.' : 'Sin tema vinculado · Usa el lápiz para aclararlo.' }}</span>
+                      <button class="btn small ghost" (click)="openTutor(s.id, doubt.text)" style="font-size:11px;padding:3px 8px;color:#dc2626;border:1px solid #fca5a5">
+                        {{ t('askTutorBtn') }} →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="draftDoubts().length === 0" style="padding:12px;text-align:center;color:#a8a29e;font-size:13px">
+                  {{ t('noDifficultiesLabel') }}
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- ZONA C: EUREKA — MIS DESCUBRIMIENTOS (100% Ancho Inferior) -->
+          <section class="pizarra-eureka-full pizarra-strip-eureka">
+            <h3 class="pizarra-eureka-title">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['bulb']"/></svg>
+              {{ t('pizarraZoneCEureka') }}
+              <span class="n" *ngIf="draftEureka().length > 0" style="font-size:12px;background:#fef3c7;color:#b45309;padding:2px 7px;border-radius:12px">
+                {{ draftEureka().length }}
+              </span>
+            </h3>
+
+            <!-- Entrada limpia de descubrimientos Eureka (añade al borrador) -->
+            <div class="row" style="gap:8px;flex-wrap:wrap">
+              <input
+                type="text"
+                class="pizarra-input-clean"
+                [(ngModel)]="newEurekaText"
+                (keydown.enter)="addDraftEureka()"
+                [placeholder]="t('eurekaPlaceholder')"
+                style="flex:1;min-width:260px">
+              <select [(ngModel)]="newEurekaTopicId" style="font-size:12px;padding:7px 10px;border-radius:8px;border:1px solid #e7e5e4;background:#fff">
+                <option value="">{{ t('generalTopicLabel') }}</option>
+                <option *ngFor="let top of draftTopics()" [value]="top.id">{{ top.name }}</option>
+              </select>
+              <button class="btn small primary" type="button" (click)="addDraftEureka()" [disabled]="!newEurekaText.trim()" style="background:#d97706;border-color:#d97706">
+                {{ t('addEurekaBtn') }}
+              </button>
+            </div>
+
+            <!-- Grilla de descubrimientos Eureka -->
+            <div class="pizarra-eureka-grid">
+              <div *ngFor="let eureka of draftEureka(); let eIdx = index; trackBy: trackByIndex" class="pizarra-eureka-card">
+                <!-- Modo edición -->
+                <div *ngIf="editingEurekaIdx === eIdx" class="stack" style="gap:6px">
+                  <input type="text" [(ngModel)]="editingEurekaText" style="border:1px solid #d97706;padding:6px;border-radius:6px;font-size:13px">
+                  <div class="row" style="gap:6px;justify-content:flex-end">
+                    <button class="btn small" type="button" (click)="cancelEditEureka()">{{ t('cancel') }}</button>
+                    <button class="btn small primary" type="button" (click)="saveEditEureka(eIdx)">{{ t('save') }}</button>
+                  </div>
+                </div>
+
+                <!-- Modo lectura -->
+                <div *ngIf="editingEurekaIdx !== eIdx" class="stack" style="gap:6px;height:100%;justify-content:space-between">
+                  <div class="row between" style="align-items:flex-start;gap:8px">
+                    <div class="row" style="gap:6px;align-items:flex-start;flex:1">
+                      <span style="font-size:16px;line-height:1">💡</span>
+                      <span style="font-size:13.5px;font-weight:600;color:#78350f;line-height:1.4">{{ eureka.text }}</span>
+                    </div>
+                    <div class="row" style="gap:4px">
+                      <button class="btn small ghost icon" (click)="startEditEureka(eIdx, eureka.text)" [title]="t('editBtn')" style="padding:2px 4px;height:auto">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path [attr.d]="P['edit']"/></svg>
+                      </button>
+                      <button class="btn small ghost icon danger" (click)="removeDraftEureka(eIdx)" [title]="t('deleteBtn')" style="padding:2px 4px;height:auto">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path [attr.d]="P['trash']"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div *ngIf="getLinkedTopicName(s, 'eureka', eureka.text) as linkedTopName" class="row">
+                    <span class="chip" style="font-size:11px;background:#fffbeb;color:#92400e;border:1px solid #fde68a">
+                      {{ activeLanguage() === 'en' ? 'Topic' : 'Tema' }}: {{ linkedTopName }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="draftEureka().length === 0" style="padding:10px;text-align:center;color:#a8a29e;font-size:13px">
+              {{ t('noEurekaDiscoveriesLabel') }}
+            </div>
+          </section>
+
+          <!-- BARRA DE ACCIÓN PRINCIPAL: UN SOLO BOTÓN "GUARDAR" QUE ACTIVA LA IA -->
+          <footer class="pizarra-action-bar">
+            <div class="pizarra-action-status">
+              <span class="pizarra-status-badge" [ngClass]="blackboardSaveState()">
+                <span *ngIf="blackboardSaveState() === 'unsaved'">● {{ t('statusUnsaved') }}</span>
+                <span *ngIf="blackboardSaveState() === 'saving'">⏳ {{ t('statusSaving') }}</span>
+                <span *ngIf="blackboardSaveState() === 'saved'">✓ {{ t('statusSavedSuccessfully') }}</span>
+                <span *ngIf="blackboardSaveState() === 'enriching'">⚡ {{ t('statusOstrixEnriching') }}</span>
+                <span *ngIf="blackboardSaveState() === 'updated'">✓ {{ t('statusLearningUpdated') }}</span>
+                <span *ngIf="blackboardSaveState() === 'error'">✕ {{ t('statusSaveErrorRetry') }}</span>
+              </span>
+              <span class="pizarra-action-hint">{{ t('saveHint') }}</span>
+            </div>
+
+            <button
+              class="btn-guardar-principal"
+              type="button"
+              (click)="saveBlackboardExplicit()"
+              [disabled]="blackboardSaveState() === 'saving'">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px"><path [attr.d]="P['check']"/></svg>
+              {{ t('saveButtonLabel') }}
+            </button>
+          </footer>
+        </div>
+
+        <!-- MODAL DE CONFIRMACIÓN: NAVEGACIÓN CON CAMBIOS SIN GUARDAR -->
+        <div *ngIf="dlgUnsavedNavigationOpen()" class="modal-unsaved-backdrop" role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="keepEditing()">
+          <div class="modal-unsaved-card stack">
+            <h2 style="font-size:19px;margin:0;color:#0f172a">{{ t('unsavedModalTitle') }}</h2>
+            <p style="font-size:14.5px;color:#475569;margin:0;line-height:1.5">{{ t('unsavedModalDesc') }}</p>
+            <div class="row" style="justify-content:flex-end;gap:10px;margin-top:8px;flex-wrap:wrap">
+              <button class="btn ghost small" type="button" (click)="keepEditing()">{{ t('keepEditingBtn') }}</button>
+              <button class="btn small danger ghost" type="button" (click)="exitWithoutSaving()">{{ t('exitWithoutSavingBtn') }}</button>
+              <button class="btn small primary" type="button" (click)="saveAndExit()">{{ t('saveAndExitBtn') }}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANTALLA B: APRENDIZAJE ENRIQUECIDO (VISTAS DE ESTUDIO INTELIGENTE) -->
+        <div *ngIf="bookMode() === 'enriquecido'" class="stack">
+          <!-- Tres Pestañas Superiores (G.1–G.3) -->
+          <div class="view-tabs-header" role="tablist">
+            <button class="view-tab-btn" [class.active]="intelTab() === 'enriquecidos'" (click)="intelTab.set('enriquecidos')">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['layers']"/></svg>
+              1. {{ t('enrichedNotesTab') }}
+            </button>
+            <button class="view-tab-btn" [class.active]="intelTab() === 'dudas'" (click)="intelTab.set('dudas')">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['help']"/></svg>
+              2. {{ t('thingsIDontUnderstandTab') }}
+              <span class="n" *ngIf="s.doubts.length > 0">({{ s.doubts.length }})</span>
+            </button>
+            <button class="view-tab-btn" [class.active]="intelTab() === 'eureka'" (click)="intelTab.set('eureka')">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['bulb']"/></svg>
+              3. {{ t('eurekaTab') }}
+              <span class="n" *ngIf="s.eureka.length > 0">({{ s.eureka.length }})</span>
+            </button>
+          </div>
+
+          <!-- VISTA 1: APUNTES ENRIQUECIDOS (G.1) -->
+          <div *ngIf="intelTab() === 'enriquecidos'" class="stack">
+            <!-- Selector de Consentimiento Cloud para Enriquecimiento -->
+            <div class="row between card flat" style="padding:12px 16px;background:var(--surface)">
+              <label class="row small" style="margin:0">
+                <input type="checkbox" [(ngModel)]="cloudSummaryConsent" (ngModelChange)="$event || ai.revokeCloudConsent()" [disabled]="settings.profile().offlineOnly">
+                {{ t('tutorCloudConsent') }}
+              </label>
+              <button class="btn small ghost" (click)="goToBlackboardTopic()">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['notes']"/></svg>
+                {{ t('viewOriginalNotesBtn') }}
+              </button>
+            </div>
+
+            <!-- Progreso activo de inferencia si está procesando -->
+            <div *ngIf="topicEnrichment.isEnriching()" class="ai-box stack" style="border:1px dashed #0284c7;background:#f0f9ff">
+              <div class="row between" style="align-items:center">
+                <div class="row" style="gap:10px;align-items:center">
+                  <span class="spinner" style="width:16px;height:16px;border:2px solid #0284c7;border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin 1s linear infinite"></span>
+                  <span class="chip" style="background:#e0f2fe;color:#0369a1;font-weight:600">
+                    {{ t('learningEnrichingLabel') }}
+                  </span>
+                </div>
+                <button class="btn small" type="button" (click)="ai.cancelActiveRequest()">{{ t('editorCancelLabel') }}</button>
+              </div>
+            </div>
+
+            <!-- Tarjetas de cada Tema Enriquecido -->
+            <div *ngFor="let topic of s.topics" class="enriched-card stack">
+              <div class="row between" style="align-items:flex-start">
+                <div>
+                  <h3 style="font-size:18px;margin:0 0 4px">{{ topic.name }}</h3>
+                  <div class="row" style="gap:8px;flex-wrap:wrap">
+                    <span class="chip" [class.green]="topic.enrichmentStatus === 'UP_TO_DATE' || topic.enrichmentStatus === 'ACTUALIZADO'"
+                                       [class.yellow]="topic.enrichmentStatus === 'OUTDATED' || topic.enrichmentStatus === 'DESACTUALIZADO'"
+                                       [class.blue]="topic.enrichmentStatus === 'GENERATING' || topic.enrichmentStatus === 'GENERANDO' || topic.enrichmentStatus === 'PREPARANDO_MODELO'"
+                                       [class.red]="topic.enrichmentStatus === 'ERROR'">
+                      <span *ngIf="topic.enrichmentStatus === 'UP_TO_DATE' || topic.enrichmentStatus === 'ACTUALIZADO'">✓ {{ t('statusUpToDate') }}</span>
+                      <span *ngIf="topic.enrichmentStatus === 'OUTDATED' || topic.enrichmentStatus === 'DESACTUALIZADO'">⚡ {{ t('statusOutdated') }}</span>
+                      <span *ngIf="topic.enrichmentStatus === 'GENERATING' || topic.enrichmentStatus === 'GENERANDO' || topic.enrichmentStatus === 'PREPARANDO_MODELO'">⏳ {{ t('statusGenerating') }}</span>
+                      <span *ngIf="topic.enrichmentStatus === 'PENDING' || topic.enrichmentStatus === 'PENDIENTE'">○ {{ t('statusPending') }}</span>
+                      <span *ngIf="topic.enrichmentStatus === 'ERROR'">{{ t('statusErrorLabel') }}</span>
+                      <span *ngIf="topic.enrichmentStatus === 'NO_DISPONIBLE'">{{ t('statusAiUnavailableLabel') }}</span>
+                    </span>
+                    <span class="chip" *ngIf="topic.inferenceSource" style="font-size:11px">{{ sourceLabel(topic.inferenceSource) }}</span>
+                  </div>
+                </div>
+
+                <div class="row" style="gap:6px">
+                  <button class="btn small ghost" type="button" (click)="goToBlackboardTopic(topic.id)" [title]="t('viewOriginalNotesBtn')">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['notes']"/></svg>
+                    {{ t('viewOriginalNotesBtn') }}
+                  </button>
+                  <button class="btn small primary"
+                          [disabled]="topicEnrichment.isEnriching()"
+                          (click)="enrichTopicAction(topic)">
+                    {{ (topic.enrichmentStatus === 'UP_TO_DATE' || topic.enrichmentStatus === 'ACTUALIZADO') ? t('regenerateEnrichmentBtn') : t('enrichWithAiBtn') }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Explicación pedagógica -->
+              <div *ngIf="topic.enrichedExplanation; else pendingEnrichTpl" class="stack" style="margin-top:12px">
+                <p style="font-size:15px;line-height:1.7;color:var(--fg);margin:0">
+                  {{ topic.enrichedExplanation }}
+                </p>
+
+                <!-- Ejemplos prácticos -->
+                <div *ngFor="let ex of topic.enrichedExamples" class="enriched-box-section example">
+                  <strong>{{ t('examplesLabel') }}:</strong>
+                  <div style="margin-top:4px">{{ ex }}</div>
+                </div>
+
+                <!-- Ideas clave -->
+                <div *ngFor="let idea of topic.keyIdeas" class="enriched-box-section idea">
+                  <strong>💡 {{ t('keyIdeasLabel') }}:</strong>
+                  <div style="margin-top:4px">{{ idea }}</div>
+                </div>
+
+                <!-- Errores comunes -->
+                <div *ngFor="let mist of topic.commonMistakes" class="enriched-box-section mistake">
+                  <strong>⚠️ {{ t('commonMistakesLabel') }}:</strong>
+                  <div style="margin-top:4px">{{ mist }}</div>
+                </div>
+              </div>
+
+              <ng-template #pendingEnrichTpl>
+                <div style="padding:16px;background:var(--bg);border-radius:12px;margin-top:12px;text-align:center">
+                  <p class="muted small" style="margin:0 0 10px">
+                    {{ t('explanationNotReadyLabel') }}
+                  </p>
+                  <button class="btn small primary" (click)="enrichTopicAction(topic)" [disabled]="topicEnrichment.isEnriching()">
+                    {{ t('enrichWithAiBtn') }}
+                  </button>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- VISTA 2: COSAS QUE NO ENTIENDO (G.2) — ESPACIO DE ESTUDIO ACTIVO SIN FORMULARIO DUPLICADO -->
+          <div *ngIf="intelTab() === 'dudas'" class="stack">
+            <!-- Cabecera de estudio de dudas -->
+            <div class="card flat" style="padding:14px 18px;background:var(--surface);border-left:4px solid #ef4444">
+              <div class="row between" style="align-items:center;flex-wrap:wrap;gap:8px">
+                <div>
+                  <h3 style="margin:0 0 4px;font-size:16px;color:var(--fg)">{{ t('thingsIDontUnderstandTab') }}</h3>
+                  <p class="muted small" style="margin:0">
+                    Espacio de estudio activo para resolver tus dificultades. Ostrix analiza cada duda y prepara explicaciones con ejemplos claros.
+                  </p>
+                </div>
+                <button class="btn small ghost" (click)="goToBlackboardDoubts()" style="white-space:nowrap">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['notes']"/></svg>
+                  {{ t('editOnBlackboardBtn') }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Lista de dudas con explicación pedagógica y acciones -->
+            <div class="stack" style="gap:14px">
+              <div class="enriched-card stack" *ngFor="let d of s.doubts" style="border-left:4px solid #f87171">
+                <!-- Dificultad planteada por el estudiante -->
+                <div class="row between" style="align-items:flex-start;gap:12px">
+                  <div style="flex:1">
+                    <div class="row" style="gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+                      <span class="chip red" style="font-size:11px;font-weight:700">{{ t('practicePendingLabel') }}</span>
+                      <span *ngIf="getLinkedTopicName(s, 'doubts', d) as linkedTopName" class="chip" style="font-size:11px;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca">
+                        {{ activeLanguage() === 'en' ? 'Topic' : 'Tema' }}: {{ linkedTopName }}
+                      </span>
+                      <span class="chip" *ngIf="getEnrichedDoubt(s, d)?.inferenceSource" style="font-size:11px">
+                        {{ sourceLabel(getEnrichedDoubt(s, d)!.inferenceSource) }}
+                      </span>
+                    </div>
+                    <h4 style="font-size:16px;font-weight:600;margin:0;color:var(--fg);line-height:1.4">
+                      "{{ d }}"
+                    </h4>
+                  </div>
+                </div>
+
+                <!-- Explicación pedagógica de Ostrix -->
+                <div *ngIf="getEnrichedDoubt(s, d) as enriched; else doubtPendingTpl" class="stack" style="margin-top:12px;gap:10px">
+                  <div style="background:#fef2f2;border-radius:10px;padding:12px 16px;border:1px solid #fee2e2">
+                    <strong style="color:#b91c1c;font-size:13px;display:block;margin-bottom:6px">
+                      💡 {{ t('ostrixExplains') }}:
+                    </strong>
+                    <p style="font-size:14px;line-height:1.6;color:#7f1d1d;margin:0">
+                      {{ displayAcademicText(enriched.explanation) }}
+                    </p>
+                  </div>
+
+                  <div *ngIf="enriched.example" class="enriched-box-section example" style="margin-top:0">
+                    <strong>{{ t('examplesLabel') }}:</strong>
+                    <div style="margin-top:4px">{{ enriched.example }}</div>
+                  </div>
+                </div>
+
+                <ng-template #doubtPendingTpl>
+                  <div style="padding:12px;background:#f8fafc;border-radius:8px;margin-top:10px;border:1px dashed #cbd5e1">
+                    <p class="muted small" style="margin:0">
+                      {{ t('ostrixExplanationQueuedLabel') }}
+                    </p>
+                  </div>
+                </ng-template>
+
+                <!-- Botones de acción pedagógica -->
+                <div class="row" style="gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);flex-wrap:wrap">
+                  <button class="btn small primary" (click)="openTutor(s.id, d)">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['chip']"/></svg>
+                    {{ t('askTutorBtn') }}
+                  </button>
+
+                  <button class="btn small" (click)="markDoubtUnderstood(s, d)">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                    {{ t('markAsMasteredBtn') }}
+                  </button>
+
+                  <button class="btn small ghost" (click)="practiceDoubt(d)">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['refresh']"/></svg>
+                    {{ t('practiceExerciseBtn') }}
+                  </button>
+
+                  <button class="btn small ghost" (click)="goToBlackboardDoubts()" style="margin-left:auto">
+                    {{ t('editOnBlackboardBtn') }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Estado vacío -->
+              <div class="empty card flat stack" *ngIf="s.doubts.length === 0" style="text-align:center;padding:32px 20px">
+                <div style="font-size:32px;margin-bottom:8px">✨</div>
+                <h4 style="margin:0 0 6px">{{ t('noDoubtsInSession') }}</h4>
+                <p class="muted small" style="margin:0 0 16px;max-width:440px;margin-inline:auto">
+                  {{ t('doubtZoneDescriptionLabel') }}
+                </p>
+                <div>
+                  <button class="btn primary small" (click)="goToBlackboardDoubts()">
+                    {{ t('writeDoubtInBlackboard') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTA 3: EUREKA (G.3) — ESPACIO DE ESTUDIO ACTIVO SIN FORMULARIO DUPLICADO -->
+          <div *ngIf="intelTab() === 'eureka'" class="stack">
+            <!-- Cabecera de descubrimientos Eureka -->
+            <div class="card flat" style="padding:14px 18px;background:var(--surface);border-left:4px solid #f59e0b">
+              <div class="row between" style="align-items:center;flex-wrap:wrap;gap:8px">
+                <div>
+                  <h3 style="margin:0 0 4px;font-size:16px;color:var(--fg)">{{ t('eurekaTab') }}</h3>
+                  <p class="muted small" style="margin:0">
+                    {{ t('eurekaZoneDescriptionLabel') }}
+                  </p>
+                </div>
+                <button class="btn small ghost" (click)="goToBlackboardEureka()" style="white-space:nowrap">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['notes']"/></svg>
+                  {{ t('editOnBlackboardBtn') }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Grilla de descubrimientos con ampliación pedagógica y acciones -->
+            <div class="stack" style="gap:14px">
+              <div class="enriched-card stack" *ngFor="let e of s.eureka" style="border-left:4px solid #f59e0b">
+                <!-- Descubrimiento original del estudiante -->
+                <div class="row between" style="align-items:flex-start;gap:12px">
+                  <div style="flex:1">
+                    <div class="row" style="gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+                      <span class="chip yellow" style="font-size:11px;font-weight:700">{{ t('eurekaDiscoveryLabel') }}</span>
+                      <span *ngIf="getLinkedTopicName(s, 'eureka', e) as linkedTopName" class="chip" style="font-size:11px;background:#fffbeb;color:#92400e;border:1px solid #fde68a">
+                        {{ activeLanguage() === 'en' ? 'Topic' : 'Tema' }}: {{ linkedTopName }}
+                      </span>
+                      <span class="chip" *ngIf="getEnrichedEureka(s, e)?.inferenceSource" style="font-size:11px">
+                        {{ sourceLabel(getEnrichedEureka(s, e)!.inferenceSource) }}
+                      </span>
+                    </div>
+                    <h4 style="font-size:16px;font-weight:600;margin:0;color:var(--fg);line-height:1.4">
+                      "{{ e }}"
+                    </h4>
+                  </div>
+                </div>
+
+                <!-- Ampliación y aplicaciones prácticas de Ostrix -->
+                <div *ngIf="getEnrichedEureka(s, e) as enriched; else eurekaPendingTpl" class="stack" style="margin-top:12px;gap:10px">
+                  <!-- Ostrix lo amplía -->
+                  <div style="background:#fffbeb;border-radius:10px;padding:12px 16px;border:1px solid #fde68a">
+                    <strong style="color:#92400e;font-size:13px;display:block;margin-bottom:6px">
+                      🚀 {{ t('ostrixExpands') }}:
+                    </strong>
+                    <p style="font-size:14px;line-height:1.6;color:#78350f;margin:0">
+                      {{ enriched.expansion }}
+                    </p>
+                  </div>
+
+                  <!-- ¿Dónde más puedo aplicarlo? -->
+                  <div *ngIf="enriched.practicalApplication" class="enriched-box-section idea" style="margin-top:0">
+                    <strong style="color:#065f46">🎯 {{ t('practicalApplication') }}:</strong>
+                    <div style="margin-top:4px;color:#064e3b">{{ enriched.practicalApplication }}</div>
+                  </div>
+                </div>
+
+                <ng-template #eurekaPendingTpl>
+                  <div style="padding:12px;background:#f8fafc;border-radius:8px;margin-top:10px;border:1px dashed #cbd5e1">
+                    <p class="muted small" style="margin:0">
+                      {{ t('eurekaExpansionQueuedLabel') }}
+                    </p>
+                  </div>
+                </ng-template>
+
+                <!-- Botones de acción -->
+                <div class="row" style="gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);flex-wrap:wrap">
+                  <button class="btn small primary" (click)="openTutor(s.id, e)">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['chip']"/></svg>
+                    {{ t('askTutorBtn') }}
+                  </button>
+
+                  <button class="btn small ghost" (click)="goToBlackboardEureka()" style="margin-left:auto">
+                    {{ t('editOnBlackboardBtn') }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Estado vacío -->
+              <div class="empty card flat stack" *ngIf="s.eureka.length === 0" style="text-align:center;padding:32px 20px">
+                <div style="font-size:32px;margin-bottom:8px">💡</div>
+                <h4 style="margin:0 0 6px">{{ t('noEurekaInSession') }}</h4>
+                <p class="muted small" style="margin:0 0 16px;max-width:440px;margin-inline:auto">
+                  {{ t('eurekaZoneTipLabel') }}
+                </p>
+                <div>
+                  <button class="btn primary small" (click)="goToBlackboardEureka()">
+                    {{ t('writeEurekaInBlackboard') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- VIEW: PRÁCTICA PARA EXAMEN INTERACTIVA (MISIÓN B) -->
+      <ng-container *ngIf="view() === 'practica'">
+        <div class="practice-shell" *ngIf="practiceSession() as ps">
+          <!-- BREADCRUMB / RETORNO -->
+          <div class="row between" style="margin-bottom:18px;align-items:center;flex-wrap:wrap;gap:12px">
+            <div class="row" style="gap:10px;align-items:center">
+              <button class="btn small ghost" type="button" (click)="exitPractice()">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['back']"/></svg>
+                {{ t('navDiary') }}
+              </button>
+              <span class="editorial-course-tag" [style.background]="getCourseCoverObj(ps.course, ps.coverId).accentColor">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="getCourseCoverObj(ps.course, ps.coverId).iconPath"/></svg>
+                {{ ps.course }}
+              </span>
+              <span style="font-weight:700;font-size:15px;color:#1e293b">{{ ps.topic }}</span>
+            </div>
+            <div>
+              <span class="ai-chip on" style="font-size:12px">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['chip']"/></svg>
+                Ostrix Practice Engine
+              </span>
+            </div>
+          </div>
+
+          <!-- ESTADO 1: PANTALLA DE CONFIGURACIÓN PREVIA -->
+          <div *ngIf="practiceState() === 'CONFIG'" class="practice-card-box">
+            <div class="practice-hero-header" [style.background]="getCourseCoverObj(ps.course, ps.coverId).gradient">
+              <div class="editorial-card-art" [innerHTML]="safeSvg(getCourseCoverObj(ps.course, ps.coverId).illustrationSvg)"></div>
+              <div style="position:relative;z-index:2">
+                <h2 style="font-size:24px;font-weight:800;margin:0 0 6px;color:#fff">{{ t('practiceExamTitle') }}</h2>
+                <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.92);max-width:540px">{{ t('practiceConfigSubtitle') }}</p>
+              </div>
+            </div>
+
+            <div class="practice-config-body">
+              <div *ngIf="practiceErrorMessage()" class="err" role="alert" style="margin-bottom:16px">
+                {{ practiceErrorMessage() }}
+              </div>
+
+              <!-- Selector de Cantidad de Preguntas (Segmented Option Tiles) -->
+              <div class="practice-config-group">
+                <label class="practice-config-label">{{ t('questionCountSelector') }}</label>
+                <div class="practice-card-grid">
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().count === 5"
+                          (click)="setPracticeCount(5)"
+                          role="radio" [attr.aria-checked]="practiceConfig().count === 5">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('countOption5') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().count === 5">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceQuickDescLabel') }}</span>
+                  </button>
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().count === 10"
+                          (click)="setPracticeCount(10)"
+                          role="radio" [attr.aria-checked]="practiceConfig().count === 10">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('countOption10') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().count === 10">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceFullDescLabel') }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Selector de Dificultad (Segmented Option Tiles) -->
+              <div class="practice-config-group">
+                <label class="practice-config-label">{{ t('difficultySelector') }}</label>
+                <div class="practice-card-grid three-cols">
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().difficulty === 'BASIC'"
+                          (click)="setPracticeDifficulty('BASIC')"
+                          role="radio" [attr.aria-checked]="practiceConfig().difficulty === 'BASIC'">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('difficultyBasic') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().difficulty === 'BASIC'">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceRecallDescLabel') }}</span>
+                  </button>
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().difficulty === 'INTERMEDIATE'"
+                          (click)="setPracticeDifficulty('INTERMEDIATE')"
+                          role="radio" [attr.aria-checked]="practiceConfig().difficulty === 'INTERMEDIATE'">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('difficultyIntermediate') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().difficulty === 'INTERMEDIATE'">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceApplicationDescLabel') }}</span>
+                  </button>
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().difficulty === 'ADVANCED'"
+                          (click)="setPracticeDifficulty('ADVANCED')"
+                          role="radio" [attr.aria-checked]="practiceConfig().difficulty === 'ADVANCED'">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('difficultyAdvanced') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().difficulty === 'ADVANCED'">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceReasoningDescLabel') }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Selector de Tipo de Práctica (Segmented Option Tiles) -->
+              <div class="practice-config-group">
+                <label class="practice-config-label">{{ t('practiceTypeSelector') }}</label>
+                <div class="practice-card-grid three-cols">
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().type === 'MIXED'"
+                          (click)="setPracticeType('MIXED')"
+                          role="radio" [attr.aria-checked]="practiceConfig().type === 'MIXED'">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('typeMixed') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().type === 'MIXED'">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceMixedDescLabel') }}</span>
+                  </button>
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().type === 'MULTIPLE_CHOICE'"
+                          (click)="setPracticeType('MULTIPLE_CHOICE')"
+                          role="radio" [attr.aria-checked]="practiceConfig().type === 'MULTIPLE_CHOICE'">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('typeMultipleChoice') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().type === 'MULTIPLE_CHOICE'">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceFourOptionsDescLabel') }}</span>
+                  </button>
+                  <button type="button" class="practice-option-tile practice-choice-pill"
+                          [class.selected]="practiceConfig().type === 'TRUE_FALSE'"
+                          (click)="setPracticeType('TRUE_FALSE')"
+                          role="radio" [attr.aria-checked]="practiceConfig().type === 'TRUE_FALSE'">
+                    <div class="practice-tile-top">
+                      <span class="practice-tile-title">{{ t('typeTrueFalse') }}</span>
+                      <span class="practice-tile-check" *ngIf="practiceConfig().type === 'TRUE_FALSE'">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path [attr.d]="P['check']"/></svg>
+                      </span>
+                    </div>
+                    <span class="practice-tile-desc">{{ t('practiceConceptDescLabel') }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Botones de Acción de Configuración -->
+              <div class="practice-actions-footer">
+                <button type="button" class="btn ghost practice-cancel-btn" (click)="exitPractice()">
+                  {{ t('cancel') }}
+                </button>
+                <button type="button" class="btn primary practice-start-btn" (click)="beginPracticeGeneration()">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                  {{ t('startPracticeBtn') }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ESTADO 2: GENERACIÓN DE EXAMEN EN CURSO -->
+          <div *ngIf="practiceState() === 'GENERATING'" class="practice-card-box" style="padding:40px 24px;text-align:center">
+            <h3 style="font-size:20px;font-weight:800;color:#1e293b;margin:0 0 8px">{{ t('generatingExamTitle') }}</h3>
+            <p class="muted" style="max-width:480px;margin:0 auto 20px;font-size:14.5px;line-height:1.5">
+              {{ t('generatingExamSubtitle') }}
+            </p>
+
+            <div style="max-width:520px;margin:0 auto 20px;text-align:left">
+              <app-ai-progress
+                phase="generating"
+                [startTime]="practiceStartTime()"
+                [canCancel]="true"
+                (cancel)="cancelPracticeExamGeneration()">
+              </app-ai-progress>
+            </div>
+
+
+          </div>
+
+          <p class="small" *ngIf="(practiceState() === 'ACTIVE' || practiceState() === 'RESULTS') && currentExam() as exam">
+            {{ sourceLabel(exam.inferenceSource) }}<span *ngIf="exam.fromCache"> · {{ activeLanguage() === 'en' ? 'Saved quiz' : 'Práctica guardada' }}</span>
+            <span *ngIf="exam.curriculumSupplement"> · {{ exam.curriculumSupplement }} {{ activeLanguage() === 'en' ? 'from the offline library' : 'del catálogo offline' }}</span>
+          </p>
+
+          <p *ngIf="practiceQuestionShortage() && (practiceState() === 'ACTIVE' || practiceState() === 'RESULTS')" class="small muted" role="status" style="margin:10px 0;padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px">
+            {{ practiceQuestionShortage() }}
+          </p>
+
+          <!-- ESTADO 3: EXAMEN ACTIVO — PREGUNTA POR PREGUNTA -->
+          <div *ngIf="practiceState() === 'ACTIVE' && currentPracticeQuestion() as q" class="practice-card-box">
+            <!-- Barra de Progreso Superior -->
+            <div class="practice-progress-bar-container"
+                 role="progressbar"
+                 [attr.aria-label]="t('questionIndexLabel')"
+                 [attr.aria-valuenow]="examProgressPercentage()"
+                 aria-valuemin="0" aria-valuemax="100">
+              <div class="practice-progress-bar-fill" [style.width.%]="examProgressPercentage()"></div>
+            </div>
+
+            <!-- Cabecera de Pregunta -->
+            <div class="practice-question-header">
+              <div class="row between" style="align-items:center;margin-bottom:14px">
+                <div class="row" style="gap:8px;align-items:center">
+                  <span class="editorial-course-tag" [style.background]="getCourseCoverObj(ps.course, ps.coverId).accentColor">
+                    {{ ps.course }}
+                  </span>
+                  <span class="chip" *ngIf="q.topicName" style="font-size:12px">
+                    {{ q.topicName }}
+                  </span>
+                </div>
+                <span class="muted small" style="font-weight:700">
+                  {{ t('questionIndexLabel') }} {{ currentQuestionIndex() + 1 }} {{ t('ofTotalLabel') }} {{ currentExam()?.questionCount }}
+                </span>
+              </div>
+
+              <!-- Enunciado de la Pregunta -->
+              <h3 class="practice-question-text">
+                {{ displayAcademicText(q.questionText) }}
+              </h3>
+            </div>
+
+            <!-- Grilla de Alternativas -->
+            <div class="practice-options-grid">
+              <button *ngFor="let opt of q.options; let optIdx = index"
+                      type="button"
+                      class="practice-option-cell"
+                      [class.selected]="userAnswers()[q.id] === optIdx"
+                      [attr.aria-pressed]="userAnswers()[q.id] === optIdx"
+                      (click)="selectExamAnswer(q.id, optIdx)">
+                <span class="practice-option-letter">
+                  {{ optIdx === 0 ? 'A' : optIdx === 1 ? 'B' : optIdx === 2 ? 'C' : 'D' }}
+                </span>
+                <span class="practice-option-text">{{ displayAcademicText(opt) }}</span>
+              </button>
+            </div>
+
+            <!-- Barra de Navegación Inferior -->
+            <div class="practice-nav-bar">
+              <button type="button" class="btn ghost small"
+                      [disabled]="currentQuestionIndex() === 0"
+                      (click)="prevExamQuestion()">
+                ← {{ t('prevQuestionBtn') }}
+              </button>
+
+              <div class="practice-page-list" role="group"
+                   [attr.aria-label]="t('questionIndexLabel')">
+                <button *ngFor="let qu of currentExam()?.questions; let qi = index"
+                        type="button"
+                        class="practice-quick-num"
+                        [attr.aria-label]="t('questionIndexLabel') + ' ' + (qi + 1)"
+                        [attr.aria-current]="qi === currentQuestionIndex() ? 'step' : null"
+                        [class.current]="qi === currentQuestionIndex()"
+                        [class.answered]="userAnswers()[qu.id] !== undefined"
+                        (click)="goToExamQuestion(qi)">
+                  {{ qi + 1 }}
+                </button>
+              </div>
+
+              <div>
+                <button *ngIf="currentQuestionIndex() < (currentExam()?.questionCount || 0) - 1"
+                        type="button" class="btn primary small"
+                        (click)="nextExamQuestion()">
+                  {{ t('nextQuestionBtn') }} →
+                </button>
+                <button *ngIf="currentQuestionIndex() === (currentExam()?.questionCount || 0) - 1"
+                        type="button" class="btn primary small"
+                        style="background:#059669;border-color:#059669"
+                        (click)="requestFinishExam()">
+                  ✓ {{ t('finishExamBtn') }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ESTADO 4: RESULTADOS PEDAGÓGICOS DETALLADOS -->
+          <div *ngIf="practiceState() === 'RESULTS' && currentAttempt() as att" class="practice-card-box">
+            <div class="practice-results-hero">
+              <div class="practice-score-circle"
+                   [class.good]="att.scorePercentage >= 80"
+                   [class.medium]="att.scorePercentage >= 50 && att.scorePercentage < 80"
+                   [class.low]="att.scorePercentage < 50">
+                <span class="practice-score-num">{{ att.scorePercentage }}%</span>
+                <span class="practice-score-sub">{{ att.correctCount }} / {{ att.totalQuestions }}</span>
+              </div>
+
+              <div class="practice-results-text">
+                <h2 style="font-size:24px;font-weight:800;color:#1e293b;margin:0 0 6px">
+                  {{ att.totalQuestions < 3
+                    ? (activeLanguage() === 'en' ? 'Short practice completed' : 'Práctica breve completada')
+                    : att.scorePercentage >= 80 ? t('examResultExcellent') : att.scorePercentage >= 50 ? t('examResultGood') : t('examResultNeedsReview') }}
+                </h2>
+                <p class="muted" style="margin:0 0 16px;font-size:14px;line-height:1.5">
+                  {{ att.totalQuestions < 3
+                    ? (activeLanguage() === 'en'
+                        ? 'This result covers only ' + att.totalQuestions + ' question(s). Practice more to assess your understanding.'
+                        : 'Este resultado corresponde solo a ' + att.totalQuestions + ' pregunta(s). Practica más para evaluar tu comprensión.')
+                    : att.scorePercentage >= 80 ? t('examFeedbackExcellent') : att.scorePercentage >= 50 ? t('examFeedbackGood') : t('examFeedbackNeedsReview') }}
+                </p>
+
+                <div class="practice-stats-grid">
+                  <div class="practice-stat-box">
+                    <span class="practice-stat-val" style="color:#059669">{{ att.correctCount }}</span>
+                    <span class="practice-stat-lbl">{{ t('statCorrect') }}</span>
+                  </div>
+                  <div class="practice-stat-box">
+                    <span class="practice-stat-val" style="color:#dc2626">{{ att.incorrectCount }}</span>
+                    <span class="practice-stat-lbl">{{ t('statIncorrect') }}</span>
+                  </div>
+                  <div class="practice-stat-box">
+                    <span class="practice-stat-val" style="color:#64748b">{{ att.unansweredCount }}</span>
+                    <span class="practice-stat-lbl">{{ t('statUnanswered') }}</span>
+                  </div>
+                  <div class="practice-stat-box">
+                    <span class="practice-stat-val" style="color:#2563eb">{{ formatTimeSpent(att.timeSpentSeconds) }}</span>
+                    <span class="practice-stat-lbl">{{ t('statTime') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Revisión Pregunta por Pregunta con Justificación Pedagógica -->
+            <div class="practice-review-section">
+              <h3 style="font-size:18px;font-weight:800;color:#1e293b;margin:0 0 16px">
+                {{ t('detailedReviewTitle') }}
+              </h3>
+
+              <div class="stack" style="gap:16px">
+                <div *ngFor="let q of att.questions; let qIdx = index"
+                     class="practice-review-item"
+                     [class.item-correct]="att.userAnswers[q.id] === q.correctAnswerIndex"
+                     [class.item-incorrect]="att.userAnswers[q.id] !== undefined && att.userAnswers[q.id] !== q.correctAnswerIndex"
+                     [class.item-unanswered]="att.userAnswers[q.id] === undefined">
+                  <div class="practice-review-header">
+                    <span class="practice-review-question">
+                      {{ qIdx + 1 }}. {{ displayAcademicText(q.questionText) }}
+                    </span>
+                    <span class="chip practice-review-status"
+                          [class.green]="att.userAnswers[q.id] === q.correctAnswerIndex"
+                          [class.red]="att.userAnswers[q.id] !== undefined && att.userAnswers[q.id] !== q.correctAnswerIndex"
+                          [class.yellow]="att.userAnswers[q.id] === undefined">
+                      {{ att.userAnswers[q.id] === q.correctAnswerIndex ? t('practiceResultCorrect') : att.userAnswers[q.id] === undefined ? t('practiceResultUnanswered') : t('practiceResultIncorrect') }}
+                    </span>
+                  </div>
+
+                  <div class="practice-review-answers">
+                    <div class="practice-review-answer">
+                      <strong>{{ t('practiceYourAnswerLabel') }}</strong>
+                      <span *ngIf="att.userAnswers[q.id] !== undefined">{{ displayAcademicText(q.options[att.userAnswers[q.id]]) }}</span>
+                      <em *ngIf="att.userAnswers[q.id] === undefined">{{ t('practiceNoAnswerLabel') }}</em>
+                    </div>
+                    <div class="practice-review-answer practice-review-answer-correct">
+                      <strong>{{ t('practiceCorrectAnswerLabel') }}</strong>
+                      <span>{{ displayAcademicText(q.options[q.correctAnswerIndex]) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="practice-pedagogical-box">
+                    <strong>{{ t('practiceOstrixExplanationLabel') }}</strong> {{ displayAcademicText(q.explanation) }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Acciones de Cierre de Resultados -->
+              <div class="practice-results-footer">
+                <button type="button" class="btn ghost practice-results-back" (click)="exitPractice()">
+                  ← {{ t('practiceBackToSession') }}
+                </button>
+                <div class="practice-results-actions">
+                  <button *ngIf="att.incorrectCount > 0" type="button" class="btn practice-weak-action" (click)="reviewWeakTopics()">
+                    🔍 {{ t('practiceReviewWeakTopics') }}
+                  </button>
+                  <button type="button" class="btn" (click)="reconfigurePractice()">
+                    ⚙ {{ t('reconfigureExamBtn') }}
+                  </button>
+                  <button type="button" class="btn primary" (click)="restartPractice()">
+                    🔄 {{ t('practiceAgainBtn') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FALLBACK SI SE ABRE PRÁCTICA SIN SESIÓN CONTEXTUAL SELECCIONADA -->
+        <div class="practice-shell" *ngIf="!practiceSession()">
+          <div class="practice-card-box" style="padding:32px 28px">
+            <div class="row between" style="align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <div>
+                <h2 style="font-size:22px;font-weight:800;color:#1e293b;margin:0 0 6px">
+                  {{ activeLanguage() === 'en' ? 'Select a Session to Practice' : 'Selecciona una clase para practicar' }}
+                </h2>
+                <p class="muted" style="margin:0;font-size:14px">
+                  {{ activeLanguage() === 'en' ? 'Choose an academic session from your diary to start an adaptive exam.' : 'Elige una sesión de tu biblioteca para evaluar tus conocimientos con preguntas formativas.' }}
+                </p>
+              </div>
+              <button class="btn small ghost" type="button" (click)="go('diario')">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['book']"/></svg>
+                {{ t('navDiary') }}
+              </button>
+            </div>
+
+            <!-- Lista de Sesiones Disponibles -->
+            <div *ngIf="diary.sessions().length > 0; else noSessionsForPractice" class="editorial-grid" style="margin-top:16px">
+              <div *ngFor="let s of diary.sessions()" class="editorial-session-card">
+                <div class="editorial-card-hero" [style.background]="getCourseCoverObj(s.course, s.coverId).gradient">
+                  <div class="editorial-card-art" [innerHTML]="safeSvg(getCourseCoverObj(s.course, s.coverId).illustrationSvg)"></div>
+                  <div class="editorial-card-badge-row">
+                    <span class="editorial-course-tag" [style.background]="getCourseCoverObj(s.course, s.coverId).accentColor">
+                      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px"><path [attr.d]="getCourseCoverObj(s.course, s.coverId).iconPath"/></svg>
+                      {{ s.course }}
+                    </span>
+                    <span class="editorial-date-pill">{{ formatDate(s.date) }}</span>
+                  </div>
+                </div>
+                <div class="editorial-card-body">
+                  <h3 class="editorial-card-title">{{ s.topic }}</h3>
+                  <div class="editorial-card-snippet">{{ getSessionSnippet(s) }}</div>
+                  <div class="editorial-actions-row" style="margin-top:12px">
+                    <button type="button" class="editorial-card-btn-practice" (click)="startExamPractice(s)">
+                      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['layers']"/></svg>
+                      {{ t('practiceForExamBtn') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noSessionsForPractice>
+              <div class="empty card flat" style="padding:40px 20px;text-align:center">
+                <p style="font-size:15px;color:#64748b;margin-bottom:16px">
+                  {{ activeLanguage() === 'en' ? 'No study sessions found in your diary.' : 'No tienes sesiones en tu Diario aún. Registra tu primera clase para comenzar a practicar.' }}
+                </p>
+                <button type="button" class="btn primary" (click)="go('diario')">
+                  {{ t('navDiary') }}
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- MODAL DE CONFIRMACIÓN DE FINALIZACIÓN CON PREGUNTAS PENDIENTES -->
+        <div *ngIf="confirmFinishModalOpen()"
+             style="position:fixed;inset:0;z-index:2600;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.55)">
+          <section role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="cancelFinishModal()"
+                   style="width:min(100%,460px);background:#fff;border-radius:20px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+            <h3 style="font-size:18px;font-weight:800;color:#1e293b;margin:0 0 10px">{{ t('confirmFinishTitle') }}</h3>
+            <p class="muted" style="font-size:14px;line-height:1.5;margin:0 0 20px">
+              {{ t('unansweredQuestionsWarningPre') }} <strong>{{ examUnansweredCount() }}</strong> {{ t('unansweredQuestionsWarningPost') }}
+            </p>
+            <div class="row end" style="gap:10px">
+              <button type="button" class="btn ghost small" (click)="cancelFinishModal()">
+                {{ t('keepPracticingBtn') }}
+              </button>
+              <button type="button" class="btn primary small" style="background:#dc2626;border-color:#dc2626" (click)="confirmFinishNow()">
+                {{ t('confirmFinishNowBtn') }}
+              </button>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom" [attr.aria-label]="t('appMobileNavigationAria')">
+    <a href="#inicio" (click)="$event.preventDefault(); go('inicio')" [attr.aria-current]="view() === 'inicio' ? 'page' : null" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['home']"/></svg>
+      {{ t('navHome') }}
+    </a>
+    <a href="#diario" (click)="$event.preventDefault(); go('diario')" [attr.aria-current]="view() === 'diario' || view() === 'libro' ? 'page' : null" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['book']"/></svg>
+      {{ t('navDiary') }}
+    </a>
+    <a href="#dudas" (click)="$event.preventDefault(); go('dudas')" [attr.aria-current]="view() === 'dudas' ? 'page' : null" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['help']"/></svg>
+      {{ t('navDoubts') }}
+    </a>
+    <a href="#repaso" (click)="$event.preventDefault(); go('repaso')" [attr.aria-current]="view() === 'repaso' ? 'page' : null" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['refresh']"/></svg>
+      {{ t('navReview') }}
+    </a>
+    <button (click)="moreOpen.set(!moreOpen())" [attr.aria-expanded]="moreOpen()">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['more']"/></svg>
+      {{ t('navMore') }}
+    </button>
+  </nav>
+
+  <!-- Mobile More Menu -->
+  <div class="card more nav" *ngIf="moreOpen()">
+    <a href="#apuntes" (click)="$event.preventDefault(); go('apuntes')" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['notes']"/></svg>
+      {{ t('navNotes') }}
+    </a>
+    <a href="#eureka" (click)="$event.preventDefault(); go('eureka')" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['bulb']"/></svg>
+      {{ t('navEureka') }}
+    </a>
+    <a href="#progreso" (click)="$event.preventDefault(); go('progreso')" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chart']"/></svg>
+      {{ t('navProgress') }}
+    </a>
+    <a href="#tutor" *ngIf="identity.student()" (click)="$event.preventDefault(); openTutor(null)" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['chip']"/></svg>
+      {{ t('navTutor') }}
+    </a>
+    <a href="#configuracion" (click)="$event.preventDefault(); go('configuracion')" style="cursor:pointer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="P['gear']"/></svg>
+      {{ t('navSettings') }}
+    </a>
+  </div>
+</div>
+
+<!-- ================= MODALS & DIALOGS ================= -->
+<!-- Session Modal (D.1: Únicamente Curso y Fecha) -->
+<div *ngIf="dlgSessionOpen()" style="position:fixed;inset:0;z-index:2500;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.45)">
+  <section role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="closeSessionModal()" [attr.aria-label]="editingSessionId ? t('editBtn') : t('newSession')" style="width:min(100%,520px);max-height:90vh;overflow-y:auto;background:#fff;color:#202124;border-radius:20px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <form class="stack" (ngSubmit)="saveSessionModal()">
+      <h2 style="font-size:20px">{{ editingSessionId ? t('editBtn') : t('newSession') }}</h2>
+      <label class="f">{{ t('course') }}
+        <div style="display:flex;gap:8px;align-items:center">
+          <select [(ngModel)]="sessCourse" name="course" style="flex:1" required>
+            <option *ngIf="courseList().length === 0" value="">-- {{ t('noCoursesPrompt') }} --</option>
+            <option *ngFor="let c of courseList()" [value]="c.name">{{ c.name }}</option>
+          </select>
+          <button type="button" class="btn small" (click)="openNewCourseModal()" [title]="t('addCourseBtn')">{{ t('addCourseBtn') }}</button>
+        </div>
+      </label>
+      <label class="f">{{ t('date') }}
+        <input type="date" [(ngModel)]="sessDate" name="date" required>
+      </label>
+      <div class="err" role="alert" *ngIf="sessError()">{{ sessError() }}</div>
+      <div class="row" style="justify-content:flex-end">
+        <button type="button" class="btn" (click)="closeSessionModal()">{{ t('cancel') }}</button>
+        <button class="btn primary" type="submit">{{ editingSessionId ? t('save') : t('createSessionBtn') }}</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<!-- Add Topic Modal (D.2 & E.4: Añadir otro tema a la sesión) -->
+<div *ngIf="dlgAddTopicOpen()" style="position:fixed;inset:0;z-index:2600;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.5)">
+  <section role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="closeAddTopicDialog()" [attr.aria-label]="t('addAnotherTopicBtn')" style="width:min(100%,460px);max-height:90vh;overflow-y:auto;background:#fff;color:#202124;border-radius:20px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <form class="stack" (ngSubmit)="saveNewTopic()">
+      <h2 style="font-size:20px">{{ t('addAnotherTopicBtn') }}</h2>
+      <label class="f">{{ t('topicTitlePlaceholder') }}
+        <input type="text" [(ngModel)]="newTopicInputName" name="newTopicName" required [placeholder]="t('topicTitlePlaceholder')" autofocus>
+      </label>
+      <div class="row" style="justify-content:flex-end;gap:8px">
+        <button type="button" class="btn" (click)="closeAddTopicDialog()">{{ t('cancel') }}</button>
+        <button class="btn primary" type="submit">{{ t('save') }}</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<!-- Course Cover Selection Modal (B.4 & B.5: Catálogo de 15 portadas offline) -->
+<div *ngIf="dlgCoverOpen()" style="position:fixed;inset:0;z-index:2600;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.55)">
+  <section role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="closeCoverModal()" [attr.aria-label]="t('selectCoverTitle')" style="width:min(100%,680px);max-height:90vh;overflow-y:auto;background:#fff;color:#202124;border-radius:22px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+    <div class="row between" style="align-items:center;margin-bottom:14px">
+      <div>
+        <h2 style="font-size:20px;margin:0">{{ t('selectCoverTitle') }}</h2>
+        <p class="small muted" style="margin:4px 0 0" *ngIf="targetCourseForCover() as tc">
+          {{ t('appCourseLabel') }} <strong>{{ tc.name }}</strong>
+        </p>
+      </div>
+      <button class="btn small icon ghost" (click)="closeCoverModal()">✕</button>
+    </div>
+
+    <div class="cover-picker-grid">
+      <div *ngFor="let cov of courseCoversList"
+           class="cover-picker-cell"
+           [class.selected]="targetCourseForCover()?.coverId === cov.id"
+           [style.background]="cov.gradient"
+           (click)="selectCourseCover(cov.id)">
+        <div style="width:48px;height:48px" [innerHTML]="safeSvg(cov.illustrationSvg)"></div>
+        <span>{{ cov.name }}</span>
+      </div>
+    </div>
+
+    <div class="row" style="justify-content:flex-end;margin-top:18px">
+      <button type="button" class="btn" (click)="closeCoverModal()">{{ t('cancel') }}</button>
+    </div>
+  </section>
+</div>
+
+<!-- Course Modal -->
+<div *ngIf="dlgCourseOpen()" style="position:fixed;inset:0;z-index:2600;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.5)">
+  <section role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="closeCourseModal()" [attr.aria-label]="editingCourseId ? t('editCourseTitle') : t('newCourseTitle')" style="width:min(100%,460px);max-height:90vh;overflow-y:auto;background:#fff;color:#202124;border-radius:20px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <form class="stack" (ngSubmit)="saveCourseModal()">
+      <h2 style="font-size:20px">{{ editingCourseId ? t('editCourseTitle') : t('newCourseTitle') }}</h2>
+      <label class="f">{{ t('courseNameLabel') }}
+        <input type="text" [(ngModel)]="courseInputName" name="courseName" required [placeholder]="t('courseNamePlaceholder')" autofocus>
+      </label>
+      <div class="err" role="alert" *ngIf="courseError()">{{ courseError() }}</div>
+      <div class="row" style="justify-content:flex-end;gap:8px">
+        <button type="button" class="btn" (click)="closeCourseModal()">{{ t('cancel') }}</button>
+        <button class="btn primary" type="submit">{{ t('save') }}</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<!-- Delete Session Modal -->
+<div *ngIf="dlgDeleteOpen()" style="position:fixed;inset:0;z-index:2500;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.45)">
+  <section role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="closeDeleteModal()" [attr.aria-label]="t('deleteBtn')" style="width:min(100%,520px);max-height:90vh;overflow-y:auto;background:#fff;color:#202124;border-radius:20px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <h2 style="font-size:20px">{{ t('deleteBtn') }}?</h2>
+    <p class="muted" style="margin:10px 0 20px">
+      {{ activeLanguage() === 'en'
+        ? 'Notes, doubts, Eureka, and reviews for this session will be removed from your local notebook.'
+        : 'Se borrarán sus apuntes, dudas, Eureka y repasos de tu cuaderno local. Esta acción no se puede deshacer.' }}
+    </p>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" (click)="closeDeleteModal()">{{ t('cancel') }}</button>
+      <button class="btn danger" (click)="executeDeleteSession()">{{ t('deleteBtn') }}</button>
+    </div>
+  </section>
+</div>
+
+<!-- Floating Toast Notification -->
+<div class="toast" role="status" *ngIf="toastMessage()">
+  {{ toastMessage() }}
+</div>
+
+<!-- AUTO-02: persistent save progress across navigation; no sensitive note contents displayed. -->
+<ng-container *ngIf="companionBackgroundSave() as saveJob">
+<div *ngIf="identity.student()?.id === saveJob.ownerId" class="companion-background-notice"
+     [attr.role]="saveJob.state === 'error' ? 'alert' : 'status'" aria-live="polite"
+     style="position:fixed;right:14px;bottom:16px;z-index:110;max-width:min(370px,calc(100vw - 28px));box-sizing:border-box;display:flex;flex-direction:column;gap:7px;padding:13px 15px;background:#fff;color:#1b3455;border:1px solid #b8cbe5;border-radius:14px;box-shadow:0 7px 28px rgba(24,49,92,.18);font:500 12px/1.45 system-ui,sans-serif;">
+  <strong style="font-size:13px;">{{ saveJob.state === 'saving' ? 'Ostrix está guardando…' : (saveJob.state === 'saved' ? 'Guardado confirmado' : 'El guardado necesita atención') }}</strong>
+  <span>{{ saveJob.destination }}</span>
+  <span>{{ saveJob.message }}</span>
+  <span *ngIf="saveJob.state === 'saving'" style="color:#7b5424;">{{ t('companionBackgroundKeepOpen') }}</span>
+  <button *ngIf="saveJob.state === 'error'" type="button" class="btn" (click)="retryCompanionBackgroundSave()"
+          [disabled]="companionCaptureBusy()" style="align-self:flex-start;">Reintentar solo lo pendiente</button>
+  <button *ngIf="saveJob.state === 'saved'" type="button" class="btn" (click)="dismissCompanionBackgroundSave()"
+          style="align-self:flex-start;">Entendido</button>
+</div>
+</ng-container>
+
+<!-- COMPANION-01: contextual owl; stays within the authenticated app only. -->
+<app-ostrix-companion
+  *ngIf="identity.student() && view() !== 'tutor' && view() !== 'practica' && view() !== 'perfil' && view() !== 'bienvenida' && view() !== 'acceso' && view() !== 'registro'"
+  [view]="view()"
+  [language]="activeLanguage()"
+  [hasCurrentSession]="view() === 'libro' && !!activeSession()"
+  [sessionContextAllowed]="settings.profile().autoInjectSessionContext"
+  [sessions]="companionSessionChoices()"
+  [captureBusy]="companionCaptureBusy()"
+  [captureFeedback]="companionCaptureFeedback()"
+  [batchResult]="companionBatchResult()"
+  (launch)="openCompanionAction($event)"
+  (navigate)="openCompanionSection($event)"
+  (capture)="saveCompanionCapture($event)"
+  (captureBatch)="saveCompanionBatch($event)">
+</app-ostrix-companion>

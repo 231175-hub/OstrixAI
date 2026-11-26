@@ -1,0 +1,50 @@
+<div class="ai-progress-container" [class.compact]="compact" role="region" aria-label="Progreso de inferencia de IA">
+  <div class="ai-progress-header">
+    <div class="ai-progress-status-row">
+      <span class="ai-progress-indicator-dot" [class.pulse]="phase !== 'complete' && phase !== 'error'"></span>
+      <span class="ai-progress-status-text" aria-live="polite">{{ statusMessage }}</span>
+      <span *ngIf="hasRealPercentage" class="ai-progress-download-pct">({{ downloadPercent }}%)</span>
+    </div>
+
+    <div class="ai-progress-meta">
+      <span class="ai-progress-timer" aria-live="off">
+        {{ timerLabel }}: <strong>{{ elapsedSeconds() }} s</strong>
+      </span>
+      <button
+        *ngIf="canCancel && phase !== 'complete' && phase !== 'error'"
+        type="button"
+        class="ai-progress-cancel-btn"
+        (click)="onCancel()"
+        [attr.aria-label]="cancelLabel">
+        {{ cancelLabel }}
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="ai-progress-bar-track"
+    role="progressbar"
+    [attr.aria-valuenow]="hasRealPercentage ? downloadPercent : null"
+    [attr.aria-valuemin]="0"
+    [attr.aria-valuemax]="100"
+    [attr.aria-label]="statusMessage">
+    <!-- Barra con porcentaje real (únicamente cuando el navegador reporta descarga real) -->
+    <div
+      *ngIf="hasRealPercentage"
+      class="ai-progress-bar-fill"
+      [style.width.%]="downloadPercent">
+    </div>
+
+    <!-- Barra de progreso indeterminado animada (sin porcentajes falsos inventados) -->
+    <div
+      *ngIf="!hasRealPercentage"
+      class="ai-progress-bar-indeterminate"
+      [class.paused]="phase === 'complete' || phase === 'error'">
+    </div>
+  </div>
+
+  <!-- Vista previa de streaming progresivo si existe -->
+  <div *ngIf="streamingPreview" class="ai-progress-streaming-preview">
+    <p class="ai-progress-streaming-text">{{ streamingPreview }}</p>
+  </div>
+</div>

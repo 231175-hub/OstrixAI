@@ -1,0 +1,286 @@
+<div class="tutor-shell" *ngIf="currentOwner()">
+  <div class="workspace">
+    <!-- Overlay oscurecedor para móvil cuando la barra lateral de historial está abierta -->
+    <div class="sidebar-backdrop" *ngIf="mobileHistoryOpen()" (click)="toggleMobileHistory()"></div>
+
+    <!-- COLUMNA IZQUIERDA: Historial de Conversaciones -->
+    <aside class="sidebar" [class.mobile-open]="mobileHistoryOpen()" [attr.aria-label]="settings.profile().language === 'en' ? 'Tutoring conversations' : 'Conversaciones de tutoría'">
+      <div class="sidebar-heading">
+        <div class="row" style="gap:6px;align-items:center">
+          <i class="pi pi-comments" style="color:#2563eb;font-size:16px" aria-hidden="true"></i>
+          <strong>{{ t('tutorConversations') }}</strong>
+        </div>
+        <div class="sidebar-head-actions">
+          <button type="button" class="new-button" (click)="newThread()" [disabled]="busy()">
+            <i class="pi pi-plus" aria-hidden="true"></i> {{ t('tutorNewBtn') }}
+          </button>
+          <button type="button" class="icon-button close-mobile-btn" (click)="toggleMobileHistory()" [attr.aria-label]="settings.profile().language === 'en' ? 'Close conversations panel' : 'Cerrar panel de conversaciones'">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <p class="hint">{{ t('tutorEncryptedHint') }}</p>
+
+      <div class="thread-list">
+        <p class="empty-sidebar" *ngIf="!chats.threads().length">{{ t('tutorNoThreads') }}</p>
+        <div class="thread-row" *ngFor="let item of chats.threads()" [class.active]="item.id === selectedThreadId()">
+          <button type="button" class="thread-choice" (click)="chooseThread(item.id)" [disabled]="busy()"
+            [attr.aria-current]="item.id === selectedThreadId() ? 'true' : null">
+            <i class="pi pi-comment" aria-hidden="true"></i>
+            <span>{{ item.title }}</span>
+          </button>
+          <button type="button" class="icon-button delete-btn" (click)="deleteThread(item.id)" [disabled]="busy()"
+            [attr.aria-label]="(settings.profile().language === 'en' ? 'Delete conversation ' : 'Eliminar conversación ') + item.title">
+            <i class="pi pi-trash" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="micro-label">{{ t('appTagline') }}</span>
+        <small>{{ t('sidebarFooterDesc') }}</small>
+      </div>
+    </aside>
+
+    <!-- COLUMNA DERECHA: Área Principal de Chat con Ostrix -->
+    <section class="chat-main" [attr.aria-label]="settings.profile().language === 'en' ? 'Ostrix virtual tutor' : 'Tutor virtual Ostrix'">
+      <!-- Panel Superior Fijo: Cabecera, Contexto y Modos -->
+      <header class="chat-top-panel">
+        <div class="chat-title">
+          <button type="button" class="btn-toggle-history" (click)="toggleMobileHistory()" [attr.aria-label]="settings.profile().language === 'en' ? 'Show conversation history' : 'Ver historial de conversaciones'">
+            <i class="pi pi-bars" aria-hidden="true"></i>
+            <span>{{ t('tutorConversations') }}</span>
+          </button>
+
+          <div class="mascot" aria-hidden="true"><i class="pi pi-sparkles"></i></div>
+          <div class="title-text-wrap">
+            <h1>{{ t('navTutor') }}</h1>
+            <p>{{ t('tutorSubtitle') }}</p>
+          </div>
+
+          <span class="status-badge" [class.offline]="!device.online()">
+            {{ device.online() ? (device.nano() === 'available' ? t('nanoAvailable') : t('online')) : t('offline') }}
+          </span>
+        </div>
+
+        <!-- Selector de Contexto Académico Simplificado (Activación local por defecto) -->
+        <div class="study-context">
+          <div class="context-row">
+            <label for="study-session">{{ t('tutorContextLabel') }}</label>
+            <select id="study-session" name="study-session" [(ngModel)]="activeSessionId" [disabled]="busy() || !!thread()">
+              <option value="">{{ t('tutorNoSession') }}</option>
+              <option *ngFor="let s of diary.sessions()" [value]="s.id">{{ s.course }} — {{ s.topic }} ({{ s.date }})</option>
+            </select>
+            <button *ngIf="session()" type="button" class="secondary-small preview-btn" (click)="showContextPreview.set(!showContextPreview())">
+              {{ showContextPreview() ? t('tutorHideContextBtn') : t('tutorPreviewContextBtn') }}
+            </button>
+          </div>
+          <p *ngIf="showContextPreview() && session()" class="context-note context-note-preview">
+            {{ contextSnapshot() }}
+          </p>
+          <p *ngIf="thread()" class="context-note">
+            {{ settings.profile().language === 'en'
+              ? 'The session for an existing conversation is locked. Click "New" to switch.'
+              : 'El curso de una conversación existente está fijado. Elige «Nueva» para cambiarlo.' }}
+          </p>
+        </div>
+
+        <!-- Selector de los 4 Modos Pedagógicos -->
+        <div class="mode-select" role="group" [attr.aria-label]="settings.profile().language === 'en' ? 'Teaching mode' : 'Modo de enseñanza'">
+          <button type="button" *ngFor="let item of modes" class="mode" [class.active]="mode() === item.id"
+            (click)="activeMode = item.id" [disabled]="busy() || !!thread()">
+            <i [class]="item.icon" aria-hidden="true"></i>
+            <span><strong>{{ t(item.titleKey) }}</strong><small>{{ t(item.descKey) }}</small></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Panel Central Scrollable: Historial de Mensajes -->
+      <section class="messages" [attr.aria-label]="settings.profile().language === 'en' ? 'Message history' : 'Historial de mensajes'" aria-live="polite">
+        @if (!thread() && canPersonalize() && !activity() && !readingStep()) {
+          @if (recommendation(); as step) {
+            @if (hiddenStep() !== step) {
+              <section class="learning-step" aria-labelledby="step-title" data-testid="learning-step">
+                <small>{{ settings.profile().language === 'en' ? 'From your journal' : 'Basado en tu Diario' }}</small>
+                <h2 id="step-title">{{ settings.profile().language === 'en' ? 'Your next learning step' : 'Tu siguiente paso de aprendizaje' }}</h2>
+                <strong>{{ stepSession()?.course }} · {{ step.focus }}</strong>
+                <details><summary>{{ settings.profile().language === 'en' ? 'Why this recommendation?' : '¿Por qué esta recomendación?' }}</summary>
+                  <p>{{ reasonText(step.reason) }} · {{ step.date }}<br>{{ stepSession()?.topic }} · {{ stepSession()?.date }}</p>
+                </details>
+                <div class="step-actions">
+                  <button type="button" class="primary-small" (click)="startRecommendedStep(step)" [disabled]="busy()">{{ settings.profile().language === 'en' ? 'Practice now' : 'Practicar ahora' }}</button>
+                  <button type="button" class="secondary-small" (click)="openDiary.emit(step.sessionId)">{{ settings.profile().language === 'en' ? 'View in my journal' : 'Ver en mi Diario' }}</button>
+                  <button type="button" class="link-btn" (click)="hiddenStep.set(step)">{{ settings.profile().language === 'en' ? 'Not now' : 'Ahora no' }}</button>
+                </div>
+              </section>
+            }
+          } @else {
+            <p class="hint" data-testid="learning-empty">{{ settings.profile().language === 'en' ? 'There is not enough activity yet to recommend a review.' : 'Todavía no tenemos suficiente actividad para recomendar un repaso' }}</p>
+          }
+        }
+        @if (canPersonalize() && activity(); as exam) {
+          <section class="learning-step" aria-labelledby="step-question" data-testid="focused-practice">
+            <small>{{ t('modePracticeTitle') }} · {{ exam.course }} · {{ exam.inferenceSource === 'CURRICULUM_OFFLINE'
+              ? (settings.profile().language === 'en' ? 'Offline library' : 'Biblioteca offline')
+              : exam.inferenceSource === 'SAVED_CACHE' ? (settings.profile().language === 'en' ? 'Saved question' : 'Pregunta guardada') : t('tutorSourceLocal') }}</small>
+            <h2 id="step-question">{{ cleanText(exam.questions[0].questionText) }}</h2>
+            @if (activityResult(); as result) {
+              <p role="status"><strong>{{ result.correctCount ? (settings.profile().language === 'en' ? 'Correct.' : 'Correcto.') : (settings.profile().language === 'en' ? 'Incorrect.' : 'Incorrecto.') }}</strong> {{ cleanText(exam.questions[0].explanation) }}</p>
+              <button class="secondary-small" type="button" (click)="newThread()">{{ settings.profile().language === 'en' ? 'Continue' : 'Continuar' }}</button>
+            } @else {
+              <div class="step-actions"><button class="secondary-small" type="button" *ngFor="let option of exam.questions[0].options; index as i"
+                (click)="answerStep(i)" [disabled]="saving()">{{ cleanText(option) }}</button></div>
+            }
+          </section>
+        }
+        @if (canPersonalize() && readingStep()) {
+          <section class="learning-step">
+            <small>{{ t('modePracticeTitle') }} · {{ t('navDiary') }}</small>
+            <p class="message-text">{{ readingStep() }}</p>
+          </section>
+        }
+        <div *ngIf="!thread()?.messages?.length && !activity() && !readingStep() && (!recommendation() || hiddenStep() === recommendation())" class="welcome">
+          <div class="welcome-icon" aria-hidden="true"><i class="pi pi-comments"></i></div>
+          <h2>{{ settings.profile().language === 'en' ? 'What shall we learn today?' : '¿Qué aprendemos hoy?' }}</h2>
+          <p>{{ settings.profile().language === 'en'
+            ? 'Choose a journal session and ask about anything you want to understand. Your doubts turn into adaptive reviews.'
+            : 'Elige una sesión de tu diario y pregunta algo que quieras entender. Tus dudas pueden convertirse en futuros repasos.' }}</p>
+          <div class="suggestions">
+            <button type="button" [disabled]="busy()" (click)="activeMode = 'explain'; draft = settings.profile().language === 'en' ? 'I did not understand this topic. Can you explain it with a simple example?' : 'No entendí este tema. ¿Me lo explicas con un ejemplo sencillo?'">
+              {{ t('modeExplainTitle') }}
+            </button>
+            <button type="button" [disabled]="busy()" (click)="activeMode = 'practice'; draft = settings.profile().language === 'en' ? 'Ask me one practice question to check what I learned.' : 'Hazme una pregunta para comprobar lo que aprendí.'">
+              {{ t('modePracticeTitle') }}
+            </button>
+            <button type="button" [disabled]="busy()" (click)="activeMode = 'explore'; draft = settings.profile().language === 'en' ? 'How can I apply this concept in everyday life?' : '¿Cómo puedo aplicar este concepto a mi vida cotidiana?'">
+              {{ t('modeExploreTitle') }}
+            </button>
+          </div>
+        </div>
+
+        <ng-container *ngIf="thread() as current">
+          <article class="message" *ngFor="let message of current.messages; trackBy: trackMessage"
+            [class.student-message]="message.role === 'user'" [class.assistant-message]="message.role === 'assistant'">
+            <div class="message-symbol" aria-hidden="true"><i [class]="message.role === 'user' ? 'pi pi-user' : message.source === 'OFFLINE_ESSENTIAL' ? 'pi pi-book' : 'pi pi-sparkles'"></i></div>
+            <div class="message-body">
+              <div class="message-label">{{ message.role === 'user' ? (settings.profile().language === 'en' ? 'You' : 'Tú') : 'Ostrix' }}</div>
+              
+              <!-- Texto original de la respuesta -->
+              <p class="message-text" *ngIf="!showOriginalMap()[message.id] || !message.translatedText">
+                <span class="os-math-rich" *ngIf="message.role === 'assistant'" [innerHTML]="mathHtml(message.text)"></span>
+                <ng-container *ngIf="message.role !== 'assistant'">{{ cleanText(message.text) }}</ng-container>
+              </p>
+
+              <!-- Vista derivada de traducción opcional sin mutar el original -->
+              <div *ngIf="message.translatedText" class="translation-view-panel">
+                <div class="translation-header-badge">
+                  <span class="badge-title">{{ t('derivedTranslationNotice') }}</span>
+                  <button type="button" class="link-btn" (click)="toggleOriginal(message.id)">
+                    {{ showOriginalMap()[message.id] ? t('viewOriginalBtn') : t('viewTranslationBtn') }}
+                  </button>
+                </div>
+                <p class="message-text translated-content" *ngIf="showOriginalMap()[message.id]">
+                  <span class="os-math-rich" *ngIf="message.role === 'assistant'" [innerHTML]="mathHtml(message.translatedText)"></span>
+                  <ng-container *ngIf="message.role !== 'assistant'">{{ cleanText(message.translatedText) }}</ng-container>
+                </p>
+              </div>
+
+              <!-- Telemetría comprensible para el estudiante -->
+              <p class="inference" *ngIf="message.role === 'assistant'">
+                <i class="pi pi-check-circle" aria-hidden="true"></i>
+                <ng-container *ngIf="message.latencyMs != null">{{ t('answerReadyIn') }} {{ formatDuration(message.latencyMs) }} · </ng-container>{{ sourceLabel(message.source) }}
+                <span *ngIf="message.limited && message.source === 'ON_DEVICE'"> · {{ settings.profile().language === 'en' ? 'Limited local context' : 'Modo local limitado' }}</span>
+              </p>
+
+              <div *ngIf="message.role === 'assistant'" class="message-actions">
+                <button type="button" (click)="beginSave(message,'notes')" [disabled]="saving()">{{ t('tutorSaveNotes') }}</button>
+                <button type="button" (click)="beginSave(message,'doubts')" [disabled]="saving()">{{ t('tutorSaveDoubt') }}</button>
+                <button type="button" (click)="beginSave(message,'eureka')" [disabled]="saving()">{{ t('tutorSaveEureka') }}</button>
+                <button type="button" (click)="beginSave(message,'review')" [disabled]="saving()">{{ t('tutorSaveReview') }}</button>
+                <button type="button" *ngIf="canTranslate(message)"
+                  (click)="translateDerived(message)" [disabled]="translatingId() !== null">
+                  {{ translatingId() === message.id ? '...' : t('translateDerivedBtn') }}
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Componente reutilizable de progreso de inferencia -->
+          <article class="message assistant-message live-streaming" *ngIf="busy()">
+            <div class="message-symbol" aria-hidden="true"><i class="pi pi-sparkles"></i></div>
+            <div class="message-body" style="width:100%;max-width:100%">
+              <app-ai-progress
+                [phase]="ai.inferencePhase() === 'preparing' ? 'preparing' : ai.inferencePhase() === 'streaming' ? 'generating' : 'generating'"
+                [downloadFraction]="ai.modelDownloadProgress() > 0 && ai.inferencePhase() === 'preparing' ? ai.modelDownloadProgress() : null"
+                [startTime]="requestStartTime()"
+                [canCancel]="true"
+                (cancel)="cancelRequest()">
+              </app-ai-progress>
+            </div>
+          </article>
+
+          <div *ngIf="current.messages.length && current.messages[current.messages.length-1].role === 'user' && !busy()" class="retry">
+            {{ settings.profile().language === 'en' ? 'The answer could not be completed.' : 'La respuesta no se pudo completar.' }}
+            <button type="button" (click)="retry()" [disabled]="saving()">{{ settings.profile().language === 'en' ? 'Retry' : 'Reintentar' }}</button>
+            <button *ngIf="canUseEssential()" type="button" data-testid="tutor-essential-guide"
+              [disabled]="saving()" (click)="useEssentialGuide()">
+              {{ settings.profile().language === 'en' ? 'Use a note-based guide (no AI)' : 'Usar guía de mis apuntes (sin IA)' }}
+            </button>
+          </div>
+        </ng-container>
+      </section>
+
+      <!-- Panel Inferior Fijo: Panel de Guardado, Alertas y Editor de Mensaje -->
+      <footer class="chat-bottom-panel">
+        <div *ngIf="saveKind()" class="save-panel" role="region" [attr.aria-label]="settings.profile().language === 'en' ? 'Save tutor content' : 'Guardar contenido del tutor'">
+          @if (!thread()?.sessionId) {
+            <label for="save-destination">{{ settings.profile().language === 'en' ? 'Save to journal session' : 'Guardar en la sesión del Diario' }}</label>
+            <select id="save-destination" [ngModel]="saveDestination()" (ngModelChange)="saveDestination.set($event)" [disabled]="saving()">
+              <option value="">{{ t('tutorContextLabel') }}</option>
+              <option *ngFor="let s of diary.sessions()" [value]="s.id">{{ s.course }} — {{ s.topic }} ({{ s.date }})</option>
+            </select>
+          }
+          <label for="save-content"><strong>{{ saveKind() === 'notes' ? t('notes') : saveKind() === 'doubts' ? t('doubts') : saveKind() === 'eureka' ? t('eureka') : t('review') }}</strong></label>
+          <p id="ostrix-save-help" class="hint" style="margin:4px 0 8px;font-size:12px">
+            {{ saveKind() === 'eureka'
+              ? (settings.profile().language === 'en' ? 'Write what YOU discovered, in your own words. The AI answer is not automatically your discovery.' : 'Escribe con tus palabras lo que TÚ descubriste. La respuesta de la IA no es automáticamente tu Eureka.')
+              : (settings.profile().language === 'en' ? 'Review and edit this suggestion before saving. The original chat will remain unchanged.' : 'Revisa y edita esta propuesta antes de guardar. El chat original no cambiará.') }}
+          </p>
+          <textarea id="save-content" [(ngModel)]="saveDraft" aria-describedby="ostrix-save-help" [attr.maxlength]="saveKind() === 'notes' ? 20000 : 400" [rows]="saveKind() === 'notes' ? 5 : 3" [placeholder]="saveKind() === 'eureka' ? (settings.profile().language === 'en' ? 'I discovered that...' : 'Descubrí que...') : ''"></textarea>
+          <div class="save-buttons">
+            <button type="button" class="primary-small" (click)="confirmSave()" [disabled]="saving() || !saveDestination() || !saveDraft.trim()">{{ saving() ? '...' : t('save') }}</button>
+            <button type="button" class="secondary-small" (click)="cancelSave()" [disabled]="saving()">{{ t('cancel') }}</button>
+          </div>
+        </div>
+
+        <div class="feedback" *ngIf="error()" role="alert">{{ error() }}</div>
+        <div class="success-note" *ngIf="notice()" aria-live="polite">{{ notice() }}</div>
+
+        <form class="composer" (ngSubmit)="send()" [attr.aria-label]="settings.profile().language === 'en' ? 'Send question to tutor' : 'Enviar pregunta al tutor'">
+          <label for="tutor-message" class="sr-only">{{ settings.profile().language === 'en' ? 'Write your question' : 'Escribe tu pregunta' }}</label>
+          <textarea id="tutor-message" name="tutorMessage" [(ngModel)]="draft" rows="2" maxlength="4000"
+            [disabled]="busy()" [placeholder]="t('tutorAskPlaceholder')"
+            (keydown.enter)="onComposerEnter($event)"></textarea>
+          <div class="composer-toolbar">
+            <div class="composer-actions" style="margin-left:auto;display:flex;gap:8px;align-items:center">
+              <button *ngIf="busy()" type="button" class="secondary-small cancel-req-btn" (click)="cancelRequest()">
+                {{ t('tutorCancelBtn') }}
+              </button>
+              <button class="send-button" type="submit" [disabled]="busy() || !draft.trim()">
+                <i class="pi pi-send" aria-hidden="true"></i> {{ busy() ? t('tutorThinkingBtn') : t('tutorSendBtn') }}
+              </button>
+            </div>
+          </div>
+          <div class="composer-foot-row">
+            <p class="disclaimer">
+              {{ settings.profile().language === 'en'
+                ? 'Without an on-device model or internet you can review notes, chats, and offline exercises. AI can make mistakes—verify content.'
+                : 'Sin modelo local ni internet puedes leer conversaciones, apuntes y repasos. El tutor puede equivocarse: verifica el contenido.' }}
+            </p>
+          </div>
+        </form>
+      </footer>
+    </section>
+  </div>
+</div>

@@ -1,68 +1,58 @@
-# OstrixAi 🦉
+# OstrixAI
 
-> **An offline-first, hybrid AI smart tutor built for the BuildHybridAI 2026 Google · Firebase Hackathon.**
+OstrixAI is an offline-first journal, tutor and study planner for secondary-school students sharing computers in rural Peru. A student can record a question in class, practice without internet, see how an answer was graded, and return for the next review. The project targets the Web/Chrome track of #BuildHybridAI 2026.
 
-OstrixAi is an educational platform designed to democratize access to artificial intelligence in regions with unstable network connectivity. By leveraging the **Firebase AI Logic SDK**, OstrixAi acts as an intelligent traffic controller: it processes simple, privacy-sensitive tasks directly on the user's device with zero latency, and seamlessly routes complex reasoning tasks to advanced cloud models when an internet connection is available. 
+## Try one lesson
 
-## 📌 Features
-* **True Offline-First AI:** Generate summaries, correct grammar, and create short flashcards without any internet connection.
-* **Hybrid Routing:** Automatically switches between edge computing (on-device AI) and cloud computing based on task complexity and network status.
-* **State Synchronization:** Work offline without fear of data loss. All progress is cached locally and synced to an AWS backend once `navigator.onLine` is detected.
-* **Secure by Design:** Cloud inference endpoints are protected using **Firebase App Check** to prevent quota abuse.
+1. Create a local account and choose English or Spanish. The account unlocks an encrypted notebook on this computer.
+2. Load a labelled sample or create a class and save your own notes, doubts and discoveries. A provisional draft can be recovered after an interrupted edit.
+3. Attach the class to Ostrix Tutor. Choose Explain, Guide, Practice or Explore. When model generation fails, the explicit Essential guide can quote relevant notes.
+4. Answer a matching curriculum exercise or a generated quiz. The answer key determines the grade. The answer and review date persist across restarts.
+5. Sign out before handing the computer to the next student. School sync requires consent and an individual Firebase identity.
 
----
+Spanish and English interface text is available. Sample curriculum, practice text and some controls are in Spanish. Quechua Chanka glossary entries work offline. Spanish-to-Quechua machine translations require authorization and linguistic review.
 
-## 🏗️ Architecture & ADR (Architecture Decision Record)
+## Architecture
 
-This project strictly follows an N-tier architecture, separating AI inference from data persistence. 
+| Layer | Responsibility |
+|---|---|
+| Angular 20, PrimeNG, PWA | Diary, tutor, study views and practice. The service worker caches the production shell and local assets after the first visit. |
+| IndexedDB and Web Crypto | Per-account salts, PBKDF2-SHA256 and AES-GCM protect notebook records. Authenticated data binds records to their account, category and ID. A tab can recover its active session on reload. A fresh browser session requires the password. |
+| Firebase AI Logic | A private or offline request selects ONLY_ON_DEVICE. With consent, a simple request can prefer the device, and a complex task can select Cloud. The service checks inferenceSource. Deterministic material carries its own label. |
+| Flask, Firebase Auth and App Check | Versioned routes verify identity and attestation, validate payloads and bound batch sizes. Production API calls use the same origin as the PWA. |
+| MySQL | Owner-scoped writes, transactions, stable event IDs and revision checks protect concurrent updates and retries. |
 
-### Context
-Educational AI tools usually fail when internet connectivity drops. Furthermore, sending all student notes to the cloud raises privacy concerns and increases API costs. 
+[Architecture](docs/ARQUITECTURA.md) · [Configuration and deployment](docs/CONFIGURATION.md).
 
-### Decision
-We implemented a **Hybrid AI Strategy** using Firebase AI Logic, alongside an independent backend for state persistence.
+## Run locally
 
-| Dimension | On-Device AI (Edge) | Cloud AI (Remote) |
-| :--- | :--- | :--- |
-| **Use Cases** | Quick summaries, grammar checks, autocomplete. | Complex concept explanations, essay evaluation. |
-| **Latency** | **Zero (Instant):** Ideal for micro-interactions. | **Variable:** Dependent on network conditions. |
-| **Privacy** | **High:** Personal notes never leave the device. | **Medium:** Only explicitly submitted prompts are sent. |
-| **Cost** | **Zero:** Utilizes the client's hardware. | **Optimized:** API quota is only consumed for heavy tasks. |
+The audit used Node 24 and desktop Chrome 158 on Windows. From the repository root:
 
-**AWS Data Persistence:** To ensure the AI layer remains stateless and independent, we built a RESTful API deployed on AWS (EC2/RDS) that handles user history and data synchronization.
+~~~sh
+cd frontend/ostrixai-web
+npm ci
+npm run build
+python -m http.server 4200 --bind 127.0.0.1 --directory dist/ostrixai-web/browser
+~~~
 
----
+Open **http://127.0.0.1:4200**, select English and create a disposable local account. Open the production build online once before testing offline. Use `npm start` for development.
 
-## 🚀 Tech Stack
+The default production build runs the offline journal with placeholder configuration. For a generative evaluation, configure a dedicated Firebase demo project and reCAPTCHA Enterprise, then run `npm run build -- --configuration production,demo`. Preinstall the local model on a compatible Chrome desktop. The component inspected in this audit reports v3Nano. Nano 4 verification remains outstanding. [Deployment guide](docs/CONFIGURATION.md) · [Firebase hybrid setup](https://firebase.google.com/docs/ai-logic/hybrid/web/get-started).
 
-**Client-Side (Frontend & Edge AI)**
-* Angular & TypeScript
-* PrimeNG (UI Components)
-* Firebase AI Logic SDK (Hybrid Routing)
-* Firebase App Check (Security)
+For the optional school API, set the backend environment and MySQL passwords. Run `docker compose --env-file backend/.env -f compose.local.yaml up -d` from the repository root for a local deployment. The Flask entry point is `backend/wsgi.py`. For a hosted evaluation serve the PWA over HTTPS, proxy `/api/v1` to Flask and authorize the evaluation origin in Firebase. Existing databases with migrations 001 and 002 require migration 003 before this API is deployed.
 
-**Server-Side (Backend & Cloud Persistence)**
-* Python (Flask) - N-Tier Architecture (Controllers, Services, Models)
-* AWS EC2 (Hosting)
-* MySQL (Database)
+## Verify the build
 
----
+From `frontend/ostrixai-web`, with desktop Chrome installed:
 
-## ⚙️ Installation & Setup
+~~~sh
+npm run build
+npm test -- --watch=false --browsers=ChromeHeadless
+npm run test:browser
+node scripts/test-input-focus.mjs
+npm audit --omit=dev
+~~~
 
-### Prerequisites
-* Node.js & Angular CLI
-* Python 3.10+
-* Firebase CLI
-* An active Google Cloud / Firebase Project with AI Logic enabled.
+From `backend`, install `requirements.txt` in a virtual environment and run `python -m unittest discover -s tests -v`. Set `OSTRIX_TEST_MYSQL=1` with a local mysqld executable in PATH to include the temporary database integration tests. Browser and database tests use synthetic records..
 
-### 1. Frontend Setup (Angular)
-```bash
-# Navigate to the frontend directory
-cd frontend-ostrix
-
-# Install dependencies
-npm install
-
-# Run the development server
-ng serve
+The local development history records the baseline on 16 November 2026, followed by the educational memory, hybrid tutor, persistence and telemetry changes. The owner must complete the pre-existing work disclosure and authorize publication and submission. [MIT license](LICENSE) · [Spanish README](README_ES.md).

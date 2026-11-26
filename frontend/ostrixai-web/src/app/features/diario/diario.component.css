@@ -1,0 +1,907 @@
+/* OstrixAi — Estilos de Biblioteca Inteligente y Diario Académico */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #f4f7fb;
+  color: #172b4d;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.diario-container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 16px 24px 48px;
+}
+
+/* ==========================================================================
+   BARRA DE ESTADO SUPERIOR (TOOLBAR)
+   ========================================================================== */
+.app-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 16px rgba(23, 43, 77, 0.04);
+  margin-bottom: 20px;
+}
+
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.library-icon {
+  font-size: 28px;
+  color: #0c66e4;
+}
+
+.library-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 750;
+  color: #091e42;
+}
+
+.library-subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #5e6c84;
+}
+
+/* Indicadores de sistema */
+.status-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #ebecf0;
+  color: #42526e;
+}
+
+.status-pill.online {
+  background: #e3fcef;
+  color: #006644;
+}
+
+.status-pill.offline {
+  background: #deebff;
+  color: #0747a6;
+}
+
+.nano-pill[data-status='available'] {
+  background: #e3fcef;
+  color: #006644;
+}
+
+.nano-pill[data-status='downloadable'] {
+  background: #fffae6;
+  color: #974f00;
+}
+
+.sync-pill.has-pending {
+  background: #fff0b3;
+  color: #172b4d;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action-btn {
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+/* Alertas */
+.alert-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.alert-error {
+  background: #ffebe6;
+  color: #bf2600;
+  border: 1px solid #ffbdad;
+}
+
+.alert-success {
+  background: #e3fcef;
+  color: #006644;
+  border: 1px solid #abf5d1;
+}
+
+/* ==========================================================================
+   VISTA 1: LAYOUT DE BIBLIOTECA (TIMELINE + PANEL MEMORIA)
+   ========================================================================== */
+.library-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .library-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.book-card {
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(23, 43, 77, 0.03);
+  margin-bottom: 24px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #091e42;
+  margin: 0 0 16px;
+}
+
+/* Formulario Nueva Sesión */
+.new-session-form {
+  display: grid;
+  gap: 14px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 650;
+  color: #253858;
+}
+
+.custom-input,
+.custom-select {
+  padding: 10px 14px;
+  border: 1px solid #c1c7d0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #172b4d;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.custom-input:focus,
+.custom-select:focus {
+  border-color: #0c66e4;
+  box-shadow: 0 0 0 3px rgba(12, 102, 228, 0.2);
+}
+
+.submit-session-btn {
+  margin-top: 6px;
+  font-weight: 650;
+}
+
+/* Timeline del Diario Académico */
+.timeline-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #091e42;
+  margin: 16px 0 16px;
+}
+
+.day-group-card {
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.day-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #ebecf0;
+  padding-bottom: 10px;
+}
+
+.day-date-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0c66e4;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.day-stats {
+  display: flex;
+  gap: 8px;
+}
+
+.badge-doubt {
+  background: #fffae6;
+  color: #974f00;
+  border-radius: 12px;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-eureka {
+  background: #e3fcef;
+  color: #006644;
+  border-radius: 12px;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.courses-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.course-sessions-block {
+  background: #f9fafc;
+  border: 1px solid #ebecf0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.course-name-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #172b4d;
+}
+
+.sessions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.session-link-card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 8px;
+  padding: 10px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.session-link-card:hover {
+  border-color: #0c66e4;
+  box-shadow: 0 2px 8px rgba(12, 102, 228, 0.08);
+  transform: translateY(-1px);
+}
+
+.session-topic-text {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+  color: #091e42;
+}
+
+.session-preview-notes {
+  display: block;
+  font-size: 12px;
+  color: #6b778c;
+  margin-top: 2px;
+}
+
+.session-meta-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b778c;
+}
+
+.open-arrow {
+  color: #0c66e4;
+  font-size: 12px;
+}
+
+/* Panel de Memoria (Columna derecha) */
+.panel-desc {
+  font-size: 13px;
+  color: #5e6c84;
+  margin-top: -8px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.progress-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-box {
+  background: #f4f7fb;
+  border: 1px solid #dce4ed;
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #091e42;
+}
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5e6c84;
+  margin-top: 4px;
+}
+
+.highlight-mastered .stat-number { color: #006644; }
+.highlight-reinforcing .stat-number { color: #de350b; }
+.highlight-due .stat-number { color: #0c66e4; }
+
+.mastery-bar-container {
+  margin-bottom: 24px;
+}
+
+.mastery-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 650;
+  margin-bottom: 6px;
+}
+
+.mastery-bar-track {
+  width: 100%;
+  height: 10px;
+  background: #ebecf0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.mastery-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0c66e4, #00875a);
+  transition: width 0.3s ease;
+}
+
+.sub-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #091e42;
+  margin: 0 0 10px;
+}
+
+.due-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.due-item {
+  background: #f9fafc;
+  border: 1px solid #ebecf0;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.due-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.due-course-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0c66e4;
+}
+
+.due-status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 2px 6px;
+  background: #ebecf0;
+}
+
+.due-status-tag[data-status='MASTERED'] { background: #e3fcef; color: #006644; }
+.due-status-tag[data-status='REINFORCING'] { background: #ffebe6; color: #de350b; }
+
+.due-concept-text {
+  font-size: 13px;
+  color: #172b4d;
+  margin: 4px 0;
+}
+
+.due-item-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b778c;
+}
+
+/* ==========================================================================
+   VISTA 2: CUADERNO ELECTRÓNICO (SESIÓN ACTIVA)
+   ========================================================================== */
+.session-workspace {
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(23, 43, 77, 0.04);
+}
+
+.session-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ebecf0;
+  padding-bottom: 16px;
+}
+
+.back-btn {
+  align-self: flex-start;
+  padding: 0;
+  color: #0c66e4;
+  font-weight: 650;
+}
+
+.session-header-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.course-badge {
+  background: #deebff;
+  color: #0747a6;
+  font-size: 13px;
+  font-weight: 750;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.session-heading-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #091e42;
+}
+
+.session-date-tag {
+  font-size: 13px;
+  color: #6b778c;
+  text-transform: capitalize;
+}
+
+/* Pestañas de Libros */
+.tabs-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ebecf0;
+}
+
+.tab-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 0;
+  background: none;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+  font-weight: 650;
+  color: #5e6c84;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -2px;
+}
+
+.tab-button:hover {
+  color: #0c66e4;
+}
+
+.tab-button.active {
+  color: #0c66e4;
+  border-bottom-color: #0c66e4;
+}
+
+.tab-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00875a;
+}
+
+.tab-panel {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-card {
+  padding: 4px 0;
+}
+
+.editor-header,
+.summary-header,
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.panel-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 750;
+  color: #091e42;
+}
+
+.panel-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #5e6c84;
+}
+
+.char-count {
+  font-size: 12px;
+  color: #6b778c;
+}
+
+.notes-textarea {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #c1c7d0;
+  border-radius: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #172b4d;
+  background: #ffffff;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.notes-textarea:focus {
+  border-color: #0c66e4;
+  box-shadow: 0 0 0 3px rgba(12, 102, 228, 0.2);
+}
+
+.generation-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.consent-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #42526e;
+  cursor: pointer;
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.content-box {
+  background: #f9fafc;
+  border: 1px solid #dce4ed;
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.quechua-box {
+  background: #f0f7ff;
+  border-color: #b3d4ff;
+}
+
+.box-subtitle {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 750;
+  color: #0747a6;
+}
+
+.markdown-preview {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #172b4d;
+  white-space: pre-wrap;
+}
+
+.disclaimer-note {
+  font-size: 12px;
+  color: #5e6c84;
+  margin: 12px 0 0;
+  border-top: 1px solid #dce4ed;
+  padding-top: 8px;
+}
+
+/* Dudas & Eureka */
+.concept-input-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.flex-input {
+  flex: 1;
+}
+
+.concepts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.concept-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #ebecf0;
+}
+
+.doubt-item { background: #fffcf0; border-color: #ffe380; }
+.eureka-item { background: #f3fcf7; border-color: #abf5d1; }
+
+.concept-text-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.concept-bullet { color: #ff991f; font-size: 16px; }
+.eureka-bullet { color: #36b37e; font-size: 16px; }
+
+.delete-btn {
+  background: none;
+  border: 0;
+  color: #6b778c;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.delete-btn:hover { color: #de350b; }
+
+/* Ejercicios Curriculares */
+.curriculum-exercises-block {
+  margin-top: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.exercise-card {
+  background: #f9fafc;
+  border: 1px solid #dce4ed;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.exercise-question {
+  font-size: 15px;
+  font-weight: 700;
+  color: #091e42;
+  margin: 0 0 6px;
+}
+
+.exercise-question-qu {
+  font-size: 14px;
+  font-style: italic;
+  color: #0747a6;
+  margin: 0 0 12px;
+}
+
+.options-group {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #c1c7d0;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #172b4d;
+  transition: all 0.15s;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: #0c66e4;
+  background: #f4f7fb;
+}
+
+.option-btn.selected {
+  border-color: #0c66e4;
+  background: #deebff;
+  font-weight: 650;
+}
+
+.option-btn.correct {
+  border-color: #00875a;
+  background: #e3fcef;
+  color: #006644;
+}
+
+.option-btn.incorrect {
+  border-color: #de350b;
+  background: #ffebe6;
+  color: #bf2600;
+}
+
+.option-letter {
+  font-weight: 750;
+}
+
+.exercise-feedback {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.feedback-correct {
+  background: #e3fcef;
+  color: #006644;
+  border: 1px solid #abf5d1;
+}
+
+.feedback-incorrect {
+  background: #ffebe6;
+  color: #bf2600;
+  border: 1px solid #ffbdad;
+}
+
+.empty-tab-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #5e6c84;
+  font-size: 14px;
+  padding: 24px;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Modal Configuración */
+.settings-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 30, 66, 0.54);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.settings-card {
+  width: min(100%, 460px);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 16px 48px rgba(9, 30, 66, 0.25);
+}
+
+.settings-sub {
+  font-size: 13px;
+  color: #5e6c84;
+  margin: -8px 0 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 24px;
+  font-size: 13px;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

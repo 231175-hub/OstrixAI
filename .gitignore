@@ -1,0 +1,54 @@
+
+# Dependencies and builds
+node_modules/
+dist/
+.angular/
+.firebase/
+coverage/
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*.local
+*service-account*.json
+backend/.credentials/
+/frontend/ostrixai-web/src/app/core/web-config.local.ts
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+venv/
+
+# Backups and temporary patches
+*.bak
+*.bak-*
+*.backup*
+*.respaldo-*
+*.antes-*
+backup-*/
+respaldo-*/
+/frontend/ostrixai-fix-v052/
+/frontend/ostrixai-v05-patch/
+/frontend/ostrixai-v053-fix/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
+
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+
+/frontend/ostrixai-v04-patch/

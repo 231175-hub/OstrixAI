@@ -1,0 +1,250 @@
+<div class="ostrix-companion"
+  [class.perched]="!!perch()"
+  [style.left.px]="perch()?.left"
+  [style.top.px]="perch()?.top"
+  [class.open]="expanded()"
+  [class.mood-think]="mood === 'think'"
+  [class.mood-celebrate]="mood === 'celebrate'"
+  [class.travelling]="travelling()"
+  [class.curious]="curious()" [class.walking]="walking()" [class.talking]="talking()">
+  <section *ngIf="expanded()" id="ostrix-companion-panel" class="companion-panel" role="region"
+           [style.left.px]="panelLocation()?.left" [style.top.px]="panelLocation()?.top"
+           [attr.aria-label]="message.heading" (keydown.escape)="close()">
+    <div class="panel-top">
+      <div class="panel-heading">
+        <span class="panel-mark" aria-hidden="true">✦</span>
+        <div>
+          <h2>{{ message.heading }}</h2>
+          <p class="panel-subtitle">{{ isEnglish ? 'Less form-filling, more guided actions.' : 'Menos formularios visibles, más acciones guiadas.' }}</p>
+        </div>
+      </div>
+      <button type="button" class="panel-close" (click)="close()"
+              [attr.aria-label]="isEnglish ? 'Close companion' : 'Cerrar acompañante'">×</button>
+    </div>
+
+    <p class="companion-message">{{ message.sentence }}</p>
+    <!-- OSTRIX-AUTO-01: tell -> organize with local model -> one confirmation. -->
+    <section class="ostrix-journey" [attr.aria-label]="isEnglish ? 'Learn with Ostrix' : 'Aprende con Ostrix'">
+      <div class="journey-heading">
+        <h3>{{ isEnglish ? 'Tell Ostrix your story' : 'Cuéntaselo a Ostrix' }}</h3>
+        <span class="journey-steps">{{ isEnglish ? 'Tell · Organize · Save' : 'Contar · Organizar · Guardar' }}</span>
+      </div>
+      <label for="journey-story">{{ isEnglish ? 'What did you learn or wonder about?' : '¿Qué aprendiste o qué no entendiste?' }}</label>
+      <textarea id="journey-story" class="journey-story" rows="3"
+                [ngModel]="journeyText()" (ngModelChange)="updateJourneyText($event)"
+                [disabled]="captureBusy || journeyBatchPending() || journeyOrganizing()" maxlength="1800"
+                [placeholder]="isEnglish ? 'Today I learned about clouds, but did not understand how they form…' : 'Hoy aprendí sobre las nubes, pero no entendí cómo se forman…'"></textarea>
+      <button type="button" class="journey-organize" (click)="organizeJourney()"
+              [disabled]="!journeyText().trim() || journeyOrganizing() || captureBusy || journeyBatchPending()">
+        {{ journeyOrganizing() ? (isEnglish ? 'Ostrix is thinking…' : 'Ostrix está pensando…') : (isEnglish ? 'Organize with local AI' : 'Organizar con Ostrix (IA local)') }}
+      </button>
+      <p class="journey-subtle">{{ isEnglish ? 'Only Gemini Nano on this device is attempted. If unavailable, offline rules help. Never sent to Cloud.' : 'Se intenta usar únicamente Gemini Nano en este dispositivo. Si no está disponible, se usan reglas offline. Nunca se envía a Cloud.' }}</p>
+      <div class="journey-preview" *ngIf="journeyOrganized()">
+        <p class="journey-strategy" [attr.aria-label]="journeyStrategy() === 'ON_DEVICE' ? 'ON_DEVICE' : 'OFFLINE_ESSENTIAL'">
+          {{ journeyStrategy() === 'ON_DEVICE' ? (isEnglish ? 'Gemini Nano · ON_DEVICE' : 'Gemini Nano · ON_DEVICE') : (isEnglish ? 'Offline rules · no generative AI' : 'Reglas offline · sin IA generativa') }}
+        </p>
+        <div class="journey-preview-card" *ngIf="journeyNote().trim()">
+          <span class="journey-summary-label">{{ isEnglish ? 'Ostrix found a note' : 'Ostrix encontró un apunte' }}</span>
+          <p>{{ journeyNote() }}</p>
+          <span *ngIf="journeySavedNote()" class="journey-saved">{{ isEnglish ? 'Saved' : 'Guardado' }}</span>
+        </div>
+        <div class="journey-preview-card" *ngIf="journeyDoubt().trim()">
+          <span class="journey-summary-label">{{ isEnglish ? 'Ostrix found a question' : 'Ostrix encontró una duda' }}</span>
+          <p>{{ journeyDoubt() }}</p>
+          <p *ngIf="journeyContextAdded()" class="journey-subtle">{{ isEnglish ? 'Ostrix made the subject explicit using your own note. Please check it.' : 'Ostrix completó el tema usando tu propio apunte. Revísalo antes de guardar.' }}</p>
+          <p *ngIf="journeyNeedsClarification()" class="journey-subtle" role="alert" style="color:#9a3412;font-weight:600">{{ isEnglish ? 'I cannot tell what this question refers to. Please edit it below before saving.' : 'No está claro a qué se refiere esta duda. Especifica el tema antes de guardar.' }}</p>
+          <span *ngIf="journeySavedDoubt()" class="journey-saved">{{ isEnglish ? 'Saved' : 'Guardada' }}</span>
+        </div>
+        <div *ngIf="journeyReviewNeeded()" class="journey-preview-card" role="alert">
+          <strong>{{ isEnglish ? 'Ostrix needs your help' : 'Ostrix necesita tu ayuda' }}</strong>
+          <p *ngIf="journeyNeedsContext()" id="journey-clarification-question">{{ journeyClarificationPrompt() }}</p>
+          <p *ngIf="!journeyNeedsContext()">{{ isEnglish ? 'I could not tell whether this is a note or a question. Which one do you want to save?' : 'No pude distinguir si es un apunte o una duda. ¿Qué deseas guardar?' }}</p>
+          <p class="journey-subtle">{{ isEnglish ? 'Your original text:' : 'Tu mensaje original:' }} {{ journeyUnclassifiedText() }}</p>
+          <div *ngIf="journeyNeedsContext()" class="journey-clarification">
+            <label for="journey-clarification">{{ isEnglish ? 'Explain it in one complete sentence' : 'Acláralo en una frase completa' }}</label>
+            <textarea id="journey-clarification" rows="2" maxlength="1800" aria-describedby="journey-clarification-question"
+                      [ngModel]="journeyClarificationText()" (ngModelChange)="journeyClarificationText.set($event)"
+                      [disabled]="captureBusy || journeyBatchPending() || journeyOrganizing()"
+                      [placeholder]="isEnglish ? 'I do not understand how fractions are added.' : 'No entiendo cómo se suman las fracciones.'"></textarea>
+            <button type="button" class="journey-clarification-submit" (click)="applyJourneyClarification()"
+                    [disabled]="!journeyClarificationText().trim() || captureBusy || journeyBatchPending() || journeyOrganizing()">
+              {{ isEnglish ? 'Organize this clarification' : 'Organizar esta aclaración' }}
+            </button>
+          </div>
+          <div class="journey-tutor-actions" *ngIf="!journeyNeedsContext()">
+            <button type="button" (click)="resolveJourneyCategory('note')">{{ isEnglish ? 'It is a note' : 'Es un apunte' }}</button>
+            <button type="button" (click)="resolveJourneyCategory('doubt')">{{ isEnglish ? 'It is a question' : 'Es una duda' }}</button>
+          </div>
+        </div>
+        <p *ngIf="!journeyReviewNeeded() && !journeyNote().trim() && !journeyDoubt().trim()" class="journey-empty">{{ isEnglish ? 'Nothing clear to save yet. Try rephrasing.' : 'Todavía no hay contenido claro para guardar. Prueba explicarlo de otra forma.' }}</p>
+        <label *ngIf="sessions.length" for="journey-session">{{ isEnglish ? 'Save to (choose a session)' : 'Se guardará en (elige la sesión)' }}</label>
+        <select *ngIf="sessions.length" id="journey-session" [ngModel]="journeySessionId() || sessions[0]?.id || ''"
+                (ngModelChange)="updateJourneySession($event)" [disabled]="captureBusy || journeyBatchPending()">
+          <option *ngFor="let session of sessions" [value]="session.id">{{ session.label }}</option>
+        </select>
+        <p *ngIf="sessions.length" class="journey-subtle">
+          {{ isEnglish ? 'Need another class?' : '¿Necesitas otra sesión?' }}
+          <button type="button" class="journey-new-session" (click)="quickNavigate('diario')">{{ isEnglish ? 'Create it in the diary' : 'Crear en Mi diario' }}</button>
+        </p>
+        <p *ngIf="!sessions.length" class="journey-empty">
+          {{ isEnglish ? 'Create a class session first.' : 'Primero debes crear una sesión.' }}
+          <button type="button" (click)="quickNavigate('diario')">{{ isEnglish ? 'Open diary' : 'Abrir Diario' }}</button>
+        </p>
+        <details class="journey-edit-optional" [open]="journeyEditOpen()" (toggle)="journeyEditOpen.set($any($event.target).open)">
+          <summary>{{ isEnglish ? 'Review or edit suggestions (optional)' : 'Revisar o corregir sugerencias (opcional)' }}</summary>
+          <label for="journey-note">{{ isEnglish ? 'Note' : 'Apunte' }}</label>
+          <textarea id="journey-note" rows="2" [ngModel]="journeyNote()" (ngModelChange)="updateJourneyNote($event)"
+                    [disabled]="captureBusy || journeyBatchPending()" maxlength="2000"></textarea>
+          <label for="journey-doubt">{{ isEnglish ? 'Question' : 'Duda' }}</label>
+          <textarea id="journey-doubt" rows="2" [ngModel]="journeyDoubt()" (ngModelChange)="updateJourneyDoubt($event)"
+                    [disabled]="captureBusy || journeyBatchPending()" maxlength="400"></textarea>
+        </details>
+        <button type="button" class="journey-save-all" (click)="saveJourneyBatch()"
+                [disabled]="!sessions.length || captureBusy || journeyBatchPending() || journeyReviewNeeded() || journeyNeedsClarification() || (!journeyNote().trim() && !journeyDoubt().trim()) || ((!journeyNote().trim() || journeySavedNote()) && (!journeyDoubt().trim() || journeySavedDoubt()))">
+          {{ journeyBatchPending() ? (isEnglish ? 'Saving in background…' : 'Guardando en segundo plano…') : (isEnglish ? 'Save and continue learning' : 'Guardar y seguir aprendiendo') }}
+        </button>
+        <p class="journey-subtle">{{ isEnglish ? 'Ostrix may be wrong: check the text. After confirming you can keep using the app while the diary saves.' : 'Ostrix puede equivocarse: revisa el texto. Tras confirmar puedes seguir usando la app mientras se guarda.' }}</p>
+        <label class="journey-consent">
+          <input type="checkbox" [ngModel]="journeyShareWithTutor()" (ngModelChange)="journeyShareWithTutor.set(!!$event)" />
+          <span>{{ isEnglish ? 'Allow the Tutor to use my text as context (optional).' : 'Permitir que el Tutor use mi texto como contexto (opcional).' }}</span>
+        </label>
+        <div class="journey-tutor-actions">
+          <button type="button" (click)="startJourneyTutor('explain')">{{ isEnglish ? 'Understand' : 'Comprender con Ostrix' }}</button>
+          <button type="button" (click)="startJourneyTutor('guide')">{{ isEnglish ? 'Get a hint' : 'Recibir una pista' }}</button>
+          <button type="button" (click)="startJourneyTutor('practice')">{{ isEnglish ? 'Practice' : 'Practicar' }}</button>
+        </div>
+      </div>
+      <p class="journey-status" *ngIf="journeyFeedback()" role="status">{{ journeyFeedback() }}</p>
+    </section>
+    <p *ngIf="isQuechuaFallback" class="companion-locale-note">
+      Sugerencias en español. Las traducciones al quechua aún no están validadas.
+    </p>
+
+    <details class="companion-more journey-extra-actions">
+      <summary>{{ isEnglish ? 'More shortcuts and manual tools' : 'Más accesos y herramientas manuales' }}</summary>
+    <div class="primary-grid" [attr.aria-label]="isEnglish ? 'Main actions' : 'Acciones principales'">
+      <button *ngFor="let card of primaryCards" type="button" class="primary-card"
+              [class.primary-card-active]="card.key === 'save' && saveFlowOpen()"
+              (click)="activatePrimary(card.key)">
+        <span class="primary-card-title">{{ card.title }}</span>
+        <span class="primary-card-detail">{{ card.detail }}</span>
+      </button>
+    </div>
+
+    <div *ngIf="saveFlowOpen()" class="save-grid" [attr.aria-label]="isEnglish ? 'Save options' : 'Opciones para guardar'">
+      <button *ngFor="let card of saveCards" type="button" class="save-card" (click)="quickNavigate(card.destination)">
+        <span class="save-card-title">{{ card.title }}</span>
+        <span class="save-card-detail">{{ card.detail }}</span>
+      </button>
+    </div>
+
+    <form *ngIf="saveFlowOpen()" class="companion-quick-capture" (ngSubmit)="saveCapture()">
+      <h3>{{ isEnglish ? 'Quick save to your notebook' : 'Guardar rápidamente en tu cuaderno' }}</h3>
+      <label for="companion-capture-session">{{ isEnglish ? 'Choose class session' : 'Elige la sesión de clase' }}</label>
+      <select *ngIf="sessions.length" id="companion-capture-session" name="captureSession"
+              [ngModel]="captureSessionId() || sessions[0]?.id || ''" (ngModelChange)="captureSessionId.set($event)">
+        <option *ngFor="let session of sessions" [value]="session.id">{{ session.label }}</option>
+      </select>
+      <p *ngIf="!sessions.length" class="companion-empty-sessions">
+        {{ isEnglish ? 'First create a class session in your diary.' : 'Primero crea una sesión en Mi diario.' }}
+        <button type="button" (click)="quickNavigate('diario')">{{ isEnglish ? 'Open diary' : 'Abrir diario' }}</button>
+      </p>
+      <label for="companion-capture-kind">{{ isEnglish ? 'What are you saving?' : '¿Qué quieres guardar?' }}</label>
+      <select id="companion-capture-kind" name="captureKind" [ngModel]="captureKind()" (ngModelChange)="captureKind.set($event)">
+        <option value="note">{{ isEnglish ? 'Note' : 'Apunte' }}</option>
+        <option value="doubt">{{ isEnglish ? 'Doubt' : 'Duda' }}</option>
+        <option value="eureka">Eureka</option>
+      </select>
+      <label for="companion-capture-text">{{ isEnglish ? 'Your idea or question' : 'Tu idea o pregunta' }}</label>
+      <textarea id="companion-capture-text" name="captureText" rows="3"
+                [ngModel]="captureText()" (ngModelChange)="captureText.set($event)"
+                [maxlength]="captureKind() === 'note' ? 2000 : 400"></textarea>
+      <button class="capture-submit" type="submit" [disabled]="captureBusy || !sessions.length || !captureText().trim()">
+        {{ captureBusy ? (isEnglish ? 'Saving…' : 'Guardando…') : (isEnglish ? 'Save locally' : 'Guardar en mi cuaderno') }}
+      </button>
+      <p class="capture-feedback" role="status" *ngIf="captureFeedback">{{ captureFeedback.startsWith('OK:') ? captureFeedback.slice(3) : captureFeedback }}</p>
+      <p class="capture-hint">{{ isEnglish ? 'Uses your current encrypted local diary. AI enrichment remains available in Notes.' : 'Usa tu Diario local cifrado. El enriquecimiento con IA sigue disponible en Apuntes.' }}</p>
+    </form>
+
+    <form class="companion-request" (ngSubmit)="sendRequest()">
+      <label for="ostrix-companion-request">{{ isEnglish ? 'Or tell me what you need' : 'O dime qué necesitas' }}</label>
+      <div class="companion-request-row">
+        <input id="ostrix-companion-request" type="text" name="companionRequest"
+               [ngModel]="requestText()" (ngModelChange)="requestText.set($event)"
+               maxlength="500" autocomplete="off"
+               [placeholder]="isEnglish ? 'I want to understand fractions…' : 'Quiero entender fracciones…'" />
+        <button type="submit" [disabled]="!requestText().trim()">{{ isEnglish ? 'Go' : 'Ir' }}</button>
+      </div>
+    </form>
+
+    </details>
+
+    <div *ngIf="view === 'libro' && hasCurrentSession" class="session-consent">
+      <label *ngIf="sessionContextAllowed">
+        <input type="checkbox" [ngModel]="includeCurrentSession()"
+               (ngModelChange)="includeCurrentSession.set(!!$event)" />
+        <span>{{ isEnglish ? 'Use this session as context (optional)' : 'Usar esta sesión como contexto (opcional)' }}</span>
+      </label>
+      <p *ngIf="!sessionContextAllowed">
+        {{ isEnglish ? 'Session personalization is disabled in Settings.' : 'La personalización con apuntes está desactivada en Configuración.' }}
+      </p>
+    </div>
+
+    <details class="companion-more">
+      <summary>{{ isEnglish ? 'All Tutor modes' : 'Todos los modos del Tutor' }}</summary>
+      <div class="companion-actions">
+        <button *ngFor="let action of message.actions" type="button" class="companion-action"
+                (click)="choose(action.mode, action.prompt)">
+          <span class="action-glyph" aria-hidden="true">{{ action.mode === 'explain' ? '✦' : action.mode === 'guide' ? '↗' : action.mode === 'practice' ? '✓' : '◇' }}</span>
+          <span>{{ action.label }}</span>
+        </button>
+      </div>
+    </details>
+
+    <div class="companion-footer-actions">
+      <button type="button" class="companion-perch-toggle" (click)="toggleFacts()">
+        {{ factsMuted() ? (isEnglish ? 'Show curious facts' : 'Activar curiosidades') : (isEnglish ? 'Mute curious facts' : 'Silenciar curiosidades') }}
+      </button>
+      <button type="button" class="companion-perch-toggle" (click)="togglePerching()">
+        {{ perchEnabled() ? (isEnglish ? 'Stay in the corner' : 'Quedarse en la esquina') : (isEnglish ? 'Perch on cards' : 'Posarse en las tarjetas') }}
+      </button>
+      <button type="button" class="companion-explore-link" (click)="activatePrimary('explore')">
+        {{ isEnglish ? 'Explore a topic' : 'Explorar un tema' }}
+      </button>
+    </div>
+
+    <p class="companion-privacy">
+      {{ isEnglish ? 'Uses the existing Tutor and sections. Cloud only with your prior consent.' : 'Usa el Tutor y las secciones existentes. Cloud solo con tu consentimiento previo.' }}
+    </p>
+  </section>
+
+  <div class="companion-launcher">
+    <button type="button" class="companion-bubble"
+            *ngIf="!expanded() && !travelling() && talking()"
+            (click)="toggle()"
+            [attr.aria-label]="isEnglish ? 'Open Ostrix companion' : 'Abrir Ostrix, tu compañero'">
+      {{ factText() }}
+    </button>
+    <button type="button" class="companion-avatar" (click)="toggle()" (mouseenter)="avatarEnter()" (mouseleave)="avatarLeave()"
+            [attr.aria-expanded]="expanded()" aria-controls="ostrix-companion-panel"
+            [attr.aria-label]="isEnglish ? 'Open Ostrix learning companion' : 'Abrir Ostrix, tu compañero de aprendizaje'">
+      <svg viewBox="0 0 120 120" role="img" aria-hidden="true" focusable="false">
+        <path d="M26 40 20 12l28 18z" fill="#4285F4"/>
+        <path d="M94 40l6-28-28 18z" fill="#4285F4"/>
+        <ellipse class="owl-body" cx="60" cy="70" rx="40" ry="42" fill="#4285F4"/>
+        <ellipse class="owl-wing-left" cx="22" cy="80" rx="9" ry="21" fill="#3367D6"/>
+        <ellipse class="owl-wing-right" cx="98" cy="80" rx="9" ry="21" fill="#3367D6"/>
+        <ellipse cx="60" cy="92" rx="23" ry="17" fill="#E8F0FE"/>
+        <path d="M50 88l10 7 10-7M50 95l10 7 10-7" stroke="#34A853" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="43" cy="52" r="17" fill="#fff"/><circle cx="77" cy="52" r="17" fill="#fff"/>
+        <g class="owl-pupil owl-pupil-left"><circle cx="44" cy="54" r="8" fill="#202124"/><circle cx="47" cy="51" r="2.6" fill="#fff"/></g>
+        <g class="owl-pupil owl-pupil-right"><circle cx="76" cy="54" r="8" fill="#202124"/><circle cx="79" cy="51" r="2.6" fill="#fff"/></g>
+        <path class="owl-lid" d="M35 54 Q43 50 51 54 M69 54 Q77 50 85 54" fill="none" stroke="#4285F4" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M53 63h14l-7 12z" fill="#FBBC05"/>
+        <path class="owl-smile" d="M51 79 Q60 87 69 79" fill="none" stroke="#1D427A" stroke-width="2.5" stroke-linecap="round"/>
+        <path class="owl-toes" d="M45 112l-7 4m7-4 5 4m26-4-6 4m6-4 5 4" stroke="#E49A0F" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span class="avatar-dot" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>

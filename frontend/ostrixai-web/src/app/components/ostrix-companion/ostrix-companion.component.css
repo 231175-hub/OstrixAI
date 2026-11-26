@@ -1,0 +1,290 @@
+:host { display: contents; }
+.ostrix-companion { position: fixed; right: 24px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 45; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; pointer-events: none; font-family: inherit; transition: left .72s cubic-bezier(.2,.8,.2,1), top .72s cubic-bezier(.2,.8,.2,1), right .3s ease, bottom .3s ease; }
+.ostrix-companion > * { pointer-events: auto; }
+.ostrix-companion.perched { right:auto; bottom:auto; }
+.ostrix-companion.travelling { z-index: 48; }
+.companion-launcher { display:flex; align-items:center; gap:12px; }
+/* FIX-03A: the bubble must never consume the mascot flex width. */
+.companion-avatar { flex: 0 0 auto; box-sizing: border-box; }
+.perched .companion-bubble { display: none; }
+.companion-bubble { padding: 11px 14px; border-radius: 16px 16px 4px 16px; background: #fff; color: #1f385e; box-shadow: 0 8px 28px rgba(20,50,90,.18); font-size: 13px; font-weight: 750; border: 1px solid #d9e5ff; white-space: nowrap; }
+.companion-avatar { position: relative; display:grid; place-items:center; width:128px; height:128px; border-radius: 30px; background: linear-gradient(145deg,#eef6ff,#fff); border: 2px solid #d4e7ff; box-shadow: 0 10px 34px rgba(45,93,177,.26); cursor:pointer; padding: 8px; transition: transform .18s ease, box-shadow .18s ease; }
+.companion-avatar svg { width:100%; height:100%; transform-origin: 50% 85%; animation: companion-float 4s ease-in-out infinite; }
+.companion-avatar:hover { transform:translateY(-3px) scale(1.02); box-shadow: 0 13px 38px rgba(45,93,177,.34); }
+.companion-avatar:focus-visible, .companion-action:focus-visible, .panel-close:focus-visible { outline: 3px solid #ef9d10; outline-offset: 3px; }
+.avatar-dot { position:absolute; right:8px; bottom:8px; background: #32a852; width:14px; height:14px; border:2px solid white; border-radius:50%; }
+.mood-think .companion-avatar svg { animation-duration: 5s; }
+.mood-celebrate .companion-avatar svg { animation-name: companion-cheer; }
+.travelling .companion-avatar svg { animation: companion-flight .75s ease-in-out infinite; }
+.companion-panel { width: min(430px, calc(100vw - 24px)); box-sizing:border-box; max-height: min(78vh, 700px); overflow-y:auto; border-radius: 24px; padding: 18px; background: #fff; color: #183253; border: 1px solid #d5e4f8; box-shadow: 0 14px 48px rgba(22,47,83,.27); }
+.panel-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.panel-heading { display:flex; align-items:flex-start; gap:8px; }
+.panel-heading h2 { font-size: 20px; line-height:1.2; margin:0; font-weight:800; color:#193b67; }
+.panel-subtitle { margin:4px 0 0; font-size:12px; color:#60738d; }
+.panel-mark { font-size:21px; line-height:1.15; color:#4285f4; }
+.panel-close { border:0; background:#eff4fd; color:#263e5c; width:32px; height:32px; font-size:23px; line-height:1; border-radius:9px; cursor:pointer; flex:none; }
+.companion-message { font-size:14px; line-height:1.45; margin: 12px 0; }
+.companion-locale-note { margin: 0 0 12px; font-size:12px; color:#73521e; background:#fff6dd; border-radius:9px; padding:9px; }
+.primary-grid { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; margin: 0 0 12px; }
+.primary-card, .save-card { display:flex; flex-direction:column; align-items:flex-start; gap:5px; border:1px solid #d8e4f8; background:#f7fbff; border-radius:16px; padding:12px; min-height:88px; text-align:left; cursor:pointer; }
+.primary-card:hover, .save-card:hover { background:#edf5ff; border-color:#b9d2fb; }
+.primary-card-active { background:#e8f1ff; border-color:#8eb5f7; box-shadow: inset 0 0 0 1px rgba(57,118,217,.12); }
+.primary-card-title, .save-card-title { font-size:14px; font-weight:800; color:#173d6d; }
+.primary-card-detail, .save-card-detail { font-size:12px; line-height:1.35; color:#526781; }
+.save-grid { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; margin: 0 0 12px; padding: 10px; background: #f9fbff; border:1px dashed #ceddf5; border-radius:18px; }
+.companion-actions { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:8px; }
+.companion-action { display:flex; align-items:center; justify-content:flex-start; gap:8px; min-height:48px; font: 650 13px/1.25 system-ui,sans-serif; color:#203c62; background:#f2f7ff; border:1px solid #d9e5fb; border-radius:12px; cursor:pointer; padding: 10px 9px; text-align:left; }
+.companion-action:hover { background:#e4efff; border-color:#adcafa; }
+.action-glyph { width:23px; height:23px; border-radius:8px; background:#dceaff; display:grid; place-items:center; flex:none; color:#2f6dcc; font-size:16px; }
+.companion-request { margin: 12px 0 11px; }
+.companion-request label { display:block; margin:0 0 7px; font-size:13px; font-weight:750; }
+.companion-request-row { display:flex; gap:7px; }
+.companion-request-row input { flex:1; min-width:0; background:white; border:1px solid #c8d8ed; border-radius:11px; padding:10px; font:inherit; font-size:13px; color:#183253; }
+.companion-request-row button, .companion-explore-link { background:#276bd2; color:white; border:0; border-radius:11px; padding:0 15px; font-weight:750; cursor:pointer; min-height:42px; }
+.companion-request-row button:disabled { opacity:.5; cursor:default; }
+.session-consent { margin: 8px 0 13px; font-size:12px; color:#304d6e; }
+.session-consent label { display:flex; align-items:flex-start; gap:8px; cursor:pointer; }
+.session-consent input { margin:2px 0 0; accent-color:#3976d9; width:17px; height:17px; }
+.session-consent p { margin:0; }
+.companion-more { padding:0; margin:0 0 8px; }
+.companion-more summary { cursor:pointer; font-size:12px; font-weight:700; color:#3764a3; padding:5px 0 9px; }
+.companion-footer-actions { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top: 4px; }
+.companion-perch-toggle { border:0; color:#4f6685; background:transparent; text-decoration:underline; font-size:11px; cursor:pointer; padding:5px 0; }
+.companion-explore-link { flex:none; }
+.companion-privacy { font-size:11px; line-height:1.45; color:#50647d; margin:12px 0 0; }
+.companion-shortcuts button:focus-visible, .companion-request-row input:focus-visible, .companion-request-row button:focus-visible, .companion-perch-toggle:focus-visible, .primary-card:focus-visible, .save-card:focus-visible, .companion-explore-link:focus-visible { outline:3px solid #ffbd4e; outline-offset:2px; }
+
+.owl-wing-left, .owl-wing-right, .owl-toes, .owl-body { transform-box: fill-box; }
+.owl-wing-left, .owl-wing-right { transform-origin: 50% 15%; }
+.owl-wing-right { animation: companion-wave 8s ease-in-out infinite; }
+.owl-wing-left { animation: companion-small-wing 8s ease-in-out infinite; }
+.owl-pupil { transform-box: fill-box; transform-origin: center; animation: companion-blink 7s linear infinite; }
+.owl-lid { opacity: 0; animation: companion-lid 7s linear infinite; }
+.owl-smile { transform-box: fill-box; transform-origin: center top; animation: companion-smile 8s ease-in-out infinite; }
+.owl-toes { animation: companion-step 2.4s ease-in-out infinite; }
+.open .owl-wing-right, .companion-avatar:hover .owl-wing-right, .companion-avatar:focus-visible .owl-wing-right { animation: companion-wave-fast .85s ease-in-out infinite; }
+.travelling .owl-wing-right, .travelling .owl-wing-left { animation: companion-flap-fast .44s ease-in-out infinite; }
+.travelling .owl-toes { animation: none; }
+.travelling .owl-body { animation: companion-body-flight .44s ease-in-out infinite; }
+
+@keyframes companion-float { 0%,100% { transform:translateY(0) rotate(0); } 50% { transform:translateY(-5px) rotate(2deg); } }
+@keyframes companion-cheer { 0%,100% { transform:rotate(0); } 45% { transform:rotate(-6deg); } 70% { transform:rotate(5deg); } }
+@keyframes companion-flight { 0%,100% { transform:translateY(0) rotate(0); } 50% { transform:translateY(-9px) rotate(1.5deg); } }
+@keyframes companion-wave { 0%, 59%, 85%, 100% { transform: rotate(0); } 64%, 75% { transform: rotate(-25deg); } 70%, 80% { transform: rotate(9deg); } }
+@keyframes companion-wave-fast { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(-28deg); } 70% { transform: rotate(10deg); } }
+@keyframes companion-small-wing { 0%, 65%, 85%, 100% { transform: rotate(0); } 74% { transform: rotate(6deg); } }
+@keyframes companion-flap-fast { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-28deg); } }
+@keyframes companion-body-flight { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes companion-blink { 0%, 46%, 49%, 82%, 85%, 100% { transform: scaleY(1); } 47.5%, 83.5% { transform: scaleY(.08); } }
+@keyframes companion-lid { 0%, 46%, 49%, 82%, 85%, 100% { opacity: 0; } 47.5%, 83.5% { opacity: 1; } }
+@keyframes companion-smile { 0%, 55%, 100% { transform: scale(1); } 68% { transform: scale(1.10, 1.05); } }
+@keyframes companion-step { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-1px); } 75% { transform: translateX(1px); } }
+@keyframes companion-perched-breathe {0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-2px) rotate(1deg)}}
+
+.perched .companion-launcher { width:118px; justify-content:flex-end; }
+.perched .companion-avatar { width:118px; height:118px; border:0; border-radius:0; background:transparent; box-shadow:none; padding:0; }
+.perched .companion-avatar:hover { box-shadow:none; }
+.perched .companion-avatar svg { animation: companion-perched-breathe 4s ease-in-out infinite; }
+.perched.mood-celebrate .companion-avatar svg { animation: companion-cheer 4s ease-in-out infinite; }
+.perched .avatar-dot { right:7px; bottom:10px; }
+.perched .companion-panel { position:absolute; top:calc(100% + 10px); right:0; bottom:auto; width:min(420px,calc(100vw - 26px)); }
+
+@media (max-width:1200px) { .companion-avatar { width:114px; height:114px; } .perched .companion-avatar { width:104px; height:104px; } }
+@media (max-width:900px) {
+  .ostrix-companion { right: 12px; bottom: calc(82px + env(safe-area-inset-bottom,0px)); }
+  .ostrix-companion.perched { left:auto!important;top:auto!important;right:12px;bottom:calc(82px + env(safe-area-inset-bottom,0px)); }
+  .companion-avatar { width:88px; height:88px; border-radius:24px; }
+  .perched .companion-avatar { width:88px; height:88px; }
+  .perched .companion-panel { top:auto; bottom:calc(100% + 10px); }
+  .companion-panel { width:min(390px,calc(100vw - 20px)); max-height:min(68vh,620px); }
+}
+@media (max-width:560px) {
+  .companion-bubble { display:none; }
+  .primary-grid, .save-grid, .companion-actions { grid-template-columns:1fr; }
+  .companion-footer-actions { flex-direction:column; align-items:stretch; }
+}
+@media (max-height:690px) { .perched .companion-panel { max-height:55vh; } }
+@media (prefers-reduced-motion:reduce) {
+  .ostrix-companion, .companion-avatar, .companion-avatar svg, .companion-avatar svg * { animation:none!important; transition:none!important; }
+}
+
+
+/* COMPANION-03-PANEL: viewport-safe side panel. Placement is computed from avatar bounds. */
+.ostrix-companion .companion-panel,
+.ostrix-companion.perched .companion-panel {
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  right: auto;
+  bottom: auto;
+  transform: none;
+  width: min(420px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+}
+@media (max-width: 900px) {
+  .ostrix-companion .companion-panel,
+  .ostrix-companion.perched .companion-panel {
+    width: min(390px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    top: 12px;
+    bottom: auto;
+  }
+}
+
+
+/* COMPANION-PERSONALIDAD: thoughtful gestures, visible panel, no overlay on fields. */
+.ostrix-companion .companion-launcher { position: relative; flex: none; }
+.ostrix-companion.perched .companion-launcher { width: 118px; min-width: 118px; }
+.ostrix-companion.perched .companion-avatar { flex: 0 0 auto; min-width: 118px; }
+.ostrix-companion.perched .companion-bubble { display: block; position: absolute; right: calc(100% + 8px); top: -13px; z-index: 1; pointer-events: none; }
+.ostrix-companion.walking .companion-avatar svg { animation: companion-curious-walk 1.6s ease-in-out 1 !important; }
+.ostrix-companion.walking .owl-toes { animation: companion-steps .24s ease-in-out 6; }
+.ostrix-companion.curious .owl-pupil { animation: companion-looking 2s ease-in-out 1; }
+.ostrix-companion.curious .owl-wing-right { animation: companion-wave-fast .85s ease-in-out 2; }
+.ostrix-companion.perched.travelling .companion-avatar svg { animation: companion-flight .72s ease-in-out 1; }
+.ostrix-companion.perched.travelling .owl-wing-left,
+.ostrix-companion.perched.travelling .owl-wing-right { animation: companion-flap-fast .25s ease-in-out 4; }
+@keyframes companion-curious-walk { 0%,100% { transform:translate(0,0) rotate(0); } 18% { transform:translate(-5px,-2px) rotate(-3deg); } 40% { transform:translate(4px,-1px) rotate(2deg); } 60% { transform:translate(10px,-2px) rotate(-2deg); } 82% { transform:translate(5px,0) rotate(1deg); } }
+@keyframes companion-steps { 0%,100% { transform:translateX(0); } 50% { transform:translateX(2px); } }
+@keyframes companion-looking { 0%,100% { transform:translateX(0); } 30% { transform:translateX(3px); } 65% { transform:translateX(-3px); } }
+@media (max-width:1200px) { .ostrix-companion.perched .companion-launcher { width:104px; min-width:104px; } .ostrix-companion.perched .companion-avatar { min-width:104px; } }
+@media (max-width:900px) { .ostrix-companion.perched .companion-launcher { width:88px; min-width:88px; } .ostrix-companion.perched .companion-avatar { min-width:88px; } }
+@media (max-width:560px) { .ostrix-companion .companion-bubble { display:none!important; } }
+@media (prefers-reduced-motion:reduce) {
+  .ostrix-companion.walking .companion-avatar svg,
+  .ostrix-companion.walking .owl-toes,
+  .ostrix-companion.curious .owl-pupil,
+  .ostrix-companion.curious .owl-wing-right,
+  .ostrix-companion.perched.travelling .companion-avatar svg,
+  .ostrix-companion.perched.travelling .owl-wing-left,
+  .ostrix-companion.perched.travelling .owl-wing-right { animation:none!important; }
+}
+
+
+/* COMPANION-04: real movement between perches and adjacent spoken facts. */
+.ostrix-companion { transition: left 1.30s cubic-bezier(.23,.65,.24,1), top 1.30s cubic-bezier(.23,.65,.24,1); }
+.ostrix-companion.walking { transition: left 1.65s steps(7,end), top 1.65s ease; }
+.ostrix-companion.travelling { transition: left 1.30s cubic-bezier(.22,.8,.16,1), top 1.30s cubic-bezier(.22,.8,.16,1); }
+.ostrix-companion.walking .companion-avatar svg { animation: companion-walking-body 1.65s ease-in-out 1 !important; }
+.ostrix-companion.walking .owl-toes { animation: companion-walking-feet .26s ease-in-out 6 !important; }
+.ostrix-companion.perched.travelling .companion-avatar svg { animation: companion-true-flight 1.35s ease-in-out 1 !important; }
+.ostrix-companion.perched.travelling .owl-wing-right,
+.ostrix-companion.perched.travelling .owl-wing-left { animation: companion-flap-fast .20s ease-in-out 6 !important; }
+@keyframes companion-walking-body { 0%,100% { transform:translateY(0) rotate(0); } 15%,45%,75% { transform:translateY(-5px) rotate(-4deg); } 30%,60%,90% { transform:translateY(1px) rotate(4deg); } }
+@keyframes companion-walking-feet { 0%,100% { transform:translateX(0); } 50% { transform:translateX(4px); } }
+@keyframes companion-true-flight { 0%,100% { transform:translateY(0) rotate(0); } 25% { transform:translateY(-22px) rotate(-7deg); } 60% { transform:translateY(-22px) rotate(6deg); } }
+/* Speech bubble is anchored to the owl itself, not placed in the page layout. */
+.ostrix-companion .companion-launcher { position:relative; }
+.ostrix-companion .companion-bubble,
+.ostrix-companion.perched .companion-bubble {
+  display:block;
+  position:absolute;
+  right:calc(100% + 10px);
+  top:16px;
+  width:max-content;
+  max-width:min(236px,calc(100vw - 155px));
+  white-space:normal;
+  text-align:left;
+  padding:12px 13px;
+  font-size:13px;
+  font-weight:600;
+  line-height:1.45;
+  font-family:inherit;
+  color:#17395d;
+  background:#fff;
+  border:1px solid #c9ddf8;
+  border-radius:17px 17px 5px 17px;
+  box-shadow:0 8px 26px rgba(29,68,120,.16);
+  cursor:pointer;
+  z-index:2;
+}
+.ostrix-companion .companion-bubble::after {
+  content:'';
+  position:absolute;
+  right:-8px;
+  top:29px;
+  width:13px;
+  height:13px;
+  transform:rotate(45deg);
+  background:white;
+  border-right:1px solid #c9ddf8;
+  border-top:1px solid #c9ddf8;
+}
+.ostrix-companion .companion-bubble:focus-visible { outline:3px solid #ef9d10; outline-offset:3px; }
+/* Full panel remains an on-demand overlay; no movement while it is open. */
+.ostrix-companion .companion-panel { z-index:3; }
+@media (max-width:900px) {
+  .ostrix-companion { transition:none; }
+  .ostrix-companion .companion-bubble { max-width:min(180px,calc(100vw - 110px)); font-size:12px; }
+}
+@media (max-width:560px) { .ostrix-companion .companion-bubble { display:none!important; } }
+@media (prefers-reduced-motion:reduce) {
+  .ostrix-companion.walking, .ostrix-companion.travelling,
+  .ostrix-companion.walking .companion-avatar svg,
+  .ostrix-companion.perched.travelling .companion-avatar svg,
+  .ostrix-companion.walking .owl-toes { animation:none!important; transition:none!important; }
+}
+
+/* COMPANION-05: quick encrypted capture and visible controls without opening more forms. */
+.companion-quick-capture { display:flex;flex-direction:column;gap:8px;margin:10px 0;padding:12px;border:1px solid #bfd4f2;background:#f7faff;border-radius:15px; }
+.companion-quick-capture h3 { font-size:15px;margin:0 0 2px;color:#17395c; }
+.companion-quick-capture label { font-size:12px;font-weight:750; }
+.companion-quick-capture select,.companion-quick-capture textarea { width:100%;box-sizing:border-box;border:1px solid #b8ccec;border-radius:10px;background:white;padding:9px;color:#183253;font:inherit;font-size:13px; }
+.companion-quick-capture textarea { resize:vertical;min-height:78px; }
+.companion-quick-capture .capture-submit { padding:11px;border:0;border-radius:10px;background:#2167d1;color:white;font-weight:800;cursor:pointer; }
+.companion-quick-capture .capture-submit:disabled { opacity:.55;cursor:not-allowed; }
+.companion-empty-sessions { font-size:12px;color:#795011; }
+.companion-empty-sessions button { display:inline-block;border:0;color:#1b5fc2;background:transparent;text-decoration:underline;cursor:pointer; }
+.capture-feedback { font-size:12px;color:#165b3a;margin:4px 0 0; }
+.capture-hint { font-size:11px;color:#50637d;margin:0; }
+.companion-quick-capture :focus-visible { outline:3px solid #ef9d10;outline-offset:2px; }
+.companion-footer-actions { flex-wrap:wrap; }
+/* Compact speech bubble is still next to Ostrix, never over an input. */
+.ostrix-companion .companion-bubble { max-width:min(245px,calc(100vw - 155px)); }
+
+/* EXPERIENCIA-01 — entrada conversacional + confirmación progresiva */
+.ostrix-journey { padding: 14px; margin: 12px 0; border: 1px solid #b8d4f6; border-radius: 18px; background: linear-gradient(160deg,#f5faff,#fff); display:flex; flex-direction:column; gap:9px; }
+.journey-heading { display:flex; align-items:start; justify-content:space-between; gap:9px; flex-wrap:wrap; }
+.journey-heading h3 { font-size: 17px; color: #153960; margin:0; }
+.journey-steps { font-size: 10px; color:#3760a2; background:#e4efff; padding:6px 8px; border-radius:30px; font-weight:700; }
+.ostrix-journey label { display:block; font-size:12px; font-weight:750; color:#26425f; }
+.ostrix-journey textarea, .ostrix-journey select { font:inherit; font-size:13px; color:#1c3654; background:#fff; border:1px solid #bacfec; border-radius:10px; padding:9px; box-sizing:border-box; width:100%; resize:vertical; }
+.ostrix-journey textarea:focus-visible, .ostrix-journey select:focus-visible, .ostrix-journey button:focus-visible { outline:3px solid #efb948; outline-offset:2px; }
+.journey-subtle { margin:0; line-height:1.5; color:#5b6e84; font-size:11px; }
+.journey-preview { display:flex; flex-direction:column; gap:10px; }
+.journey-preview-card { display:flex; flex-direction:column; gap:6px; padding:10px; border:1px solid #dce7f8; background:#fff; border-radius:12px; }
+.journey-preview-card button, .journey-tutor-actions button, .journey-enrich { cursor:pointer; font:700 12px system-ui,sans-serif; color:#20508d; background:#eaf2ff; border:1px solid #bed4f6; border-radius:10px; padding:9px; }
+.journey-preview-card button:disabled, .journey-tutor-actions button:disabled { cursor:default; opacity:.58; }
+.journey-tutor-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+.journey-tutor-actions button:first-child { grid-column:1/-1; background:#286bd0; color:#fff; }
+.journey-consent { display:flex!important; align-items:start; gap:8px; line-height:1.4; }
+.journey-consent input { accent-color:#2a6bcc; margin:1px 0 0; width:18px; height:18px; flex:none; }
+.journey-status { color:#17643d; background:#eaf7ee; padding:9px; border-radius:9px; font-size:12px; margin:0; }
+.journey-empty { font-size:12px; color:#8b4f21; margin:0; }
+.journey-empty button { color:#275d9f; border:0; background:transparent; text-decoration:underline; cursor:pointer; }
+@media (max-width:500px) { .journey-tutor-actions {grid-template-columns:1fr;} .journey-tutor-actions button:first-child {grid-column:auto;} }
+
+/* OSTRIX-AUTO-01 — compact cards instead of long visible forms. */
+.ostrix-journey .journey-organize,.ostrix-journey .journey-save-all {display:block;width:100%;border:0;border-radius:10px;padding:12px 11px;background:#256bd2;color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;}
+.ostrix-journey .journey-organize {background:#e7f0ff;color:#17467f;border:1px solid #abc7ef;}
+.ostrix-journey .journey-save-all:disabled,.ostrix-journey .journey-organize:disabled {opacity:.55;cursor:default;}
+.ostrix-journey .journey-strategy {margin:0;font-size:11px;font-weight:700;color:#256d50;}
+.ostrix-journey .journey-preview-card p {margin:0;color:#273d57;font-size:13px;overflow-wrap:anywhere;white-space:pre-wrap;}
+.ostrix-journey .journey-summary-label {font-size:11px;font-weight:750;color:#24508a;}
+.ostrix-journey .journey-saved {font-size:10px;color:#147640;font-weight:700;}
+.ostrix-journey .journey-edit-optional {border:1px dashed #b9cae0;border-radius:10px;padding:9px;}
+.ostrix-journey .journey-edit-optional summary {cursor:pointer;font-size:12px;font-weight:700;color:#2b5284;}
+.ostrix-journey .journey-edit-optional textarea {margin:5px 0 10px;}
+.ostrix-journey .journey-status {overflow-wrap:anywhere;}
+
+/* AUTO-02: create another destination session without exposing more form fields. */
+.ostrix-journey .journey-new-session { border:0; padding:0 0 0 4px; background:transparent; color:#286bd0; text-decoration:underline; cursor:pointer; font:700 11px system-ui,sans-serif; }
+
+/* CLARIDAD-01: una unica pregunta cuando falta contenido academico; sin formularios extra. */
+.ostrix-journey .journey-clarification { display:flex; flex-direction:column; gap:8px; }
+.ostrix-journey .journey-clarification-submit { background:#286bd0; color:#fff; border:0; border-radius:10px; font:700 12px system-ui,sans-serif; min-height:42px; padding:9px; cursor:pointer; }
+.ostrix-journey .journey-clarification-submit:disabled { opacity:.5; cursor:default; }
