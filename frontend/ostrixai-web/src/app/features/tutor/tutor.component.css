@@ -1005,3 +1005,55 @@ button:disabled {
     transition: none !important;
   }
 }
+
+/* UX-01: panel desplegable del tutor */
+.tutor-options {
+  min-width: 0;
+}
+
+.tutor-options > summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #1e40af;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  list-style: none;
+}
+
+.tutor-options > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tutor-options > summary:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.current-mode {
+  margin-left: auto;
+  font-size: 11px;
+  color: #475569;
+}
+
+.tutor-options[open] .panel-chevron {
+  transform: rotate(180deg);
+}
+
+.tutor-options-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.mascot img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}

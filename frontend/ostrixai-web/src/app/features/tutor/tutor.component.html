@@ -53,7 +53,7 @@
             <span>{{ t('tutorConversations') }}</span>
           </button>
 
-          <div class="mascot" aria-hidden="true"><i class="pi pi-sparkles"></i></div>
+          <div class="mascot" aria-hidden="true"><img src="/icons/ostrix-owl.svg" alt=""></div>
           <div class="title-text-wrap">
             <h1>{{ t('navTutor') }}</h1>
             <p>{{ t('tutorSubtitle') }}</p>
@@ -65,7 +65,17 @@
         </div>
 
         <!-- Selector de Contexto Académico Simplificado (Activación local por defecto) -->
-        <div class="study-context">
+        <details class="tutor-options" open>
+  <summary>
+    <i class="pi pi-sliders-h" aria-hidden="true"></i>
+    <span>{{ settings.profile().language === 'en' ? 'Tutor options' : 'Opciones del tutor' }}</span>
+    <strong class="current-mode">
+      {{ t(mode() === 'explain' ? 'modeExplainTitle' : mode() === 'guide' ? 'modeGuideTitle' : mode() === 'practice' ? 'modePracticeTitle' : 'modeExploreTitle') }}
+    </strong>
+    <i class="pi pi-chevron-down panel-chevron" aria-hidden="true"></i>
+  </summary>
+  <div class="tutor-options-body">
+<div class="study-context">
           <div class="context-row">
             <label for="study-session">{{ t('tutorContextLabel') }}</label>
             <select id="study-session" name="study-session" [(ngModel)]="activeSessionId" [disabled]="busy() || !!thread()">
@@ -94,7 +104,8 @@
             <span><strong>{{ t(item.titleKey) }}</strong><small>{{ t(item.descKey) }}</small></span>
           </button>
         </div>
-      </header>
+      </div></details>
+</header>
 
       <!-- Panel Central Scrollable: Historial de Mensajes -->
       <section class="messages" [attr.aria-label]="settings.profile().language === 'en' ? 'Message history' : 'Historial de mensajes'" aria-live="polite">

@@ -133,8 +133,8 @@ export class OstrixAiService {
       inCloudParams: {
         model: name,
         generationConfig: {
-          maxOutputTokens: 700, temperature: 0.4,
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+          maxOutputTokens: 4096, temperature: 0.4,
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW, includeThoughts: false },
         },
       },
     });
@@ -605,7 +605,17 @@ export class OstrixAiService {
         const [final, { t4, firstSource }] = await Promise.all([result.response, consume()]);
         signal.throwIfAborted();
         const source = this.verifySource(final.inferenceSource, mode, firstSource);
-        const text = final.text().trim();
+        if (source === 'IN_CLOUD') {
+  const reason = final.candidates?.[0]?.finishReason;
+  console.info('[OSTRIX CLOUD]', {
+    finishReason: reason,
+    usage: final.usageMetadata
+  });
+  if (reason === 'MAX_TOKENS') {
+    throw new Error('Gemini Cloud alcanzo el limite de tokens.');
+  }
+}
+const text = final.text().trim();
         if (!text) throw new Error('Respuesta del modelo vacía.');
         return { text, source, t3, t4, t5: performance.now(),
           modelUsed: source === 'ON_DEVICE' ? 'gemini-nano (on-device)' : modelName,
