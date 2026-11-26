@@ -1,4 +1,4 @@
-import { EXPLORE_INITIAL_ES, EXPLORE_INITIAL_EN, EXPLORE_GUIDANCE_ES, exploreGuidanceForTurn } from './tutor-explore-guidance';
+import { EXPLORE_INITIAL_ES, EXPLORE_INITIAL_EN, EXPLORE_GUIDANCE_ES, EXPLORE_CONCEPT_ES, EXPLORE_CONCEPT_EN, exploreGuidanceForTurn } from './tutor-explore-guidance';
 
 describe('TUTOR-EXPLORE-PRIMER-TURNO-05', () => {
   const question = 'Quiero investigar la evaporación del agua al sol y a la sombra. Propón una hipótesis, exactamente 4 materiales y 4 pasos.';
@@ -23,9 +23,11 @@ describe('TUTOR-EXPLORE-PRIMER-TURNO-05', () => {
     expect(prompt).toBe(EXPLORE_GUIDANCE_ES);
   });
 
-  it('no cambia las consultas generales de ciencias', () => {
+  it('usa instrucciones breves para consultas generales sin forzar experimentos', () => {
     const prompt = exploreGuidanceForTurn('¿Qué es la fotosíntesis?', false, false);
-    expect(prompt).toBe(EXPLORE_GUIDANCE_ES);
+    expect(prompt).toBe(EXPLORE_CONCEPT_ES);
+    expect(prompt.length).toBeLessThan(EXPLORE_GUIDANCE_ES.length);
+    expect(exploreGuidanceForTurn('Why does the sky look blue?', true, false)).toBe(EXPLORE_CONCEPT_EN);
   });
 
   it('conserva la revisión breve de un experimento previo', () => {

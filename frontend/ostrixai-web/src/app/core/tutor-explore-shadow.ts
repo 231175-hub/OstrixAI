@@ -11,7 +11,15 @@ export interface ShadowInspection {
 }
 
 function shadowContext(question: string, history: readonly ShadowPriorTurn[]): { correction: boolean } | null {
-  const context = [question, ...history.slice(-4).map(message => message.text)].join(' ');
+  // NANO-FINAL-SCOPE: apply only to the intended shadow-length experiment.
+  // A new evaporation question must never inherit a shadow-length backup.
+  if (/evapor\w*|evaporaci[oó]n/i.test(question)) return null;
+  const shadowLengthTopic = (s: string) => /\b(?:sombras?|shadows?)\b/i.test(s)
+    && /\b(?:palos?|postes?|objetos?|sticks?|poles?|objects?|longitud|length|tama[nñ]o|size)\b/i.test(s);
+  const followup = /(?:corr[ií]g|correc|revis|errores?|equivoc|mejor|replante|fix|mistake|wrong|correct|revise)/i.test(question);
+  const userHistory = history.slice(-4).filter(message => message.role === 'user').map(message => message.text);
+  if (!shadowLengthTopic(question) && !(followup && userHistory.some(shadowLengthTopic))) return null;
+  const context = [question, ...userHistory].join(' ');
   if (!/\b(?:sombras?|shadows?)\b/i.test(context) || !/\b(?:sol|solar|sun|d[ií]a|mediod[ií]a|noon)\b/i.test(context)) return null;
   if (!/(?:experimen|investig|hip[oó]tes|hypothes|procedim|variables?|pasos?|steps?|corrig|correc|revis|error|mistake)/i.test(question)) return null;
   const correction = history.some(message => message.role === 'assistant') &&

@@ -55,3 +55,14 @@ describe('EXPLORE-SCIENCE-01: sombras del Sol', () => {
     expect(shadowScienceFallback(first, [], false)).not.toContain('ON_DEVICE');
   });
 });
+
+// NANO-FINAL-SCOPE
+describe('Shadow guard topic isolation', () => {
+  it('does not apply the shadow-length experiment to evaporation, including with prior shadow history', () => {
+    const q = 'Diseña un experimento para comparar la evaporación del agua al sol y a la sombra.';
+    expect(shadowSciencePrompt(q, [], false)).toBeNull();
+    expect(shadowScienceFallback(q, history, false)).toBeNull();
+    expect(inspectExploreShadow(q, wrong, history, false)).toBeNull();
+    expect(shadowSciencePrompt('Compare water evaporation in sun and shade.', [], true)).toBeNull();
+  });
+});

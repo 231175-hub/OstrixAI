@@ -16,6 +16,47 @@ export function reviewTutorReply(
   const visible = cleanMarkdownToText(formatTutorFractions(answer));
   const mismatch = findTutorFractionMismatch(formatTutorFractions(question), visible);
   const feedback: string[] = [];
+  // NANO-FINAL-01: narrow detection of observed output artifacts, not a truth certificate.
+  const leakedChecklist = /(?:^|\n)\s*(?:[•*–-]\s*)?(?:explain quantities\/elements\?\s*(?:yes|no)\.?|scientific accuracy(?:\s*[:?]\s*(?:yes|no))?\.?)\s*(?=\n|$)/i.test(visible);
+  const brokenNumbering = /^\s*\)\s*\p{L}/u.test(visible) && (visible.match(/\(\d{1,3}\)/g)?.length ?? 0) >= 3;
+  const lastOpen = visible.lastIndexOf('¿');
+  const unfinishedQuestion = lastOpen > visible.lastIndexOf('?') &&
+    (visible.slice(lastOpen + 1).match(/\p{L}+/gu)?.length ?? 0) >= 4 &&
+    !/[.!]$/.test(visible.trim());
+  if (!visible.trim() || leakedChecklist || brokenNumbering || unfinishedQuestion) {
+    feedback.push(english
+      ? 'Return a complete student-facing answer without internal checklists or broken numbering. Finish every question.'
+      : 'Entrega una respuesta completa para el estudiante, sin listas internas ni numeración rota. Termina todas las preguntas.');
+  }
+  // NANO-FINAL-SCOPE: detect two specific failure classes, not general correctness.
+  const asksNewPercentage = mode === 'practice' && /porcentaj|percent/i.test(question)
+    && /prop[oó]n|propon\w*|plantea\w*|crea\w*|dame|genera\w*|pose|propose|create|give|generate/i.test(question);
+  const numericQuestion = /cu[aá]nt[oa]s?|calcula|how much|how many|calculate/i.test(visible);
+  if (asksNewPercentage && numericQuestion) {
+    const rate = /\d+(?:[.,]\d+)?\s*(?:%|por ciento|percent)/gi;
+    const hasRate = new RegExp(rate.source, 'i').test(visible);
+    const hasOtherNumber = /\d/.test(visible.replace(rate, ''));
+    const finalQuestion = visible.slice(Math.max(0, visible.lastIndexOf('¿')));
+    const asksIncome = /\b(?:salario|sueldo|ingresos?|salary|income|wages?)\b/i.test(finalQuestion);
+    const hasIncome = /(?:salario|sueldo|ingresos?|salary|income|wages?)(?:\s+(?:semanal|mensual|weekly|monthly|is|es|de|of|equals|asciende a|amounts to))*\s*(?:[:=]\s*)?(?:S\/\s*|\$\s*|PEN\s*|USD\s*)?\d+(?:[.,]\d+)?(?!\d|[.,]\d|\s*%)/i.test(visible)
+      || /\b(?:gana|ganas|recibe|recibes|earns?|receives?)\s*(?:S\/\s*|\$\s*|PEN\s*|USD\s*)?\d+(?:[.,]\d+)?(?!\d|[.,]\d|\s*%)/i.test(visible)
+      || /\d+(?:[.,]\d+)?\s*(?:soles|dollars|euros)\s+(?:de|as|in)\s+(?:salario|sueldo|ingresos?|salary|income|wages?)/i.test(visible);
+    if (!hasRate || !hasOtherNumber || (asksIncome && !hasIncome)) {
+      feedback.push(english
+        ? 'The percentage exercise is missing a matching numerical base. Use one coherent scenario with a percentage and its base amount. Do not solve it.'
+        : 'Falta una cantidad base correspondiente al porcentaje. Usa una sola situación coherente, con porcentaje y cantidad base explícitos. No resuelvas el ejercicio.');
+    }
+  }
+  const asksEvaporationComparison = mode === 'explore' && /evapor\w*/i.test(question)
+    && /\b(?:sol|sun|sunlight)\b/i.test(question) && /\b(?:sombra|shade)\b/i.test(question)
+    && /experimen|investig|hip[oó]tes|hypothes|pasos?|steps?/i.test(question);
+  if (asksEvaporationComparison && (!/evapor\w*/i.test(visible) || !/agua|water/i.test(visible)
+    || !/\b(?:sol|sun|sunlight)\b/i.test(visible) || !/\b(?:sombra|shade)\b/i.test(visible)
+    || !/volumen|volume|nivel|level|masa|mass|cantidad|amount|mililit|millilit/i.test(visible))) {
+    feedback.push(english
+      ? 'Keep the requested water evaporation experiment in sun and shade. Measure the change in water amount, not shadow length.'
+      : 'Mantén el experimento solicitado de evaporación del agua al sol y a la sombra. Mide el cambio en la cantidad de agua, no la longitud de una sombra.');
+  }
   const operation = directCalculation(question);
   const equation = incorrectEquation(visible);
   if (equation || (operation && sameNumericValue(visible, operation.result) === false)) {

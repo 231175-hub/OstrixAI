@@ -96,6 +96,9 @@ Never invent measurements or results or suggest drinking untreated water. No gre
  * request to generate another full experiment. Keep the on-device task short.
  * This only changes instructions; it does not simulate a model answer.
  */
+export const EXPLORE_CONCEPT_ES = `EXPLOREMOS: parte de una duda u observación concreta. Explica el fenómeno y su relación con la vida cotidiana; distingue los hechos conocidos de las hipótesis. Propón una forma sencilla y segura de comprobar una idea, si corresponde. No inventes mediciones ni resultados. Si la duda no es experimental, no fuerces un experimento. Respeta la extensión y las preguntas solicitadas. No recomiendes beber agua sin tratamiento. Sin saludos ni repeticiones.`;
+export const EXPLORE_CONCEPT_EN = `EXPLORE: start from a concrete question or observation. Explain the phenomenon and its relation to everyday life; distinguish known facts from hypotheses. Suggest a simple safe way to investigate when relevant. Never invent measurements or results. Do not force an experiment for a nonexperimental question. Respect requested length and question count. Never recommend drinking untreated water. No greetings or repetition.`;
+
 export function exploreGuidanceForTurn(
   question: string, english: boolean, hasPreviousTutorAnswer: boolean
 ): string {
@@ -108,6 +111,8 @@ export function exploreGuidanceForTurn(
     if (initialExperiment && !/(?:germin\w*|lent[eí]ja|sprout\w*|seed germination)/i.test(question)) {
       return english ? EXPLORE_INITIAL_EN : EXPLORE_INITIAL_ES;
     }
+    const experimental = scientificContext || /germin\w*|lent[eí]ja|sprout\w*|seed germination|variables?|medici[oó]n|measurement|investig\w*/i.test(question);
+    if (!experimental) return english ? EXPLORE_CONCEPT_EN : EXPLORE_CONCEPT_ES;
     return english ? EXPLORE_GUIDANCE_EN : EXPLORE_GUIDANCE_ES;
   }
   if (!wantsCorrection || !scientificContext) {

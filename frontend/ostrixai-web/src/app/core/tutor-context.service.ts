@@ -11,16 +11,16 @@ import { EXPLORE_GUIDANCE_ES, EXPLORE_GUIDANCE_EN, exploreGuidanceForTurn } from
 import { shadowSciencePrompt } from './tutor-explore-shadow';
 
 const modeInstructionEs: Record<TutorMode, string> = {
-  explain: 'EXPLÍCAME: responde directamente a la duda actual al nivel escolar indicado. Usa un ejemplo que aclare esa duda. Explica qué representa cada cantidad. Evita afirmaciones absolutas sin respaldo y comprueba la precisión científica. Si se pide una pregunta de cierre, plantea una pregunta aplicada que obligue al estudiante a razonar, nunca solo «¿Entendiste?». En ejemplos de ríos o arroyos, no recomiendes beber agua sin tratamiento. Omite saludos, introducciones repetidas y ejemplos ajenos al tema.',
-  guide: 'GUÍAME: parte del último paso que ya hizo el estudiante. Reconoce brevemente qué acertó (sin felicitar errores) y usa los datos que identificó. Antes de responder, verifica algebraicamente el paso del estudiante. Si propone una operación incorrecta, indícalo de forma clara y explica brevemente por qué; no lo felicites por ese error. Si tú cometiste un error anterior, reconócelo como tuyo y corrígelo. Da UNA pista concreta sobre la operación inversa relevante, seguida de UNA sola pregunta principal. No reveles x = número ni la solución final, ni siquiera al corregirte. No repitas datos falsos del historial como hechos. Si estás atascado, da una pista específica, no una pregunta genérica. Deja el resultado para el estudiante.',
-  practice: 'PRACTIQUEMOS: plantea un ejercicio y espera. Si el estudiante responde, evalúa el mismo ejercicio. Si se equivoca, dilo al comienzo, explica por qué y pídele corregir ese paso. Reserva las felicitaciones para un acierto comprobado. Espera antes de introducir otro ejercicio.',
+  explain: 'EXPLÍCAME: responde directamente al nivel escolar indicado. Define el concepto, explica cómo o por qué ocurre y da un ejemplo pertinente. Si comparas, contrasta las características reales de ambos elementos. Explica cantidades y unidades solo cuando correspondan. Usa términos precisos; distingue hechos de analogías. No inventes propiedades, cifras ni causas. Si no sabes, reconócelo. Respeta la extensión y las preguntas de cierre solicitadas; si se pide una, que sea aplicada. Nunca recomiendes beber agua sin tratamiento. Omite saludos y repeticiones.',
+  guide: 'GUÍAME: parte del último paso del estudiante; no reinicies el ejercicio. Verifica ese paso y los datos (si hay álgebra, comprueba la operación). Reconoce solo los aciertos; explica los errores sin felicitarlos y corrige tus errores previos. Da UNA pista concreta sobre el siguiente paso, usando la operación inversa cuando corresponda, seguida de UNA sola pregunta principal. No reveles el resultado final ni x = número. No repitas afirmaciones falsas del historial. Si faltan datos, pide el dato necesario. Deja que el estudiante resuelva.',
+  practice: 'PRACTIQUEMOS: plantea un solo ejercicio adecuado al nivel, con datos suficientes, y espera sin revelar la solución. Si el estudiante responde, evalúa ese mismo ejercicio sin cambiar datos ni enunciado. Verifica el procedimiento antes de calificar. Si hay error, indícalo al inicio, explica el paso incorrecto y pide corregirlo. Si acierta, explica brevemente por qué. Si no puedes verificar, dilo. No inventes puntajes ni avances. No introduzcas otro ejercicio hasta terminar el actual.',
   explore: EXPLORE_GUIDANCE_ES,
 };
 
 const modeInstructionEn: Record<TutorMode, string> = {
-  explain: 'EXPLAIN: address the current question directly at the stated school level. Use one relevant example. Name what each quantity represents. Avoid unsupported scientific absolutes. If asked for a checking question, ask an applied reasoning question rather than merely "Did you understand?". Never suggest drinking untreated stream water. Omit greetings, repeated introductions and unrelated examples.',
-  guide: 'GUIDE ME: start from the last step the student completed. Briefly recognize correct reasoning without praising errors. Check the student\'s algebraic step before replying. Explicitly correct a wrong operation without praising it. If you made a previous mistake, acknowledge it as yours. Give ONE concrete inverse-operation hint followed by exactly ONE question about the next step. Never state x = a number or the final solution, even when correcting yourself. Do not repeat a wrong historical claim as fact. Make the hint specific rather than generic. Leave the result for the student.',
-  practice: 'PRACTICE: pose one exercise and wait. When the student replies, assess that same exercise. If the answer is wrong, say so first, explain why and ask for a correction of that step. Praise only verified correct answers. Wait before introducing another exercise.',
+  explain: 'EXPLAIN: answer directly at the stated school level. Define the concept, explain how or why it works, and give a relevant example. For comparisons contrast actual features of both items. Explain quantities and units only when relevant. Use precise terms; distinguish facts from analogies. Do not invent properties, figures or causes. Acknowledge uncertainty. Respect the requested length and number of closing questions; make a requested single question applied. Never recommend drinking untreated water. No greetings or repetition.',
+  guide: 'GUIDE ME: start from the last step the student completed; do not restart the exercise. Verify that step and the data, including the algebraic operation when relevant. Recognize only correct reasoning; explain mistakes without praising them and correct your own earlier errors. Give ONE concrete next-step hint, using the inverse operation when relevant, followed by exactly ONE main question. Never reveal the final answer or x = a number. Do not repeat false historical claims. Ask for missing information if needed. Let the student solve.',
+  practice: 'PRACTICE: pose one age-appropriate exercise with enough information and wait without revealing the solution. When the student answers, assess the same exercise without changing its data or wording. Verify the reasoning before grading. If wrong, say so first, explain the incorrect step and ask for a correction. If correct, briefly explain why. If you cannot verify it, say so. Do not invent scores or progress. Do not introduce another exercise until the current one is finished.',
   explore: EXPLORE_GUIDANCE_EN,
 };
 
@@ -67,6 +67,36 @@ export class TutorContextService {
           'Verifica los cálculos y usa las unidades indicadas en la pregunta.',
         ];
 
+    // NANO-FINAL-01: compact output discipline and bounded curricular grounding.
+    parts.push(isEnglish
+      ? 'Deliver only the student-facing answer, not a checklist, internal analysis or word-by-word numbering. Finish every sentence and question.'
+      : 'Entrega solo la respuesta para el estudiante, sin listas de comprobación internas, análisis interno ni numeración palabra por palabra. Completa cada oración y pregunta.');
+    // These facts ground explanations, not answers to guided/practice exercises.
+    // Do not override the evidence-only rule for an attached academic session.
+    if (mode === 'explain' && !session) {
+      const q = question.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+      if (/celul|cell/.test(q) && /vegetal|plant/.test(q) && /animal/.test(q)) {
+        parts.push(isEnglish
+          ? 'Curricular facts: both are eukaryotic and have a cell membrane. Typical plant cells have a cell wall and a large central vacuole; photosynthetic plant cells have chloroplasts. Animal cells lack a cell wall and chloroplasts, and do not have the typical large central vacuole.'
+          : 'Base curricular: ambas son eucariotas y tienen membrana celular. Las células vegetales típicas poseen pared celular y gran vacuola central; las fotosintéticas tienen cloroplastos. Las animales carecen de pared celular, cloroplastos y de la gran vacuola central típica. No presupongas que ambas tienen vacuola central.');
+      }
+      if (/gravedad|gravity|caida libre|free fall|aceleracion gravitatoria/.test(q) && /vacio|vacuum|masa|mass|luna|moon/.test(q)) {
+        parts.push(isEnglish
+          ? 'Curricular facts: in the same gravitational field, neglecting air resistance, F = mg and a = F/m = g. Near the surfaces, Earth g is about 9.8 m/s² and Moon g about 1.62 m/s².'
+          : 'Base curricular: en el mismo campo gravitatorio, sin resistencia del aire, F = mg y a = F/m = g. Cerca de las superficies, g terrestre es aproximadamente 9,8 m/s² y g lunar 1,62 m/s².');
+      }
+      if (/nube|cloud|lluvia|rain|ciclo del agua|water cycle/.test(q) && /evapor|condens|form|produce|origin/.test(q)) {
+        parts.push(isEnglish
+          ? 'Curricular facts: evaporation turns liquid into vapor; cooling can condense vapor into droplets or form ice crystals. Precipitation occurs when particles grow enough to fall. Do not confuse vapor with visible droplets.'
+          : 'Base curricular: la evaporación transforma líquido en vapor; al enfriarse, el vapor puede condensarse en gotas o formar cristales de hielo. La precipitación ocurre cuando las partículas crecen lo suficiente para caer. No confundas vapor con gotas visibles.');
+      }
+    }
+
+    if (mode === 'practice' && /porcentaj|percent/i.test(question)) {
+      parts.push(isEnglish
+        ? 'For a new numerical percentage exercise, give the percentage and its matching base amount with units. Keep one coherent scenario. Ask one solvable question without giving its answer.'
+        : 'Para un ejercicio numérico nuevo de porcentajes, incluye el porcentaje y la cantidad base correspondiente con unidades. Mantén una sola situación coherente. Plantea una pregunta resoluble sin dar su respuesta.');
+    }
     const subject = [question, session?.topic, ...priorMessages.slice(-2).map(m => m.text)].join(' ');
     // EXPLORE-SCIENCE-01: concise targeted guardrails for the solar-shadow experiment.
     if (mode === 'explore') {
