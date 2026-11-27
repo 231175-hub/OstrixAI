@@ -19,8 +19,8 @@ export function perchOnCard(rects: readonly PerchRect[], viewportWidth: number, 
 /** Default remains an explanation; the student can still select the four Tutor modes. */
 export function companionIntent(query: string): CompanionTutorMode {
   const text = query.toLocaleLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  if (/(pista|guiame|ayudame a resolver|guide me|hint)/.test(text)) return 'guide';
-  if (/(practicar|practiquemos|ejercicio|repasar|practica|practice|quiz|repaso)/.test(text)) return 'practice';
-  if (/(experimento|explorar|investigar|explore|experiment)/.test(text)) return 'explore';
+  if (/\b(pista|guiame|ayudame a resolver|guide me|hint)\b/.test(text)) return 'guide';
+  if (/\b(practicar|practiquemos|ejercicio|repasar|practica|practice|quiz|repaso)\b/.test(text)) return 'practice';
+  if (/\b(experimento|explorar|investigar|explore|experiment)\b/.test(text)) return 'explore';
   return 'explain';
 }

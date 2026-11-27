@@ -28,7 +28,7 @@ describe('Ostrix — clasificación conservadora y consentimiento', () => {
   it('separa incluso si la duda aparece primero', () => {
     const result = suggestStudyPreview('No entendí qué es la gravedad, pero aprendí que atrae los objetos.');
     expect(result.doubt).toBe('No entendí qué es la gravedad');
-    expect(result.note).toBe('aprendí que atrae los objetos');
+    expect(result.note).toBe('aprendí que atrae los objetos.');
   });
   it('mantiene el contenido editable cuando solo hay una observación', () => {
     expect(suggestStudyPreview('Hoy comprendí las fracciones.').note).toBe('Hoy comprendí las fracciones.');

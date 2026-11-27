@@ -236,7 +236,7 @@
             <button type="button" (click)="retry()" [disabled]="saving()">{{ settings.profile().language === 'en' ? 'Retry' : 'Reintentar' }}</button>
             <button *ngIf="canUseEssential()" type="button" data-testid="tutor-essential-guide"
               [disabled]="saving()" (click)="useEssentialGuide()">
-              {{ settings.profile().language === 'en' ? 'Use a note-based guide (no AI)' : 'Usar guía de mis apuntes (sin IA)' }}
+              {{ settings.profile().language === 'en' ? (session() ? 'Use a note-based guide (no AI)' : 'Use an offline activity (no AI)') : (session() ? 'Usar guía de mis apuntes (sin IA)' : 'Usar actividad offline (sin IA)') }}
             </button>
           </div>
         </ng-container>

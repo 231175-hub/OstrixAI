@@ -16,6 +16,7 @@ describe('OstrixAiService routing and request lifetime', () => {
   const persist = jasmine.createSpy('enqueueInteraction');
   const calls: { mode: InferenceMode; name: string; signal: AbortSignal }[] = [];
   let ai: OstrixAiService;
+  const dispatchedPrompts: string[] = [];
   let configured = true;
   const sdkResponse = (source: InferenceSource | undefined) =>
     ({ inferenceSource: source, text: () => 'cuatro' });
@@ -30,6 +31,7 @@ describe('OstrixAiService routing and request lifetime', () => {
 
   beforeEach(() => {
     calls.length = 0;
+    dispatchedPrompts.length = 0;
     configured = true;
     owner.set({ id: 'audit-student' });
     online.set(true);
@@ -51,7 +53,10 @@ describe('OstrixAiService routing and request lifetime', () => {
     spyOn(boundary, 'cloudConfigured').and.callFake(() => configured);
     spyOn(boundary, 'modelForRequest').and.callFake((mode, name, signal) => {
       calls.push({ mode, name, signal });
-      return { generateContentStream: () => next(mode) } as unknown as GenerativeModel;
+      return { generateContentStream: (prompt: string) => {
+        dispatchedPrompts.push(prompt);
+        return next(mode);
+      } } as unknown as GenerativeModel;
     });
   });
 
@@ -74,6 +79,21 @@ describe('OstrixAiService routing and request lifetime', () => {
       expect(calls.at(-1)?.mode).toBe(InferenceMode.PREFER_ON_DEVICE);
       expect(result.source).toBe(source === InferenceSource.ON_DEVICE ? 'ON_DEVICE' : 'IN_CLOUD');
     }
+  });
+
+  it('uses a grounded raw tutor prompt on device-capable routes, never on Cloud-only', async () => {
+    const original = 'original tutor prompt';
+    const local = 'compact local facts and student question';
+    const opt = { ...noSave, rawPrompt: true, localPrompt: local };
+    await ai.processPromptDetailed(original, true, opt);
+    expect(calls.at(-1)?.mode).toBe(InferenceMode.ONLY_ON_DEVICE);
+    expect(dispatchedPrompts.at(-1)).toBe(local);
+    await ai.processPromptDetailed(original, true, { ...opt, cloudConsent: true });
+    expect(calls.at(-1)?.mode).toBe(InferenceMode.ONLY_IN_CLOUD);
+    expect(dispatchedPrompts.at(-1)).toBe(original);
+    await ai.processPromptDetailed(original, false, { ...opt, cloudConsent: true });
+    expect(calls.at(-1)?.mode).toBe(InferenceMode.PREFER_ON_DEVICE);
+    expect(dispatchedPrompts.at(-1)).toBe(local);
   });
 
   it('keeps an unconfigured deployment local even when an individual explicitly allows Cloud', async () => {

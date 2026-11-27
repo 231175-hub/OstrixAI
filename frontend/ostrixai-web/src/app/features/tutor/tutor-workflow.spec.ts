@@ -192,14 +192,19 @@ describe('Tutor rendered workflows with encrypted student storage', () => {
     const reply = tutor.thread()!.messages.at(-1)!;
     expect(reply.originalLanguage).toBe('es');
     fixture.detectChanges();
-    expect(root.querySelector('.assistant-message .message-text')?.textContent).toContain(reply.text);
+    const rendered = root.querySelector('.assistant-message .message-text')!;
+    expect(reply.text).toContain('Respuesta en español. La traducción al quechua todavía no está validada por un hablante competente.\n\nTexto de transporte de prueba');
+    // HTML br elements preserve visual line breaks; textContent omits them.
+    expect(rendered.textContent).toContain(reply.text.replace(/\n/g, ''));
+    expect(rendered.querySelectorAll('br').length).toBeGreaterThanOrEqual(2);
     await settings.save(2, 'es', false);
     await tutor.translateDerived(reply);
     expect(translate).not.toHaveBeenCalled();
     await settings.save(2, 'en', false);
     translate.and.resolveTo({ translatedText: 'Derived test string' });
     await tutor.translateDerived(reply);
-    expect(translate).toHaveBeenCalledWith(reply.id, reply.text, 'es', 'en', false);
+    // Translate only the Spanish content, not its interface disclaimer.
+    expect(translate).toHaveBeenCalledWith(reply.id, 'Texto de transporte de prueba', 'es', 'en', false);
     expect(tutor.thread()!.messages.at(-1)!.translatedLang).toBe('en');
     fixture.detectChanges();
     const toggle = root.querySelector<HTMLButtonElement>('.translation-header-badge button')!;

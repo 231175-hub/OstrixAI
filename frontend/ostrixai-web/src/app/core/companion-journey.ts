@@ -175,7 +175,7 @@ function labelClause(fragment: string): Label {
 }
 
 function trimClause(text: string): string {
-  return text.replace(/^[\s,;.!]+|[\s,;.!]+$/gu, '').trim();
+  return text.replace(/^[\s,;]+|[\s,;]+$/gu, '').trim();
 }
 /** Segmenta por puntuación; conserva el signo de pregunta como parte de la duda. */
 function splitPunctuation(text: string): string[] {
