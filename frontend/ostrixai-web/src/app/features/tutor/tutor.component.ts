@@ -4,6 +4,7 @@ import { Component, computed, inject, Input, OnDestroy, output, signal } from '@
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { buildEssentialTutorGuide } from '../../core/essential-tutor';
+import { essentialExploreActivity, isComplexTutorTask, useCompactExplore } from '../../core/tutor-hybrid-policy';
 import { OstrixAiService, formatFriendlyDuration, type InferenceCallOptions } from '../../core/ostrix-ai.service';
 import { LearningDiaryService, migrateSessionIfNeeded, type StudySession } from '../../core/learning-diary.service';
 import { PracticeExamService, type PracticeAttempt, type PracticeExam } from '../../core/practice-exam.service';
@@ -16,7 +17,7 @@ import { ReviewSchedulerService } from '../../core/review-scheduler.service';
 import { TranslationService } from '../../core/translation.service';
 import { TutorContextService } from '../../core/tutor-context.service';
 import { quoteOriginalNote } from '../../core/original-note-lookup';
-import { reviewTutorReply } from '../../core/tutor-reply-review';
+import { reviewTutorReply, tutorReplyFormatNotice } from '../../core/tutor-reply-review';
 import { quechuaSafePrompt, prepareQuechuaTutorReply, acceptAutomaticQuechuaTranslation, labelUnverifiedQuechuaTranslation, originalSpanishForTranslation, isQuechuaLanguage } from '../../core/tutor-quechua-guard';
 import { keepOneGuideQuestion } from '../../core/tutor-guide-turn';
 import { guidedAlgebraFallback, inspectGuidedAlgebra } from '../../core/tutor-guide-algebra';
@@ -31,6 +32,8 @@ import { cleanMarkdownToText } from '../../core/markdown-cleaner';
 import { renderTutorMathHtml } from '../../core/tutor-math-renderer';
 import { formatTutorFractions } from '../../core/tutor-fractions';
 import { gradeLinearPracticeAnswer } from '../../core/practice-linear-feedback';
+import { gradeDiscountPracticeTurn } from '../../core/practice-successive-discounts';
+import { buildGroundedLocalPrompt } from '../../core/tutor-local-knowledge';
 import { buildVerifiedPracticePrompt, acceptPracticeAiHint } from '../../core/practice-ai-hint';
 import { formatTutorReadableMath } from '../../core/tutor-readable-math';
 import { prepareTutorSaveDraft } from '../../core/tutor-save-drafts';
@@ -95,7 +98,7 @@ export class TutorComponent implements OnDestroy {
     const last = thread?.messages.at(-1);
     if (!thread || last?.role !== 'user' || this.failedTurnId() !== last.id) return false;
     if (this.session()) return this.settings.profile().autoInjectSessionContext;
-    return !!verifiedLocalTutor(last.text, this.mode(), thread.messages.slice(0, -1), this.settings.profile().language);
+    return this.mode() === 'explore' || !!verifiedLocalTutor(last.text, this.mode(), thread.messages.slice(0, -1), this.settings.profile().language);
   });
   readonly saveKind = signal<SaveKind | null>(null);
   readonly saveMessageId = signal<string | null>(null);
@@ -333,9 +336,15 @@ export class TutorComponent implements OnDestroy {
       if (!active()) return;
       const mode = this.mode();
       const session = studentProfile.autoInjectSessionContext ? this.session() : null;
-      const buildPrompt = () => quechuaSafePrompt(this.context.build(
-        question, mode, this.settings.profile().autoInjectSessionContext ? session : null, contextMessages
-      ), studentProfile.language);
+      const buildPrompt = () => {
+        const profile = this.settings.profile();
+        const approvedSession = profile.autoInjectSessionContext ? session : null;
+        const localOnly = profile.offlineOnly || !profile.allowCloudEnrichment || !navigator.onLine;
+        return quechuaSafePrompt(this.context.build(
+          question, mode, approvedSession, contextMessages,
+          useCompactExplore(mode, !!approvedSession, contextMessages.length > 0, localOnly)
+        ), studentProfile.language);
+      };
       const english = studentProfile.language === 'en';
       // MEM01-LOCAL-ORIGINAL-QUOTE: nunca pedirle al modelo que invente una cita.
       // Solo el Diario ya cargado para el usuario activo puede proporcionar el texto.
@@ -356,9 +365,9 @@ export class TutorComponent implements OnDestroy {
       if (mode === 'practice') {
         const previous = contextMessages.at(-1);
         const checked = previous?.role === 'assistant'
-          ? gradeLinearPracticeAnswer(
+          ? (gradeLinearPracticeAnswer(
               previous.text, question, english ? 'en' : 'es'
-            )
+            ) ?? gradeDiscountPracticeTurn(contextMessages, question, english ? 'en' : 'es'))
           : null;
 
         if (checked) {
@@ -374,10 +383,10 @@ export class TutorComponent implements OnDestroy {
             Awaited<ReturnType<typeof this.ai.processPromptDetailed>> | null = null;
 
           try {
-            // Same device-first route and Cloud consent as the Tutor.
+            // Prioritize assessment when Cloud is authorized; the service enforces consent.
             modelResult = await this.ai.processPromptDetailed(
               prompt,
-              false,
+              isComplexTutorTask(question, mode, contextMessages),
               {
                 cloudConsent: 'profile',
                 saveInOutbox: false,
@@ -446,7 +455,7 @@ export class TutorComponent implements OnDestroy {
       }
       // Exploring alternatives or a multi-step comparison may need the Cloud. A short
       // question in Explain/Guide/Practice keeps the SDK's device-first route.
-      const complex = mode === 'explore' || /compar[ae]|contrast|analiza|analy[sz]e|paso a paso|step.by.step/i.test(question);
+      const complex = isComplexTutorTask(question, mode, contextMessages);
       this.generating = true;
       inferenceTurnId = questionId ?? null;
       const options: InferenceCallOptions = {
@@ -456,7 +465,18 @@ export class TutorComponent implements OnDestroy {
         allowEssentialFallback: false,
       };
       const started = performance.now();
-      let result = await this.ai.processPromptDetailed(buildPrompt(), complex, options);
+      const grounded = buildGroundedLocalPrompt({
+        question, mode, language: studentProfile.language, grade: studentProfile.grade,
+        hasSession: !!session, historyLength: contextMessages.length,
+      });
+      const localPrompt = grounded ? quechuaSafePrompt(grounded.prompt, studentProfile.language) : undefined;
+      const originalPrompt = buildPrompt();
+      let result = await this.ai.processPromptDetailed(originalPrompt, complex,
+        localPrompt ? { ...options, localPrompt } : options);
+      if (active() && grounded && result.source === 'ON_DEVICE') {
+        console.info('[NANO-RAG-01]', { factIds: grounded.ids,
+          originalChars: originalPrompt.length, localChars: localPrompt?.length });
+      }
       if (!active()) return;
       result = { ...result, text: mode === 'guide' ? keepOneGuideQuestion(result.text) : result.text };
       const revision = reviewTutorReply(question, result.text, english, 'draft', mode, contextMessages);
@@ -467,7 +487,9 @@ export class TutorComponent implements OnDestroy {
       if (revision) {
         try {
           const instruction = english ? 'Return only the revised answer.' : 'Entrega solo la respuesta revisada.';
-          const prompt = `${buildPrompt()}\n\nDRAFT (data): ${result.text.slice(0, 1600)}\n\n${revision} ${instruction}`;
+          const revisionBase = result.source === 'ON_DEVICE' && localPrompt
+            ? localPrompt : buildPrompt();
+          const prompt = `${revisionBase}\n\nDRAFT (data): ${result.text.slice(0, 1600)}\n\n${revision} ${instruction}`;
           const revisionStart = performance.now();
           result = await this.ai.processPromptDetailed(prompt, complex, {
             ...options, modeOverride: result.source === 'ON_DEVICE' ? 'local' : 'cloud',
@@ -558,13 +580,12 @@ export class TutorComponent implements OnDestroy {
       });
 
       if (!active()) return;
-      this.notice.set(
-        displayTutorSource === 'ON_DEVICE'
-          ? this.t('tutorSourceLocal')
-          : displayTutorSource === 'IN_CLOUD'
-            ? this.t('tutorSourceCloud')
-            : this.t('tutorSourceEssential')
-      );
+      const sourceNotice = displayTutorSource === 'ON_DEVICE'
+        ? this.t('tutorSourceLocal')
+        : displayTutorSource === 'IN_CLOUD'
+          ? this.t('tutorSourceCloud') : this.t('tutorSourceEssential');
+      const formatNotice = tutorReplyFormatNotice(question, originalSpanishForTranslation(quechuaPublished.text), english, mode);
+      this.notice.set([sourceNotice, formatNotice].filter(Boolean).join(' '));
     } catch (error: unknown) {
       if (!active()) return;
       // QUECHUA-01: reliable Spanish fallback, not a fabricated ON_DEVICE answer.
@@ -608,7 +629,8 @@ export class TutorComponent implements OnDestroy {
     const lang = this.settings.profile().language;
     const essentialText = session
       ? buildEssentialTutorGuide(question.text, this.mode(), session, lang === 'en')
-      : verifiedLocalTutor(question.text, this.mode(), thread.messages.slice(0, -1), lang)?.text;
+      : (verifiedLocalTutor(question.text, this.mode(), thread.messages.slice(0, -1), lang)?.text
+        ?? (this.mode() === 'explore' ? essentialExploreActivity(lang === 'en') : undefined));
     if (!essentialText) return;
     const text = prepareQuechuaTutorReply(essentialText, lang, this.mode(), question.text).text;
     this.saving.set(true);

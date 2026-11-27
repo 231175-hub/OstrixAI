@@ -4,7 +4,7 @@ import { LearningMemoryService } from './learning-memory.service';
 import { ReviewSchedulerService } from './review-scheduler.service';
 import { StudentSettingsService } from './student-settings.service';
 import { TutorContextService } from './tutor-context.service';
-import { reviewTutorReply } from './tutor-reply-review';
+import { reviewTutorReply, tutorReplyFormatNotice } from './tutor-reply-review';
 import { checkPracticeCalculation } from './tutor-calculation';
 import type { TutorMessage } from './tutor-conversation.service';
 
@@ -69,14 +69,35 @@ describe('Tutor pedagogy before inference', () => {
   }
 });
 
+describe('NANO-FLEX-01 format notices', () => {
+  it('does not regenerate for length alone in any mode', () => {
+    const q = 'Responde en un máximo de 10 palabras.';
+    const a = 'Esta explicación desarrolla el tema con suficiente detalle para que puedas entenderlo mejor.';
+    for (const mode of ['explain', 'guide', 'practice', 'explore'] as const) {
+      const answer = mode === 'guide' ? a + ' Pista: observa. ¿Qué notas?' : a;
+      expect(reviewTutorReply(q, answer, false, 'draft', mode)).toBeNull();
+      expect(reviewTutorReply(q, answer, false, 'revised', mode)).toBeNull();
+      expect(tutorReplyFormatNotice(q, answer, false, mode)).toContain('máximo solicitado 10');
+    }
+  });
+  it('still rejects substantive errors even when the answer is overlong', () => {
+    const q = 'Responde en un máximo de 10 palabras.';
+    const a = '3/4 - 1/4 = 2/8. ' + 'palabra '.repeat(20);
+    expect(reviewTutorReply(q, a, false, 'draft', 'explain')).toContain('1/2');
+    expect(() => reviewTutorReply(q, a, false, 'revised', 'explain')).toThrow();
+    expect(tutorReplyFormatNotice(q, a, false, 'explain')).toContain('máximo solicitado 10');
+  });
+});
+
 describe('Tutor review of written examples', () => {
   const question = 'Explica 3/4 con una chacra de papas en un máximo de 100 palabras.';
 
-  it('requests both corrections for an overlong example confusing the remaining potatoes with those eaten', () => {
+  it('requires the fraction correction but reports length separately', () => {
     const incorrect = 'Si comes 3 de las 4 papas, te quedan $\\frac{3}{4}$.';
     const feedback = reviewTutorReply(question, incorrect + ' Otra palabra.'.repeat(51), false, 'draft');
     expect(feedback).toContain('3 unidades usadas de 4');
-    expect(feedback).toContain('100 palabras');
+    expect(feedback).not.toContain('100 palabras');
+    expect(tutorReplyFormatNotice(question, incorrect + ' Otra palabra.'.repeat(51), false)).toContain('máximo solicitado 100');
   });
 
   it('accepts a correctly labelled example with equivalent fractions in plain or TeX notation', () => {
@@ -88,13 +109,15 @@ describe('Tutor review of written examples', () => {
   it('counts the visible fraction as one word at the exact boundary', () => {
     const exact = 'palabra '.repeat(99) + '$\\frac{3}{4}$';
     expect(reviewTutorReply(question, exact, false, 'draft')).toBeNull();
-    expect(reviewTutorReply(question, exact + ' más', false, 'draft')).toContain('101 palabras');
+    expect(tutorReplyFormatNotice(question, exact, false)).toBeNull();
+    expect(reviewTutorReply(question, exact + ' más', false, 'draft')).toBeNull();
+    expect(tutorReplyFormatNotice(question, exact + ' más', false)).toContain('101 palabras');
   });
 
-  it('stops a revised draft that still violates either check, giving the specific reason', () => {
+  it('blocks a wrong fraction but permits an overlong revised answer with a notice', () => {
     expect(() => reviewTutorReply(question, 'Si comes 3 de 4 papas, te quedan 3/4.', false, 'revised'))
       .toThrowError(/fracciones.*contradicen/);
-    expect(() => reviewTutorReply(question, 'papas '.repeat(101), false, 'revised'))
-      .toThrowError(/límite de 100 palabras/);
+    expect(reviewTutorReply(question, 'papas '.repeat(101), false, 'revised')).toBeNull();
+    expect(tutorReplyFormatNotice(question, 'papas '.repeat(101), false)).toContain('101 palabras');
   });
 });

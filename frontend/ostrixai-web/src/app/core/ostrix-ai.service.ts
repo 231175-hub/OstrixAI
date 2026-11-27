@@ -54,6 +54,8 @@ export interface InferenceCallOptions {
   readonly cloudConsent?: boolean | 'profile';
   /** When true, sends prompt directly without wrapping in duplicate summary/tutor boilerplate. */
   readonly rawPrompt?: boolean;
+  /** Optional compact grounded prompt for raw tutor calls using a device-capable route. */
+  readonly localPrompt?: string;
   /** When false (e.g. Tutor Ostrix), never substitutes a deterministic template for generative AI. */
   readonly allowEssentialFallback?: boolean;
   readonly modeOverride?: 'hybrid' | 'cloud' | 'local';
@@ -415,11 +417,18 @@ export class OstrixAiService {
       : mode === 'cloud' || isComplex ? InferenceMode.ONLY_IN_CLOUD : InferenceMode.PREFER_ON_DEVICE;
     const requestId = ++this.activeRequestId;
     const allowEssential = options.allowEssentialFallback !== false;
-    const defaultLocalTimeout = this.isLocalModelWarm ? 60_000 : 120_000;
+    const defaultLocalTimeout = isComplex
+      ? (this.isLocalModelWarm ? 120_000 : 180_000)
+      : (this.isLocalModelWarm ? 60_000 : 120_000);
     const timeoutMs = options.timeoutMs ?? (route === InferenceMode.ONLY_IN_CLOUD ? 45_000 : defaultLocalTimeout);
     const t1 = performance.now(); // Context preparation
+    // Cloud-only always receives the original prompt. The SDK may still use Cloud
+    // on PREFER_ON_DEVICE only when consent is active, as before.
+    const localCandidate = options.rawPrompt && route !== InferenceMode.ONLY_IN_CLOUD
+      ? options.localPrompt?.trim() : undefined;
+    const rawTask = localCandidate && localCandidate.length <= 20_000 ? localCandidate : clean;
     const task = options.rawPrompt
-      ? clean
+      ? rawTask
       : isComplex
         ? `Actúa como tutor educativo para secundaria rural. Explica paso a paso, da ejemplos claros y orienta al estudiante.\n\nApuntes:\n${clean}`
         : `Resume en español estos apuntes escolares de forma fiel, estructurada y clara para secundaria rural.\n` +
