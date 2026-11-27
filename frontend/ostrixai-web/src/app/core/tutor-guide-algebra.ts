@@ -30,7 +30,10 @@ interface Exercise { equation: Equation; partial: Equation | undefined; studentW
 
 function exerciseFor(question: string, history: readonly GuidePriorTurn[]): Exercise | null {
   const studentTexts = history.filter(m => m.role === 'user').map(m => m.text).concat(question);
-  const found = studentTexts.flatMap(text => equations(text));
+  const currentEquations = equations(question);
+  // A newly stated full equation must not inherit a partial step from old exercises.
+  const found = currentEquations.some(eq => eq.b !== 0)
+    ? currentEquations : studentTexts.flatMap(text => equations(text));
   const original = found.filter(eq => Math.abs(eq.a) > 1 && eq.b !== 0).at(-1);
   const partial = found.filter(eq => Math.abs(eq.a) > 1 && eq.b === 0).at(-1);
   const equation = original ?? partial;
@@ -81,6 +84,13 @@ function revealsResult(text: string): boolean {
 export function guidedAlgebraFallback(question: string, history: readonly GuidePriorTurn[], english: boolean): string | null {
   const x = exerciseFor(question, history);
   if (!x) return null;
+  // Without a verified partial equation, remove the constant first; never praise an unverified step.
+  if (!x.partial && x.equation.b !== 0) {
+    const term = x.equation.b > 0 ? '+' + x.equation.b : String(x.equation.b);
+    return english
+      ? `Hint: first remove the constant ${term} using its inverse operation. What operation would you apply to both sides?`
+      : `Pista: primero elimina el término ${term} usando la operación inversa. ¿Qué operación debes aplicar a ambos miembros?`;
+  }
   const k = Math.abs(x.equation.a);
   if (english) {
     const intro = x.tutorOwnError && x.equation.b
@@ -99,6 +109,7 @@ export function inspectGuidedAlgebra(question: string, answer: string, history: 
   const x = exerciseFor(question, history);
   if (!x) return null;
   const issues: string[] = [];
+  if (!x.partial && x.equation.b !== 0 && !/(?:termino independiente|término independiente|constante|constant term|constant|sumar|restar|add|subtract)/i.test(answer)) issues.push('initial-step');
   if (revealsResult(answer)) issues.push('revealed-value');
   if ((answer.match(/\?/g) ?? []).length !== 1) issues.push('question-count');
   if (!/\b(?:pista|hint)\s*:/i.test(answer)) issues.push('missing-hint');

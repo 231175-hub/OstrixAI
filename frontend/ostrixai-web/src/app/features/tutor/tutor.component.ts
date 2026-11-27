@@ -24,6 +24,7 @@ import { inspectExploreShadow, shadowScienceFallback } from '../../core/tutor-ex
 import { verifyIntegerFeedback } from '../../core/tutor-integer-guard';
 import { gradeSimplePracticeAnswer } from '../../core/practice-integer-feedback';
 import { reviewEducationalAnswer } from '../../core/educational-guard';
+import { verifiedLocalTutor } from '../../core/tutor-verified-local';
 import { TutorConversationService, type TutorMessage, type TutorMode, type TutorThread } from '../../core/tutor-conversation.service';
 import { interfaceText, type InterfaceKey } from '../../core/interface-language';
 import { cleanMarkdownToText } from '../../core/markdown-cleaner';
@@ -89,8 +90,13 @@ export class TutorComponent implements OnDestroy {
   readonly notice = signal('');
   readonly saving = signal(false);
   readonly failedTurnId = signal<string | null>(null);
-  readonly canUseEssential = computed(() => !!this.session() && this.settings.profile().autoInjectSessionContext
-    && !!this.failedTurnId() && this.failedTurnId() === this.thread()?.messages.at(-1)?.id);
+  readonly canUseEssential = computed(() => {
+    const thread = this.thread();
+    const last = thread?.messages.at(-1);
+    if (!thread || last?.role !== 'user' || this.failedTurnId() !== last.id) return false;
+    if (this.session()) return this.settings.profile().autoInjectSessionContext;
+    return !!verifiedLocalTutor(last.text, this.mode(), thread.messages.slice(0, -1), this.settings.profile().language);
+  });
   readonly saveKind = signal<SaveKind | null>(null);
   readonly saveMessageId = signal<string | null>(null);
   readonly showContextPreview = signal(false);
@@ -345,6 +351,7 @@ export class TutorComponent implements OnDestroy {
         if (active()) this.notice.set(this.t('tutorSourceEssential'));
         return;
       }
+      // TUTOR-REGRESION-02: generative inference first. Reviewed content is offered only by explicit action after failure.
       // PRACTICA-ALGEBRA-02: verified AI tutoring with local fallback.
       if (mode === 'practice') {
         const previous = contextMessages.at(-1);
@@ -595,11 +602,14 @@ export class TutorComponent implements OnDestroy {
     const thread = this.thread();
     const question = thread?.messages.at(-1);
     const session = this.session();
-    if (!this.canUseEssential() || this.busy() || this.saving() || !thread || !session || question?.role !== 'user') return;
+    if (!this.canUseEssential() || this.busy() || this.saving() || !thread || question?.role !== 'user') return;
     const sameSession = this.ai.sessionGuard();
     const started = performance.now();
     const lang = this.settings.profile().language;
-    const essentialText = buildEssentialTutorGuide(question.text, this.mode(), session, lang === 'en');
+    const essentialText = session
+      ? buildEssentialTutorGuide(question.text, this.mode(), session, lang === 'en')
+      : verifiedLocalTutor(question.text, this.mode(), thread.messages.slice(0, -1), lang)?.text;
+    if (!essentialText) return;
     const text = prepareQuechuaTutorReply(essentialText, lang, this.mode(), question.text).text;
     this.saving.set(true);
     try {

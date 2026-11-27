@@ -56,7 +56,7 @@ export const COMPANION_FACTS_ES: Record<string, readonly string[]> = {
     "Un glaciar puede verse azul porque el hielo absorbe más luz roja que azul.",
     "En los Andes se puede hervir agua a menos de 100 °C debido a la menor presión atmosférica.",
     "Existen «ríos atmosféricos»: bandas de vapor que transportan muchísima humedad por el cielo.",
-    "La lluvia que desaparece antes de tocar el suelo se llama virga.",
+    "El agua de las gotas de lluvia puede evaporarse antes de tocar el suelo; las estelas de precipitación que no llegan al suelo se llaman virga.",
     "Los granizos pueden crecer en capas al subir y bajar dentro de una tormenta.",
     "La niebla puede recogerse con mallas: en zonas secas se usa para obtener agua.",
     "Algunas tormentas producen destellos rojos muy altos, por encima de las nubes, llamados sprites.",
